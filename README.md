@@ -24,7 +24,7 @@ tools/                 Gerador das faixas ornamentais
 Tudo fica em `assets/js/data.js`:
 
 - **`config`:** texto de apresentação, e-mail, WhatsApp e redes. Link vazio não aparece no site.
-- **`produtos`:** loja. `destaque: true` coloca o produto na página inicial (até 6). `preco: null` mostra "Preço a definir" e esconde o botão de compra. `demo: true` mostra o selo DEMO.
+- **`produtos`:** loja. `destaque: true` coloca o produto na vitrine da página inicial (até 7). O primeiro da lista aparece grande quando há 5 ou mais na tela; os botões de categoria são criados a partir das categorias presentes. `preco: null` mostra "Preço a definir" e esconde o botão de compra. `demo: true` mostra o selo DEMO.
 - **`trabalhos`:** portfólio (até 6 em destaque). `produtoId` liga um trabalho a um produto da loja, como uma cerâmica à venda.
 - **`flashes`:** `estado` pode ser `disponivel`, `reservado` ou `tatuado`. "Tenho interesse" preenche o contato.
 - **Fotos:** coloque em `assets/img/` e preencha `imagem` (ou `imagens`).

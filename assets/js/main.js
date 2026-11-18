@@ -230,6 +230,7 @@
 
   /* ---------- Loja: dados e textos de produto ---------- */
   var PROD_CAT = { camiseta: 'Camiseta', print: 'Print', adesivo: 'Adesivo', ceramica: 'Cerâmica', objeto: 'Objeto' };
+  var PROD_CAT_PL = { camiseta: 'Camisetas', print: 'Prints', adesivo: 'Adesivos', ceramica: 'Cerâmicas', objeto: 'Objetos' };
   var DISP = { disponivel: 'Disponível', esgotado: 'Esgotado', 'sob-encomenda': 'Sob encomenda' };
   var products = {};
   (DATA.produtos || []).forEach(function (p) { products[p.id] = p; });
@@ -254,11 +255,13 @@
   }
 
   /* ---------- [02] Loja: produtos em destaque ---------- */
+  // Vitrine: até 7 produtos. O primeiro aparece grande (2×2) e os outros preenchem ao redor.
   var shopGrid = $('#shop-grid');
-  shopGrid.innerHTML = (DATA.produtos || []).filter(function (p) { return p.destaque; }).slice(0, 6).map(function (p) {
+  var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; }).slice(0, 7);
+  shopGrid.innerHTML = vitrine.map(function (p) {
     var selo = p.edicao && /única/i.test(p.edicao) ? 'ÚNICA' : '';
     return '' +
-      '<article class="product" data-reveal>' +
+      '<article class="product" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         (selo ? '<span class="hanko">' + selo + '</span>' : '') +
         (p.demo ? '<span class="demo-tag">DEMO</span>' : '') +
         '<div class="product-media tilt" data-tilt>' + media((p.imagens || [])[0], p.nome) + '</div>' +
@@ -274,6 +277,42 @@
         '</div>' +
       '</article>';
   }).join('');
+
+  // O destaque grande é o primeiro produto visível, inclusive depois de filtrar.
+  // Com menos de 5 produtos na tela ele ficaria com um buraco ao lado, então todos ficam do mesmo tamanho.
+  function markFeature() {
+    var visible = $$('.product', shopGrid).filter(function (c) { return !c.hidden; });
+    var first = visible.length >= 5 ? visible[0] : null;
+    $$('.product', shopGrid).forEach(function (c) { c.classList.toggle('product--feature', c === first); });
+  }
+  markFeature();
+
+  // Botões de categoria: só aparecem as categorias que existem na vitrine, e só se houver mais de uma
+  var shopCats = vitrine.map(function (p) { return p.categoria; }).filter(function (c, i, a) { return a.indexOf(c) === i; });
+  var shopFilters = $('#shop-filters');
+  if (shopCats.length > 1) {
+    shopFilters.innerHTML = ['todos'].concat(shopCats).map(function (c, i) {
+      return '<button class="filter' + (i ? '' : ' is-active') + '" data-shop-filter="' + esc(c) + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(c === 'todos' ? 'Todos' : (PROD_CAT_PL[c] || c)) + '</button>';
+    }).join('');
+  } else {
+    shopFilters.hidden = true;
+  }
+  shopFilters.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-shop-filter]');
+    if (!btn) return;
+    var f = btn.getAttribute('data-shop-filter'), shown = 0;
+    $$('.filter', shopFilters).forEach(function (b) {
+      b.classList.toggle('is-active', b === btn);
+      b.setAttribute('aria-pressed', String(b === btn));
+    });
+    $$('.product', shopGrid).forEach(function (card) {
+      var show = f === 'todos' || card.getAttribute('data-cat') === f;
+      card.hidden = !show;
+      if (show) { shown++; card.classList.add('is-visible'); }
+    });
+    markFeature();
+    $('#shop-empty').hidden = shown > 0;
+  });
 
   /* ---------- [03] Trabalhos selecionados ---------- */
   var CATEGORIAS = { tatuagem: 'Tatuagem', design: 'Design', ceramica: 'Cerâmica' };
@@ -302,10 +341,10 @@
       '</article>';
   }).join('');
 
-  $$('.filter').forEach(function (btn) {
+  $$('#trabalhos .filter').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var f = btn.getAttribute('data-filter'), shown = 0;
-      $$('.filter').forEach(function (b) {
+      $$('#trabalhos .filter').forEach(function (b) {
         var active = b === btn;
         b.classList.toggle('is-active', active);
         b.setAttribute('aria-pressed', String(active));

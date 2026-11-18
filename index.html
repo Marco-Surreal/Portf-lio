@@ -26,7 +26,7 @@
       <a href="#trabalhos">Portfólio</a>
       <a href="#flashes">Flashes</a>
       <a href="#loja" class="is-shop">Loja</a>
-      <a href="#topo">Manifesto</a>
+      <a href="#topo">Sobre</a>
       <a href="#contato">Agendar</a>
     </nav>
     <button class="nav-btn nav-btn--bag" id="bag-toggle" aria-controls="cart-drawer">Sacola [<span id="bag-count">0</span>]</button>
@@ -78,7 +78,10 @@
         <h2 class="section-title" id="loja-title">Loja</h2>
         <p class="section-lead">Prints, camisetas, adesivos e cerâmicas.</p>
       </div>
-      <div class="shop-grid" id="shop-grid"></div>
+      <!-- Vitrine: o primeiro produto em destaque aparece grande; os botões filtram por categoria -->
+      <div class="filters shop-filters" id="shop-filters" role="group" aria-label="Filtrar produtos"></div>
+      <div class="shop-grid vitrine" id="shop-grid"></div>
+      <p class="empty-note" id="shop-empty" hidden>Nenhum produto nesta categoria.</p>
       <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os produtos <em>em breve</em></span></div>
     </section>
 
