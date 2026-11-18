@@ -90,8 +90,17 @@
   }
   function near(a, b, eps) { return Math.abs(a - b) < eps; }
 
+  /* A barra do topo fica escura quando passa sobre uma seção escura */
+  var DARK = '.theme-dark, .shop, .footer, .ornament-band--dark, .ornament-band--forest';
+  var navH = $('.navbar').offsetHeight;
+  function updateNav() {
+    var el = document.elementFromPoint(window.innerWidth / 2, navH + 2);
+    document.body.classList.toggle('nav-dark', !!(el && el.closest(DARK)));
+  }
+
   function render() {
     var settled = true;
+    updateNav();
     var hp = progressOf(hero), ap = progressOf(about);
     heroP += (hp - heroP) * 0.19;
     aboutP += (ap - aboutP) * 0.08;

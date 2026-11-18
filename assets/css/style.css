@@ -20,6 +20,8 @@
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
 
+  --ph-stripe: #D9DEB5;                        /* segunda listra dos placeholders */
+  --shadow-ink: rgba(18, 17, 16, 0.85);        /* sombra sólida do hover das imagens */
   --border: 1.5px solid var(--ink-sumi);
   --ease-curtain: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -59,10 +61,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
           mask-image: linear-gradient(to bottom, transparent, #000 60%);
 }
 
+/* ---------- Ritmo claro / escuro ----------
+   Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
+   Como quase tudo no site usa as variáveis abaixo, bordas, textos, placeholders e botões
+   invertem sozinhos. Ordem: Hero claro → Manifesto escuro → Portfólio claro →
+   Loja escura (verde) → Agendamento claro → Rodapé escuro. */
+.theme-dark {
+  --bg-cotton: #121110;
+  --ink-sumi: #F0F1D8;
+  --bg-cream: #1D1C19;
+  --ph-stripe: #272621;
+  --shadow-ink: rgba(226, 160, 37, 0.9);       /* no escuro a sombra vira ouro ocre */
+  --border: 1.5px solid #F0F1D8;               /* precisa ser redeclarada: var() já foi resolvida no :root */
+  background: var(--bg-cotton); color: var(--ink-sumi);
+}
+.theme-dark .link-hash:hover { color: var(--accent-ochre); border-color: var(--accent-ochre); }
+
 /* ---------- Placeholder de imagem ---------- */
 .ph {
   position: relative; width: 100%; height: 100%; min-height: 160px;
-  background: repeating-linear-gradient(45deg, var(--bg-cream) 0 10px, #D9DEB5 10px 20px);
+  background: repeating-linear-gradient(45deg, var(--bg-cream) 0 10px, var(--ph-stripe) 10px 20px);
   border: var(--border);
   display: grid; place-items: center;
 }
@@ -127,6 +145,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 body.menu-open .navbar { background: var(--ink-sumi); color: var(--bg-cotton); border-color: var(--bg-cotton); }
 body.menu-open .nav-btn { border-color: var(--bg-cotton); }
+/* A barra do topo acompanha a seção que está passando por baixo dela */
+body.nav-dark .navbar { background: #121110; color: var(--bg-cotton); border-color: rgba(240, 241, 216, 0.3); }
+body.nav-dark .nav-btn { border-color: var(--bg-cotton); }
+body.nav-dark .nav-btn:hover { background: var(--bg-cotton); color: var(--ink-sumi); }
+.nav-btn--bag, body.nav-dark .nav-btn--bag { color: var(--ink-sumi); }
 
 .nav-menu-wrapper {
   position: fixed; inset: 0 0 auto 0; z-index: 90; height: 0%; overflow: hidden;
@@ -238,6 +261,7 @@ body.menu-open .nav-btn { border-color: var(--bg-cotton); }
 .ornament-band--terung { --ratio: calc(337 / 120); --ornament: url("../img/ornamento-terung.svg"); }
 .ornament-band--terung .ornament-track { animation-duration: 10s; }
 .ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
+.ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: #121110; border-bottom: none; }
 @keyframes ornament {
   to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
 }
@@ -430,7 +454,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
   transition: transform 0.7s var(--ease-out), box-shadow 0.7s var(--ease-out);
 }
-.tilt.is-hover { transition: transform 0.15s linear, box-shadow 0.4s var(--ease-out); box-shadow: 10px 14px 0 rgba(18, 17, 16, 0.85); }
+.tilt.is-hover { transition: transform 0.15s linear, box-shadow 0.4s var(--ease-out); box-shadow: 10px 14px 0 var(--shadow-ink); }
 .tilt > .ph, .tilt > img { height: 100%; }
 /* .glass = só o brilho, sem inclinar (usado nos cards, que já giram inteiros) */
 .glass { --mx: 50%; --my: 50%; isolation: isolate; }
