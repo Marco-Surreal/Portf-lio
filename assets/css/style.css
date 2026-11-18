@@ -62,9 +62,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
    miolo de cada escama é pintado com a cor do fundo para as ondas se sobreporem. */
 .theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
 .shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
-/* Textura "despadronizada": anéis preenchidos em escamas sorteadas (JS cria os elementos), por cima das linhas */
-.scale-fx { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.scale-fx span { position: absolute; width: 48px; height: 48px; background-size: 48px 48px; }
 
 /* ---------- Ritmo claro / escuro ----------
    Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
@@ -213,12 +210,12 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-image-holder {
   grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; width: 100%;
   max-width: calc(70vh - 100px); /* em telas baixas as imagens diminuem para não cortar */
-  margin: 8% 0 3% 0; /* reserva o espaço da imagem que sai para cima; à direita, a mesma margem do título */
+  margin: 8% 3vw 3% 0; /* reserva o espaço da imagem que sai para cima; à direita, um pouco mais que a margem do título */
   z-index: 2; position: relative; will-change: transform; }
 .hero-layer { will-change: transform; }
 .hero-layer--main { position: relative; z-index: 1; }
 .hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -8%; }
-.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: 0; top: -6%; } /* na frente, alinhada à margem direita */
+.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: -3vw; top: -6%; } /* na frente; fica na margem do título, as outras vão 3vw para a esquerda */
 .hero-layer--b .ph, .hero-layer--c .ph { aspect-ratio: 4 / 5; min-height: 0; }
 .hero-layer--c .ph { background-color: var(--bg-cream); }
 .hero-layer:hover { z-index: 4; }
@@ -323,7 +320,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 /* ---------- [07] Loja ---------- */
 .shop { background: var(--bg-forest); padding: 6rem var(--pad); }
 /* Textos da seção ficam claros sobre o verde; os cartões continuam em papel claro com tinta escura */
-.shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-bar, .shop > .empty-note {
+.shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-bar, .shop > .shop-grid, .shop > .empty-note {
   --ink-sumi: #F0F1D8; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #F0F1D8;
   color: var(--ink-sumi);
 }
@@ -350,12 +347,16 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .vitrine::-webkit-scrollbar { display: none; }
 .vitrine .product { scroll-snap-align: start; }
 .vitrine.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
-.product { position: relative; background: var(--bg-cotton); color: var(--ink-sumi); padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.product { position: relative; color: var(--ink-sumi); padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
 .product-media { margin-bottom: 0.4rem; }
 .product .product-cat { margin: 0; }
 .product-avail { margin: 0; }
 .product-avail.is-disponivel { color: var(--accent-jade); opacity: 1 !important; }
 .product-avail.is-esgotado { color: var(--accent-vermilion); opacity: 1 !important; }
+/* Produtos direto sobre o verde da loja, sem cartão claro atrás */
+.shop > .shop-grid { --shadow-ink: rgba(0, 0, 0, 0.45); }
+.shop .ph { color: #121110; }
+.shop .product-avail.is-disponivel { color: #6CC4A1; }
 .product-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
 .product-media { aspect-ratio: 1; position: relative; }
 .product-media .ph, .product-media img { position: absolute; inset: 0; }
@@ -542,7 +543,6 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
   .portfolio-grid { grid-template-columns: 1fr; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }
-  .vitrine .product { padding: 0.7rem; }
   .contact-form { grid-template-columns: 1fr; }
   .modal-panel { grid-template-columns: 1fr; }
   .modal-media { min-height: 260px; border-right: 0; border-bottom: var(--border); }

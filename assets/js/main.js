@@ -64,6 +64,7 @@
      tamanho da tela. No celular as imagens ficam embaixo do texto. */
   var heroHold = $('#hero-image');
   var sideBySide = window.matchMedia('(min-width: 641px)');
+  var HERO_OVERLAP = 0.08; // quanto a Cerâmica cobre de SURREAL (8% da largura da palavra)
   function absLeft(el) { var x = 0; while (el) { x += el.offsetLeft; el = el.offsetParent; } return x; }
   function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
   function placeHeroImages() {
@@ -75,23 +76,25 @@
     // (o CSS já alinha pela margem da seção). Aqui se acerta o tamanho para a imagem de baixo
     // ir da beirada do L até a principal: ela fica 42% da largura para a esquerda da principal.
     var right = absLeft(heroHold) + heroHold.offsetWidth;
-    var startX = absLeft(heroBig) + heroBig.offsetWidth - heroBig.offsetWidth * 0.04; // cobre só ~4% de SURREAL
+    var startX = absLeft(heroBig) + heroBig.offsetWidth - heroBig.offsetWidth * HERO_OVERLAP;
+    var intro = $('.hero-intro');
+    if (intro) startX = Math.max(startX, absLeft(intro) + intro.offsetWidth + 16); // nunca por cima da bio
     var W = heroHold.offsetWidth, fitW = (right - startX) / 1.42;
     if (fitW < W) { W = Math.max(200, Math.floor(fitW)); heroHold.style.maxWidth = W + 'px'; }
     // Se a altura da tela limitou o tamanho, a imagem de baixo se afasta um pouco da principal
     // para continuar encostando no L (no máximo 55% para fora, para não soltar dela).
     var bLeft = Math.max(startX - (right - W), -0.55 * W);
     b.style.left = Math.round(bLeft) + 'px';
-    // Na altura: começa na metade de SURREAL, cobrindo só o pé do L. Sem sair da seção embaixo.
+    // Na altura: começa perto da base de SURREAL, cobrindo só o pé do L. Sem sair da seção embaixo.
     var holdTop = absTop(heroHold);
-    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.55 - holdTop;
+    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.85 - holdTop;
     var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - holdTop;
     b.style.top = Math.round(Math.min(bTop, bMax)) + 'px'; b.style.bottom = 'auto';
   }
   // Com as imagens ao lado, o subtítulo termina onde a imagem começa (ela cobre só um pouco do L).
   function layoutHero() {
     if (!heroBig) return;
-    var cut = sideBySide.matches ? heroBig.offsetWidth * 0.04 + 10 : 0;
+    var cut = sideBySide.matches ? heroBig.offsetWidth * HERO_OVERLAP + 10 : 0;
     fitHeroSub(heroBig.offsetWidth - cut);
     placeHeroImages();
   }
@@ -699,58 +702,4 @@
 
   $('#year').textContent = new Date().getFullYear();
 
-  /* ---------- Textura "despadronizada" ----------
-     Em algumas escamas sorteadas da textura (seigaiha), um dos anéis fica preenchido com a cor
-     das linhas. É fixo (sem animação) e raro: cerca de 2% das escamas. As escamas da frente
-     continuam cobrindo o anel, como no desenho original. */
-  (function scaleRings() {
-    var TW = 48, TH = 24;                        // mesmo tamanho da textura (background-size 48×24)
-    var BANDS = [[18, 24], [12, 18], [6, 12]];   // anéis entre os círculos (raios 20/15/10/5 × 1,2)
-    var sprites = {};
-    function sprite(color, band) {
-      var key = color + band;
-      if (sprites[key]) return sprites[key];
-      var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
-      var g = cv.getContext('2d'); g.scale(2, 2);
-      var r = BANDS[band];
-      g.fillStyle = color; g.beginPath();
-      g.arc(24, 24, r[1], 0, Math.PI * 2); g.arc(24, 24, r[0], 0, Math.PI * 2, true);
-      g.fill();
-      // tira o que as três escamas da frente (embaixo e dos lados) cobrem
-      g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000'; // cor opaca para recortar por inteiro
-      [[0, 36], [48, 36], [24, 48]].forEach(function (p) { g.beginPath(); g.arc(p[0], p[1], 24, 0, Math.PI * 2); g.fill(); });
-      return (sprites[key] = cv.toDataURL());
-    }
-    var layers = $$('.seigaiha').map(function (sec) {
-      var layer = document.createElement('div');
-      layer.className = 'scale-fx'; layer.setAttribute('aria-hidden', 'true');
-      sec.insertBefore(layer, sec.firstChild);
-      // mesma cor e força das linhas da textura de cada fundo
-      var color = sec.matches('.theme-dark, .footer, .shop') ? 'rgba(240,241,216,0.08)' : 'rgba(31,78,120,0.12)';
-      return { sec: sec, layer: layer, color: color, w: 0, h: 0 };
-    });
-    function build(L) {
-      var w = L.sec.clientWidth, h = L.sec.clientHeight;
-      if (w === L.w && Math.abs(h - L.h) < TH * 4) return;   // só refaz quando o tamanho muda de verdade
-      L.w = w; L.h = h;
-      var cols = Math.ceil(w / TW) + 1, rows = Math.ceil(h / TH) + 1;
-      var n = Math.round(cols * rows * 2 * 0.02), used = {}, html = '';
-      for (var k = 0; k < n; k++) {
-        var odd = Math.random() < 0.5 ? 1 : 0;
-        var i = Math.floor(Math.random() * cols), j = Math.floor(Math.random() * rows);
-        var id = i + ':' + j + ':' + odd;
-        if (used[id]) continue;
-        used[id] = true;
-        var cx = i * TW + odd * TW / 2, cy = j * TH + odd * TH / 2;
-        html += '<span style="left:' + (cx - 24) + 'px;top:' + (cy - 24) + 'px;background-image:url(' +
-          sprite(L.color, Math.floor(Math.random() * BANDS.length)) + ')"></span>';
-      }
-      L.layer.innerHTML = html;
-    }
-    function buildAll() { layers.forEach(build); }
-    buildAll();
-    var t;
-    window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(buildAll, 300); });
-    window.addEventListener('load', buildAll);
-  })();
 })();
