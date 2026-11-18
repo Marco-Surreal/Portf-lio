@@ -43,6 +43,25 @@
     });
   }
 
+  /* ---------- "ARTISTA MULTIDISCIPLINAR" com a mesma largura de "SURREAL" ----------
+     Mede as duas linhas (offsetWidth ignora as animações de giro) e ajusta o tamanho da linha pequena. */
+  var heroBig = $('.hero-line:nth-child(2) > span');
+  var heroSmall = $('.hero-line--small > span');
+  function fitHeroSub() {
+    if (!heroBig || !heroSmall) return;
+    heroSmall.style.fontSize = '';
+    var k = 1;
+    for (var i = 0; i < 3; i++) { // o espaçamento entre letras não escala junto, então refina 3 vezes
+      var w = heroSmall.offsetWidth;
+      if (!w) return;
+      k *= heroBig.offsetWidth / w;
+      heroSmall.style.fontSize = k + 'em';
+    }
+  }
+  fitHeroSub();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeroSub);
+  window.addEventListener('resize', fitHeroSub);
+
   /* ---------- Hero reveal ---------- */
   window.requestAnimationFrame(function () {
     setTimeout(function () { document.body.classList.add('is-loaded'); }, 80);
@@ -97,7 +116,10 @@
 
     if (!reduceMotion) {
       var big = desktop.matches;
-      heroHolder.style.transform = big ? 'translate3d(' + (-110 * heroP).toFixed(2) + 'px,' + (150 * heroP).toFixed(2) + 'px,0)' : '';
+      // Na vertical, desconta o ponto de partida (p0 = topo da página) para as imagens não começarem
+      // empurradas para baixo e cortadas; elas descem a partir dali conforme a rolagem.
+      var p0 = window.innerHeight / (window.innerHeight + hero.offsetHeight);
+      heroHolder.style.transform = big ? 'translate3d(' + (-110 * heroP).toFixed(2) + 'px,' + (150 * (heroP - p0)).toFixed(2) + 'px,0)' : '';
       heroLayers.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
         el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
