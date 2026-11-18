@@ -60,19 +60,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 /* Textura de escamas (seigaiha) no site inteiro. Cada fundo tem sua versão, porque o
    miolo de cada escama é pintado com a cor do fundo para as ondas se sobreporem. */
-.theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23121110'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
+.theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
 .shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
 
 /* ---------- Ritmo claro / escuro ----------
    Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
    Como quase tudo no site usa as variáveis abaixo, bordas, textos, placeholders e botões
-   invertem sozinhos. Ordem: Hero claro → Manifesto escuro → Portfólio claro →
-   Loja escura (verde) → Agendamento claro → Rodapé escuro. */
+   invertem sozinhos. Todo fundo escuro usa o mesmo verde da Loja (--bg-forest).
+   Ordem: Hero claro → Loja verde → Trabalhos claro → Flashes verde → Contato claro → Rodapé verde. */
 .theme-dark {
-  --bg-cotton: #121110;
+  --bg-cotton: #162A24;                        /* mesmo verde escuro da Loja */
   --ink-sumi: #F0F1D8;
-  --bg-cream: #1D1C19;
-  --ph-stripe: #272621;
+  --bg-cream: #1E352E;
+  --ph-stripe: #24403A;
   --shadow-ink: rgba(226, 160, 37, 0.9);       /* no escuro a sombra vira ouro ocre */
   --border: 1.5px solid #F0F1D8;               /* precisa ser redeclarada: var() já foi resolvida no :root */
   background: var(--bg-cotton); color: var(--ink-sumi);
@@ -152,7 +152,7 @@ body.nav-dark .nav-links a.is-shop { color: var(--accent-ochre); }
 @keyframes bump { 50% { transform: scale(1.12); } }
 
 /* A barra do topo acompanha a seção que está passando por baixo dela */
-body.nav-dark .navbar { background: #121110; color: #F0F1D8; border-color: rgba(240, 241, 216, 0.3); }
+body.nav-dark .navbar { background: var(--bg-forest); color: #F0F1D8; border-color: rgba(240, 241, 216, 0.3); }
 body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 
 /* Celular e tablet estreito: logo e sacola em cima, links numa segunda linha que desliza para o lado */
@@ -179,7 +179,7 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-title {
   grid-column: 1 / -1; grid-row: 1; align-self: center; z-index: 1; margin: 0;
   font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
-  font-size: clamp(3rem, 13vw, 13rem); line-height: 0.88; letter-spacing: -0.01em;
+  font-size: clamp(2.4rem, min(8vw, 14vh), 8rem); line-height: 0.88; letter-spacing: -0.01em;
 }
 /* Alien "Animate On Load": cada palavra gira 90° no eixo Y e sobe 45px (1200ms outExpo, +100ms entre elas) */
 .hero-line { display: block; perspective: 1500px; }
@@ -249,13 +249,13 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .ornament-band--terung { --ratio: calc(337 / 120); --ornament: url("../img/ornamento-terung.svg"); }
 .ornament-band--terung .ornament-track { animation-duration: 10s; }
 .ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
-.ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: #121110; border-bottom: none; }
+.ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
 @keyframes ornament {
   to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
 }
-/* A faixa já separa as seções: as seções vizinhas não precisam do respiro grande (6rem) */
-.ornament-band + section { padding-top: 3rem; }
-section:has(+ .ornament-band) { padding-bottom: 3rem; }
+/* A faixa já separa as seções: o espaço entre a faixa e o conteúdo é o mesmo em cima e embaixo */
+.ornament-band + section { padding-top: 0.75rem; }
+section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 
 /* Faixa de texto em movimento: usada só no "VER FICHA TÉCNICA" dos cards */
 .marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
@@ -417,7 +417,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 .form-status.err { color: var(--accent-vermilion); }
 
 /* ---------- [10] Footer ---------- */
-.footer { background: var(--ink-sumi); color: var(--bg-cotton); padding: 4rem var(--pad) 2rem; }
+.footer { background: var(--bg-forest); color: var(--bg-cotton); padding: 0.75rem var(--pad) 2rem; } /* em cima: mesmo espaço das outras faixas */
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-bottom: 3rem; border-bottom: 1.5px solid rgba(240, 241, 216, 0.3); }
 .footer-roles { margin-top: 1rem; opacity: 0.7; }
 .footer-big { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 5vw, 4rem); margin: 0.5rem 0 0; line-height: 1; }
@@ -532,8 +532,6 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .product--feature { grid-row: span 1; }
   .product--feature .product-media { min-height: 240px; }
   .vitrine .product:not(.product--feature) { padding: 0.7rem; }
-  .ornament-band + section { padding-top: 2.25rem; }
-  section:has(+ .ornament-band) { padding-bottom: 2.25rem; }
   .contact-form { grid-template-columns: 1fr; }
   .modal-panel { grid-template-columns: 1fr; }
   .modal-media { min-height: 260px; border-right: 0; border-bottom: var(--border); }
