@@ -32,7 +32,6 @@ Tudo fica em `assets/js/data.js`:
 
 ## Pendências conhecidas
 
-- **WhatsApp:** com `config.whatsapp` vazio, o formulário abre o e-mail com a mensagem pronta. Preenchendo o número, passa a abrir o WhatsApp.
 - **Loja:** sem plataforma conectada, "Finalizar compra" avisa que é demonstração e não cria pedido (`commerce.js`).
 - **Páginas internas** (`loja/`, `trabalhos/`, `flashes/`, `produto/`): parte 2. Os botões "Ver todos" aparecem como "em breve".
 

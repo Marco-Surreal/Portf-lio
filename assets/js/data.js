@@ -16,11 +16,12 @@ window.SITE_DATA = {
     apresentacao: 'Marco Surreal é um artista multidisciplinar com produção em tatuagem, design gráfico, ilustração e cerâmica. Seu trabalho se desenvolve através de diferentes técnicas e suportes, reunindo imagens, objetos e projetos autorais.',
     email: 'omarcosurreal@gmail.com',
     // WhatsApp só com números, com DDI e DDD. Ex.: '5511999998888'.
-    // Enquanto estiver vazio, o formulário envia por e-mail e o link de WhatsApp fica oculto.
-    whatsapp: '',
+    // Se ficar vazio, o formulário envia por e-mail e o link de WhatsApp fica oculto.
+    whatsapp: '5562982869136',
     instagram: 'https://www.instagram.com/marcosurreal/',
     behance: 'https://www.behance.net/marcomachado3',
-    spotify: 'https://open.spotify.com/user/tonikow'
+    spotify: 'https://open.spotify.com/user/tonikow',
+    pinterest: 'https://br.pinterest.com/marcosurreal/'
   },
 
   /* ---------- Produtos (loja) ----------

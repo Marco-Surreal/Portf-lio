@@ -182,7 +182,8 @@
   var socials = [
     CFG.instagram && { href: CFG.instagram, label: '#INSTAGRAM' },
     CFG.behance && { href: CFG.behance, label: '#BEHANCE' },
-    CFG.spotify && { href: CFG.spotify, label: '#SPOTIFY' }
+    CFG.spotify && { href: CFG.spotify, label: '#SPOTIFY' },
+    CFG.pinterest && { href: CFG.pinterest, label: '#PINTEREST' }
   ].filter(Boolean);
   var contacts = [
     CFG.email && { href: 'mailto:' + CFG.email, label: CFG.email },
@@ -429,8 +430,10 @@
     // O site não envia sozinho: abre o WhatsApp ou o e-mail com tudo preenchido.
     // A mensagem só chega quando a pessoa confirma o envio no aplicativo, e o aviso diz isso.
     if (via === 'whatsapp') {
-      var w = window.open(waLink(texto), '_blank', 'noopener');
-      if (!w) window.location.href = waLink(texto);
+      // Sem 'noopener' no terceiro argumento: com ele, window.open sempre devolve null
+      // e a página atual também seria trocada. O opener é cortado logo em seguida.
+      var w = window.open(waLink(texto), '_blank');
+      if (w) w.opener = null; else window.location.href = waLink(texto);
     } else {
       window.location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent('[Site] ' + assunto) + '&body=' + encodeURIComponent(texto);
     }
