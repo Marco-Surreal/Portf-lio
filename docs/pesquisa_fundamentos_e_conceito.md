@@ -157,7 +157,18 @@ A direção de arte do site (brutalismo editorial + papel algodão e pigmentos d
 
 **Campos de ficha técnica sugeridos (Cerâmica):** argila, temperatura de queima, esmalte, técnica (torno, placa, acordelado), dimensões (cm), peso, peça única ou série.
 
-### 2.6 Design Editorial & Brutalismo Web (Estrutura do Site)
+### 2.6 Tatuagem de Bornéu (Dayak): Ornamento do Site
+
+As faixas ornamentais que separam as seções do site vêm da tatuagem dos povos Dayak de Bornéu (Iban, Kayan, Kenyah, entre outros). `[VERIFICAR fontes antes de publicar]`
+
+- **Técnica tradicional:** feita à mão, batendo a agulha com um bastão (*hand-tapping*), com pigmento de fuligem. É mais uma prática manual e irreversível que conversa com a tese da seção 1.
+- **Bunga terung** ("flor da berinjela"): roseta tatuada no ombro dos homens Iban. Marca a saída para a jornada de vida (*bejalai*). No site, é a roseta com miolo vermilion.
+- **Aso** (cão-dragão): figura protetora dos Kayan e Kenyah, desenhada com volutas e ganchos em espiral.
+- **Princípios formais:** preto chapado e pesado, espirais e ganchos que engrossam no meio e afinam nas pontas, e a pele aberta funcionando como linha (o desenho é lido tanto pelo preto quanto pelo vazio).
+- **Referências para estudo:** Ernesto Kalum (tatuador Iban contemporâneo, Kuching) e as pesquisas de Lars Krutak sobre tatuagem indígena.
+- **Cuidado cultural:** cada motivo tem significado e, às vezes, só pode ser usado por quem cumpriu um rito. No site, as faixas são ornamento *inspirado* no estilo e não reproduzem desenhos tradicionais específicos. Ver seção 7.
+
+### 2.7 Design Editorial & Brutalismo Web (Estrutura do Site)
 
 - **Estilo Tipográfico Internacional (Suíço):** Josef Müller-Brockmann, *Grid Systems in Graphic Design* (1981). O grid é uma ferramenta de clareza e não de decoração.
 - **Brutalismo web:** estrutura exposta, bordas visíveis e tipografia em escala monumental, sem esconder a "construção" da página.

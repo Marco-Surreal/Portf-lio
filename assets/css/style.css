@@ -183,20 +183,32 @@ body.menu-open .nav-btn { border-color: var(--bg-cotton); }
 .block-line__fill::after { bottom: 0; left: -2.25px; }
 .hero-bio .editorial { font-size: clamp(1.1rem, 1.8vw, 1.4rem); }
 
-/* ---------- Marquee ---------- */
-.marquee {
-  overflow: hidden; border-bottom: var(--border); padding: 0.6rem 0; background: var(--bg-cotton);
+/* ---------- Faixas ornamentais (espirais Dayak / Bornéu) ----------
+   Cada faixa repete um SVG de assets/img/ na horizontal.
+   --ratio = largura / altura do viewBox do SVG (precisa bater para a emenda ficar invisível).
+   Arquivos gerados por tools/gerar-ornamentos.js; podem ser trocados por desenho próprio. */
+.ornament-band {
+  --h: clamp(64px, 9vw, 112px);
+  --ratio: calc(494 / 120);
+  --ornament: url("../img/ornamento-espiral.svg");
+  overflow: hidden; padding: 0.5rem 0; background: var(--bg-cotton); border-bottom: var(--border);
 }
+.ornament-track {
+  height: var(--h); width: calc(100% + var(--h) * var(--ratio));
+  background: var(--ornament) repeat-x left center / auto 100%;
+  animation: ornament 14s linear infinite; will-change: transform;
+}
+.ornament-band--reverse .ornament-track { animation-direction: reverse; }
+.ornament-band--terung { --ratio: calc(337 / 120); --ornament: url("../img/ornamento-terung.svg"); }
+.ornament-band--terung .ornament-track { animation-duration: 10s; }
+.ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
+@keyframes ornament {
+  to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
+}
+
+/* Faixa de texto em movimento: usada só no "VER FICHA TÉCNICA" dos cards */
 .marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
-.marquee--reverse .marquee-track { animation-direction: reverse; }
 .marquee-group { display: flex; white-space: nowrap; }
-.marquee-item {
-  font-family: var(--font-display-alt); font-weight: 800; text-transform: uppercase;
-  font-size: clamp(3.5rem, 8vw, 7.5rem); line-height: 1; padding: 0 0.4em;
-}
-.marquee-star { color: var(--accent-vermilion); font-size: clamp(2rem, 4vw, 4rem); align-self: center; }
-.marquee--forest { background: var(--bg-forest); color: var(--bg-cotton); border-bottom: none; }
-.marquee--forest .marquee-star { color: var(--accent-ochre); }
 @keyframes marquee {
   0% { transform: translate3d(0%, 0, 0); }
   100% { transform: translate3d(-33.333%, 0, 0); }
@@ -377,7 +389,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0s !important; }
-  .marquee-track { animation: none !important; }
+  .marquee-track, .ornament-track { animation: none !important; }
   .hero-line > span, [data-reveal] { opacity: 1; transform: none; }
   .lines { width: 100%; }
 }

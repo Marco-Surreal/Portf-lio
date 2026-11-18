@@ -30,21 +30,6 @@
     document.body.classList.toggle('is-locked', locks > 0);
   }
 
-  /* ---------- Marquees ---------- */
-  function buildMarquee(el, words) {
-    var group = words.map(function (w) {
-      return '<span class="marquee-item">' + esc(w) + '</span><span class="marquee-star">✦</span>';
-    }).join('');
-    var html = '';
-    for (var i = 0; i < 3; i++) html += '<div class="marquee-group">' + group + '</div>';
-    el.innerHTML = '<div class="marquee-track">' + html + '</div>';
-  }
-  $$('.marquee[data-words]').forEach(function (el) {
-    var words = el.getAttribute('data-words').split('|');
-    // repete as palavras para preencher telas largas
-    buildMarquee(el, words.concat(words));
-  });
-
   /* ---------- Menu fullscreen ---------- */
   var menuBtn = $('#Menu');
   var menu = $('#nav-menu');
