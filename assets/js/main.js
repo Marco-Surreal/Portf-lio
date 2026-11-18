@@ -59,44 +59,42 @@
     }
   }
 
-  /* Imagens do topo: a imagem de baixo (Cerâmica) passa um pouquinho por cima do L de SURREAL.
-     Mede sem transformações (offsetLeft), porque a largura do título muda com a fonte e o
-     tamanho da tela. No celular as imagens ficam embaixo do texto. */
+  /* Imagens do topo: posição da Cerâmica em relação à imagem principal e à bio.
+     Mede sem transformações (offsetLeft/offsetTop). No celular as imagens ficam embaixo do texto. */
   var heroHold = $('#hero-image');
   var sideBySide = window.matchMedia('(min-width: 641px)');
-  var HERO_OVERLAP = 0.08; // quanto a Cerâmica cobre de SURREAL (8% da largura da palavra)
   function absLeft(el) { var x = 0; while (el) { x += el.offsetLeft; el = el.offsetParent; } return x; }
   function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
+  // Retorna a posição da Cerâmica na página (para o subtítulo saber se precisa terminar antes dela).
   function placeHeroImages() {
-    if (!heroHold || !heroBig) return;
+    if (!heroHold || !heroBig) return null;
     var b = $('.hero-layer--b', heroHold);
-    heroHold.style.maxWidth = ''; b.style.left = ''; b.style.top = ''; b.style.bottom = '';
-    if (!sideBySide.matches) return;
-    // A imagem principal termina à direita na mesma distância que o título tem da esquerda
-    // (o CSS já alinha pela margem da seção). Aqui se acerta o tamanho para a imagem de baixo
-    // ir da beirada do L até a principal: ela fica 42% da largura para a esquerda da principal.
-    var right = absLeft(heroHold) + heroHold.offsetWidth;
-    var startX = absLeft(heroBig) + heroBig.offsetWidth - heroBig.offsetWidth * HERO_OVERLAP;
+    b.style.left = ''; b.style.top = ''; b.style.bottom = '';
+    if (!sideBySide.matches) return null;
+    // A Cerâmica acompanha a principal: fica até 50% da largura para a esquerda dela,
+    // mas nunca por cima da bio (aí ela chega mais perto da principal).
+    var W = heroHold.offsetWidth, holdLeft = absLeft(heroHold), holdTop = absTop(heroHold);
+    var bLeft = -0.5 * W;
     var intro = $('.hero-intro');
-    if (intro) startX = Math.max(startX, absLeft(intro) + intro.offsetWidth + 16); // nunca por cima da bio
-    var W = heroHold.offsetWidth, fitW = (right - startX) / 1.42;
-    if (fitW < W) { W = Math.max(200, Math.floor(fitW)); heroHold.style.maxWidth = W + 'px'; }
-    // Se a altura da tela limitou o tamanho, a imagem de baixo se afasta um pouco da principal
-    // para continuar encostando no L (no máximo 55% para fora, para não soltar dela).
-    var bLeft = Math.max(startX - (right - W), -0.55 * W);
+    if (intro) bLeft = Math.max(bLeft, absLeft(intro) + intro.offsetWidth + 16 - holdLeft);
     b.style.left = Math.round(bLeft) + 'px';
-    // Na altura: começa perto da base de SURREAL, cobrindo só o pé do L. Sem sair da seção embaixo.
-    var holdTop = absTop(heroHold);
-    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.85 - holdTop;
+    // Na altura: passa um pouco para baixo da principal, na mesma medida em que o
+    // Ateliê / Retrato passa para cima (6% da altura do bloco). Sem sair da seção embaixo.
+    var bTop = heroHold.offsetHeight * 1.06 - b.offsetHeight;
     var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - holdTop;
-    b.style.top = Math.round(Math.min(bTop, bMax)) + 'px'; b.style.bottom = 'auto';
+    bTop = Math.round(Math.min(bTop, bMax));
+    b.style.top = bTop + 'px'; b.style.bottom = 'auto';
+    return { left: holdLeft + bLeft, top: holdTop + bTop };
   }
-  // Com as imagens ao lado, o subtítulo termina onde a imagem começa (ela cobre só um pouco do L).
+  // "ARTISTA MULTIDISCIPLINAR" tem a largura de SURREAL; só termina antes se a Cerâmica estiver na altura dele.
   function layoutHero() {
     if (!heroBig) return;
-    var cut = sideBySide.matches ? heroBig.offsetWidth * HERO_OVERLAP + 10 : 0;
-    fitHeroSub(heroBig.offsetWidth - cut);
-    placeHeroImages();
+    fitHeroSub(heroBig.offsetWidth);
+    var pos = placeHeroImages();
+    if (!pos) return;
+    var subTop = absTop(heroSmall), subBottom = subTop + heroSmall.offsetHeight;
+    var subLeft = absLeft(heroSmall);
+    if (pos.top < subBottom && pos.left < subLeft + heroSmall.offsetWidth + 10) fitHeroSub(Math.max(100, pos.left - 10 - subLeft));
   }
   layoutHero();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero);

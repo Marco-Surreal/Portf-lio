@@ -209,13 +209,13 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 /* Três imagens sobrepostas; cada camada anda numa profundidade diferente (JS: data-depth) */
 .hero-image-holder {
   grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; width: 100%;
-  max-width: calc(70vh - 100px); /* em telas baixas as imagens diminuem para não cortar */
-  margin: 8% 3vw 3% 0; /* reserva o espaço da imagem que sai para cima; à direita, um pouco mais que a margem do título */
+  max-width: calc(66vh - 95px); /* em telas baixas as imagens diminuem para não cortar */
+  margin: 8% 6vw 9% 0; /* reserva o espaço das imagens que saem para cima e para baixo; à direita, 6vw além da margem */
   z-index: 2; position: relative; will-change: transform; }
 .hero-layer { will-change: transform; }
 .hero-layer--main { position: relative; z-index: 1; }
 .hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -8%; }
-.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: -3vw; top: -6%; } /* na frente; fica na margem do título, as outras vão 3vw para a esquerda */
+.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: -6vw; top: -6%; } /* na frente; fica na margem do título, as outras vão 6vw para a esquerda */
 .hero-layer--b .ph, .hero-layer--c .ph { aspect-ratio: 4 / 5; min-height: 0; }
 .hero-layer--c .ph { background-color: var(--bg-cream); }
 .hero-layer:hover { z-index: 4; }
