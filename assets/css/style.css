@@ -173,13 +173,15 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 /* ---------- [01] Hero ---------- */
 .hero {
   min-height: 100vh; padding: calc(var(--nav-h) + 2rem) var(--pad) 3rem;
-  display: grid; grid-template-columns: 1fr minmax(200px, 26vw); grid-template-rows: 1fr auto; gap: 2rem;
+  /* Esquerda: título e biografia. Direita: imagens sobrepostas. */
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); grid-template-rows: auto auto;
+  align-content: center; gap: 2.5rem 2rem;
   border-bottom: var(--border); overflow: hidden;
 }
 .hero-title {
-  grid-column: 1 / -1; grid-row: 1; align-self: center; z-index: 1; margin: 0;
+  grid-column: 1; grid-row: 1; align-self: end; z-index: 1; margin: 0;
   font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
-  font-size: clamp(2.4rem, min(8vw, 14vh), 8rem); line-height: 0.88; letter-spacing: -0.01em;
+  font-size: clamp(2.7rem, min(10.5vw, 19vh), 10.5rem); line-height: 0.88; letter-spacing: -0.01em;
 }
 /* Alien "Animate On Load": cada palavra gira 90° no eixo Y e sobe 45px (1200ms outExpo, +100ms entre elas) */
 .hero-line { display: block; perspective: 1500px; }
@@ -206,7 +208,7 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .is-loaded .hero-line > span { transform: none; opacity: 1; }
 
 /* Três imagens sobrepostas; cada camada anda numa profundidade diferente (JS: data-depth) */
-.hero-image-holder { grid-column: 2; grid-row: 1; align-self: center; z-index: 2; position: relative; will-change: transform; }
+.hero-image-holder { grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: center; width: min(100%, 25vw); z-index: 2; position: relative; will-change: transform; }
 .hero-layer { will-change: transform; }
 .hero-layer--main { position: relative; z-index: 1; }
 .hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -14%; }
@@ -222,12 +224,12 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
   33% { transform: translate3d(0, -12px, 0) rotate(-1.2deg); }
   66% { transform: translate3d(0, 8px, 0) rotate(0.8deg); }
 }
-.hero-meta { grid-column: 1 / -1; grid-row: 2; display: flex; gap: 1.5rem; align-items: stretch; max-width: 560px; }
-.block-line { width: 1.5px; height: 140px; flex-shrink: 0; }
+.hero-meta { grid-column: 1; grid-row: 2; align-self: start; display: flex; gap: 1.5rem; align-items: stretch; max-width: 40rem; }
+.block-line { width: 1.5px; flex-shrink: 0; }
 .block-line__fill { display: block; width: 1.5px; height: 0%; }
 .block-line__fill::before { top: 0; left: -2.25px; }
 .block-line__fill::after { bottom: 0; left: -2.25px; }
-.hero-intro { font-size: clamp(1rem, 1.25vw, 1.12rem); line-height: 1.6; max-width: 46ch; margin: 0 0 1.5rem; }
+.hero-intro { font-size: clamp(1.1rem, 1.55vw, 1.45rem); line-height: 1.55; max-width: 36ch; margin: 0 0 1.75rem; }
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
 /* ---------- Faixas ornamentais (espirais Dayak / Bornéu) ----------
@@ -517,6 +519,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 /* ---------- Responsivo ---------- */
 @media (max-width: 960px) {
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr); }
   .vitrine { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -525,6 +528,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 @media (max-width: 640px) {
   /* No celular, texto e botões vêm logo depois do título; as imagens descem */
   .hero { grid-template-columns: 1fr; grid-template-rows: auto auto auto; min-height: 0; padding-bottom: 4rem; }
+  .hero-title { align-self: start; }
   .hero-meta { grid-row: 2; }
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin-top: 2rem; }
   .portfolio-grid { grid-template-columns: 1fr; }
