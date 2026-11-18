@@ -122,9 +122,10 @@ body.menu-open .nav-btn { border-color: var(--bg-cotton); }
 .nav-menu-wrapper {
   position: fixed; inset: 0 0 auto 0; z-index: 90; height: 0%; overflow: hidden;
   background: var(--ink-sumi); color: var(--bg-cotton);
-  transition: height 0.65s var(--ease-curtain);
+  visibility: hidden;
+  transition: height 0.65s var(--ease-curtain), visibility 0s linear 0.65s;
 }
-.nav-menu-wrapper.is-open { height: 100vh; }
+.nav-menu-wrapper.is-open { height: 100vh; visibility: visible; transition: height 0.65s var(--ease-curtain), visibility 0s; }
 .nav-menu-inner {
   height: 100vh; padding: calc(var(--nav-h) + 3rem) var(--pad) 3rem;
   display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; align-items: end;
@@ -329,9 +330,10 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 160; width: min(420px, 100%);
   background: var(--bg-cotton); border-left: var(--border);
   display: flex; flex-direction: column;
-  transform: translateX(100%); transition: transform 0.55s var(--ease-curtain); visibility: hidden;
+  transform: translateX(100%); visibility: hidden;
+  transition: transform 0.55s var(--ease-curtain), visibility 0s linear 0.55s;
 }
-.drawer.is-open { transform: none; visibility: visible; }
+.drawer.is-open { transform: none; visibility: visible; transition: transform 0.55s var(--ease-curtain), visibility 0s; }
 .drawer-head { position: relative; padding: 1.25rem 1.5rem; border-bottom: var(--border); }
 .drawer-head .modal-close { top: 50%; transform: translateY(-50%); }
 .cart-list { list-style: none; margin: 0; padding: 0 1.5rem; overflow-y: auto; flex: 1; }
