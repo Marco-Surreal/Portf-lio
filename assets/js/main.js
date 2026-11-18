@@ -57,43 +57,75 @@
     setTimeout(function () { document.body.classList.add('is-loaded'); }, 80);
   });
 
-  /* ---------- Scroll + mouse: block-line e camadas em profundidade ----------
-   * Cada imagem com data-depth anda com o mouse e com o scroll numa velocidade diferente,
-   * então as camadas deslizam umas sobre as outras. O movimento é suavizado (lerp),
-   * como as interações "smooth" do template Alien. */
+  /* ---------- Movimento ligado ao scroll e ao mouse (coreografia do Alien) ----------
+   * Valores tirados das interações do template (webflow.js):
+   *  - "Hero Animation": com o progresso da seção, a linha vertical cresce 0→100% e o bloco
+   *    de imagens anda até (-110px, 150px). Suavização 81 → lerp 0.19.
+   *  - "About Me Section": a foto principal desce 355px, a menor anda (80px, 126px) e o texto
+   *    desce 492px; as linhas chegam a 100% em 35% e 37% do progresso. Suavização 92 → lerp 0.08.
+   *  - "Project Look At Mouse": o card gira até ±15° nos eixos X e Y. Suavização 93 → lerp 0.07.
+   * Os dois primeiros só rodam no desktop (≥ 992px), como no original.
+   * Além disso, cada imagem com data-depth acompanha o mouse em profundidade própria,
+   * para as camadas deslizarem umas sobre as outras. */
   var hero = $('.hero');
+  var about = $('#manifesto');
   var blockFill = $('.block-line__fill');
+  var heroHolder = $('#hero-image');
   var heroLayers = $$('.hero-layer');
-  var aboutImgs = $$('.about-img');
-  var target = { x: 0, y: 0 }, cur = { x: 0, y: 0, s: window.scrollY };
+  var aboutMovers = $$('[data-scroll]', about);
+  var aboutLines = [$('.section-head .lines', about), $('.about > .lines', about)].filter(Boolean);
+  aboutLines.forEach(function (l) { l.classList.add('is-scrub'); });
+  var desktop = window.matchMedia('(min-width: 992px)');
+
+  var mouse = { tx: 0, ty: 0, x: 0, y: 0 };
+  var heroP = progressOf(hero), aboutP = progressOf(about);
+  var cards = [];   // estados dos cards em movimento
   var running = false;
 
-  function render() {
-    var y = window.scrollY;
-    cur.x += (target.x - cur.x) * 0.08;
-    cur.y += (target.y - cur.y) * 0.08;
-    cur.s += (y - cur.s) * 0.12;
+  function clamp01(v) { return Math.min(1, Math.max(0, v)); }
+  /** 0 quando a seção começa a entrar por baixo, 1 quando termina de sair por cima. */
+  function progressOf(el) {
+    var r = el.getBoundingClientRect(), vh = window.innerHeight;
+    return clamp01((vh - r.top) / (vh + r.height));
+  }
+  function near(a, b, eps) { return Math.abs(a - b) < eps; }
 
-    var heroH = hero.offsetHeight || 1;
-    var progress = Math.min(1, Math.max(0, (y + window.innerHeight * 0.6) / heroH));
-    blockFill.style.height = (progress * 100) + '%';
+  function render() {
+    var settled = true;
+    var hp = progressOf(hero), ap = progressOf(about);
+    heroP += (hp - heroP) * 0.19;
+    aboutP += (ap - aboutP) * 0.08;
+    mouse.x += (mouse.tx - mouse.x) * 0.08;
+    mouse.y += (mouse.ty - mouse.y) * 0.08;
+    if (!near(hp, heroP, 0.0005) || !near(ap, aboutP, 0.0005) || !near(mouse.tx, mouse.x, 0.0005) || !near(mouse.ty, mouse.y, 0.0005)) settled = false;
+
+    blockFill.style.height = (heroP * 100).toFixed(2) + '%';
+    aboutLines.forEach(function (l, i) {
+      l.style.width = (clamp01(aboutP / (i ? 0.37 : 0.35)) * 100).toFixed(2) + '%';
+    });
 
     if (!reduceMotion) {
+      var big = desktop.matches;
+      heroHolder.style.transform = big ? 'translate3d(' + (-110 * heroP).toFixed(2) + 'px,' + (150 * heroP).toFixed(2) + 'px,0)' : '';
       heroLayers.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
-        el.style.transform = 'translate3d(' + (cur.x * 22 * d) + 'px,' + (-cur.s * 0.12 * d + cur.y * 16 * d) + 'px,0)';
+        el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
       });
-      aboutImgs.forEach(function (el) {
-        var rect = el.parentElement.getBoundingClientRect();
-        if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
-        var offset = rect.top + rect.height / 2 - window.innerHeight / 2;
-        var p = parseFloat(el.getAttribute('data-parallax')) || 0;
+      aboutMovers.forEach(function (el) {
+        var xy = el.getAttribute('data-scroll').split(',').map(Number);
         var d = parseFloat(el.getAttribute('data-depth')) || 0;
-        el.style.transform = 'translate3d(' + (cur.x * 14 * d) + 'px,' + (offset * p + cur.y * 10 * d) + 'px,0)';
+        var sx = big ? xy[0] * aboutP : 0, sy = big ? xy[1] * aboutP : 0;
+        el.style.transform = 'translate3d(' + (sx + mouse.x * 14 * d).toFixed(2) + 'px,' + (sy + mouse.y * 10 * d).toFixed(2) + 'px,0)';
+      });
+      cards.forEach(function (c) {
+        c.rx += (c.tgx - c.rx) * 0.07;
+        c.ry += (c.tgy - c.ry) * 0.07;
+        c.lift += (c.tlift - c.lift) * 0.22;   // o Alien sobe o card com transition de 0.3s
+        c.el.style.transform = 'translateY(' + c.lift.toFixed(2) + 'px) rotateX(' + c.rx.toFixed(2) + 'deg) rotateY(' + c.ry.toFixed(2) + 'deg)';
+        if (!near(c.tgx, c.rx, 0.01) || !near(c.tgy, c.ry, 0.01) || !near(c.tlift, c.lift, 0.05)) settled = false;
       });
     }
 
-    var settled = Math.abs(target.x - cur.x) < 0.001 && Math.abs(target.y - cur.y) < 0.001 && Math.abs(y - cur.s) < 0.5;
     if (settled) running = false; else window.requestAnimationFrame(render);
   }
   function wake() { if (!running) { running = true; window.requestAnimationFrame(render); } }
@@ -101,8 +133,8 @@
   window.addEventListener('resize', wake);
   if (!reduceMotion) {
     window.addEventListener('mousemove', function (e) {
-      target.x = e.clientX / window.innerWidth - 0.5;
-      target.y = e.clientY / window.innerHeight - 0.5;
+      mouse.tx = e.clientX / window.innerWidth - 0.5;
+      mouse.ty = e.clientY / window.innerHeight - 0.5;
       wake();
     }, { passive: true });
   }
@@ -130,15 +162,37 @@
     });
   }
 
-  /* Cortina de entrada das imagens, em cascata dentro de cada grupo */
-  function prepReveal(el, i, base) {
-    el.style.setProperty('--d', ((base || 0) + i * 0.14).toFixed(2) + 's');
+  /** Cards do portfólio: giro de ±15° seguindo o mouse + subida de 10px + brilho de vidro na imagem. */
+  function bindCard(card) {
+    if (reduceMotion || !canHover) return;
+    var item = $('.card-item', card), glass = $('.glass', card);
+    var c = { el: item, rx: 0, ry: 0, tgx: 0, tgy: 0, lift: 0, tlift: 0 };
+    cards.push(c);
+    card.addEventListener('pointerenter', function () { c.tlift = -10; glass.classList.add('is-hover'); wake(); });
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect();
+      var px = clamp01((e.clientX - r.left) / r.width), py = clamp01((e.clientY - r.top) / r.height);
+      c.tgy = (px - 0.5) * 30;    // -15° a 15°
+      c.tgx = (0.5 - py) * 30;
+      var m = glass.getBoundingClientRect();
+      glass.style.setProperty('--mx', (clamp01((e.clientX - m.left) / m.width) * 100).toFixed(1) + '%');
+      glass.style.setProperty('--my', (clamp01((e.clientY - m.top) / m.height) * 100).toFixed(1) + '%');
+      wake();
+    });
+    card.addEventListener('pointerleave', function () {
+      c.tgx = 0; c.tgy = 0; c.tlift = 0;   // volta ao repouso (restingState 50 no Alien)
+      glass.classList.remove('is-hover');
+      wake();
+    });
+  }
+
+  /* Cortina de entrada das imagens do manifesto, em cascata */
+  $$('.about-images .img-reveal').forEach(function (el, i) {
+    el.style.setProperty('--d', (i * 0.14).toFixed(2) + 's');
     el.addEventListener('transitionend', function (e) {
       if (e.propertyName === 'clip-path' && el.classList.contains('is-visible')) el.classList.add('is-revealed');
     });
-  }
-  $$('#hero-image .img-reveal').forEach(function (el, i) { prepReveal(el, i, 0.45); });  // entra depois do título
-  $$('.about-images .img-reveal').forEach(function (el, i) { prepReveal(el, i); });
+  });
 
   /* ---------- Portfólio ---------- */
   var grid = $('#portfolio-grid');
@@ -148,14 +202,16 @@
     for (var i = 0; i < 6; i++) strip += '<span>VER FICHA TÉCNICA ✦</span>';
     return '' +
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
-        '<div class="card-media tilt" data-tilt>' + m +
-          '<div class="card-layer _02" aria-hidden="true">' + m + '</div>' +
-          '<div class="card-layer _03" aria-hidden="true">' + m + '</div>' +
-          '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
-        '</div>' +
-        '<div class="card-info">' +
-          '<h3 class="card-title">' + esc(p.titulo) + '</h3>' +
-          '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + ' · ' + esc(p.ano) + '</span>' +
+        '<div class="card-item">' +
+          '<div class="card-media glass">' + m +
+            '<div class="card-layer _02" aria-hidden="true">' + m + '</div>' +
+            '<div class="card-layer _03" aria-hidden="true">' + m + '</div>' +
+            '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
+          '</div>' +
+          '<div class="card-info">' +
+            '<div class="card-title-wrap"><h3 class="card-title">' + esc(p.titulo) + '</h3></div>' +
+            '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + ' · ' + esc(p.ano) + '</span>' +
+          '</div>' +
         '</div>' +
         '<button class="card-open" data-id="' + esc(p.id) + '" aria-label="Ver ficha técnica: ' + esc(p.titulo) + '"></button>' +
       '</article>';
@@ -354,14 +410,23 @@
 
   /* ---------- Reveal + linhas progressivas ---------- */
   $$('[data-tilt]').forEach(bindTilt);
-  var targets = $$('[data-reveal], .lines, .img-reveal');
+  $$('.card', grid).forEach(bindCard);
+  var targets = $$('[data-reveal], .lines:not(.is-scrub), .img-reveal');
   if ('IntersectionObserver' in window && !reduceMotion) {
+    // .img-reveal começa com clip-path de área zero e o navegador nunca o considera visível;
+    // por isso observamos o elemento pai e marcamos o filho.
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); }
+        if (!en.isIntersecting) return;
+        var el = en.target._revealChild || en.target;
+        el.classList.add('is-visible');
+        io.unobserve(en.target);
       });
     }, { threshold: 0.15 });
-    targets.forEach(function (t) { io.observe(t); });
+    targets.forEach(function (t) {
+      if (t.classList.contains('img-reveal')) { t.parentElement._revealChild = t; io.observe(t.parentElement); }
+      else io.observe(t);
+    });
   } else {
     targets.forEach(function (t) { t.classList.add('is-visible'); });
   }

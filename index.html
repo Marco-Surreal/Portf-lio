@@ -65,13 +65,13 @@
       <!-- Imagens sobrepostas: cada camada tem profundidade própria (data-depth) no mouse e no scroll -->
       <div class="hero-image-holder" id="hero-image">
         <div class="hero-layer hero-layer--main" data-depth="1">
-          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph ph--tall" data-label="FLASH SHEET / IMAGEM HERO"></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph ph--tall" data-label="FLASH SHEET / IMAGEM HERO"></div></div></div></div>
         </div>
         <div class="hero-layer hero-layer--b" data-depth="2.2">
-          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE NA PELE"></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="DETALHE NA PELE"></div></div></div></div>
         </div>
         <div class="hero-layer hero-layer--c" data-depth="-1.5">
-          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="PROCESSO / ESTÊNCIL"></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="PROCESSO / ESTÊNCIL"></div></div></div></div>
         </div>
       </div>
     </section>
@@ -87,7 +87,7 @@
       </div>
 
       <div class="about-grid">
-        <div class="about-text">
+        <div class="about-text" data-scroll="0,492">
           <h2 class="section-title">A agulha, o grid<br />e o barro</h2>
           <p class="editorial">Três ofícios irreversíveis feitos à mão. A pele não se apaga, a tiragem não se reimprime, o grés não volta a ser argila.</p>
           <p>[A PREENCHER: manifesto, primeiro parágrafo. Como o Marco chegou à tatuagem, ao design e à cerâmica.]</p>
@@ -95,9 +95,10 @@
           <a href="#agendar" class="link-hash">#AGENDAR SESSÃO →</a>
         </div>
         <div class="about-images">
-          <div class="about-img about-img--a" data-parallax="0.08" data-depth="0.8"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="FOTO DO ATELIÊ"></div></div></div>
-          <div class="about-img about-img--b" data-parallax="-0.06" data-depth="-1.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="TATUAGEM NA PELE"></div></div></div>
-          <div class="about-img about-img--c" data-parallax="0.16" data-depth="2.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE"></div></div></div>
+          <!-- data-scroll="x,y": deslocamento em px ao fim da seção (valores do Alien: 0,355 e 80,126) -->
+          <div class="about-img about-img--a" data-scroll="0,355" data-depth="0.8"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="FOTO DO ATELIÊ"></div></div></div>
+          <div class="about-img about-img--b" data-scroll="80,126" data-depth="-1.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="TATUAGEM NA PELE"></div></div></div>
+          <div class="about-img about-img--c" data-scroll="-40,230" data-depth="2.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE"></div></div></div>
         </div>
       </div>
       <div class="lines _03" aria-hidden="true"></div>
