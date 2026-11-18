@@ -12,8 +12,8 @@ window.SITE_DATA = {
   /* ---------- Contato e redes ---------- */
   config: {
     nome: 'Marco Surreal',
-    // Apresentação da abertura (texto provisório, 2 ou 3 frases)
-    apresentacao: 'Marco Surreal é um artista multidisciplinar com produção em tatuagem, design gráfico, ilustração e cerâmica. Seu trabalho se desenvolve através de diferentes técnicas e suportes, reunindo imagens, objetos e projetos autorais.',
+    // Apresentação da abertura (texto provisório, resumido da bio do Marco; ele vai reescrever)
+    apresentacao: 'Tatuador, designer e artista multidisciplinar. Com base na tatuagem tradicional e forte influência da psicodelia dos anos 60, do surrealismo e da op art, trabalha com cores vibrantes, distorções visuais e a mistura entre referências clássicas e contemporâneas.',
     email: 'omarcosurreal@gmail.com',
     // WhatsApp só com números, com DDI e DDD. Ex.: '5511999998888'.
     // Se ficar vazio, o formulário envia por e-mail e o link de WhatsApp fica oculto.
@@ -30,6 +30,7 @@ window.SITE_DATA = {
    * estoque: quantidade máxima na sacola (peça única = 1)
    * disponibilidade: "disponivel" | "esgotado" | "sob-encomenda"
    * edicao: texto curto opcional (ex.: "Peça única", "Tiragem de 30")
+ * grande: true → este produto abre a vitrine da página inicial em tamanho grande (use em um só)
    * detalhes: pares "Campo": "Valor" (materiais, dimensões, acabamento...) */
   produtos: [
     {
@@ -56,7 +57,7 @@ window.SITE_DATA = {
     {
       id: 'p-camiseta-01', nome: '[Camiseta — estampa]', categoria: 'camiseta',
       preco: null, estoque: 10, disponibilidade: 'disponivel', edicao: '',
-      destaque: true, demo: true, imagens: [],
+      destaque: true, grande: true, demo: true, imagens: [],
       descricao: '[A PREENCHER]',
       detalhes: { 'Tamanhos': '[—]', 'Tecido': '[—]' }
     },

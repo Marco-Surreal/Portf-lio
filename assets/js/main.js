@@ -258,6 +258,8 @@
   // Vitrine: até 7 produtos. O primeiro aparece grande (2×2) e os outros preenchem ao redor.
   var shopGrid = $('#shop-grid');
   var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; }).slice(0, 7);
+  // O produto marcado com grande: true vai para o começo, para ser o card grande
+  vitrine.sort(function (a, b) { return (b.grande ? 1 : 0) - (a.grande ? 1 : 0); });
   shopGrid.innerHTML = vitrine.map(function (p) {
     var selo = p.edicao && /única/i.test(p.edicao) ? 'ÚNICA' : '';
     return '' +

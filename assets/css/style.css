@@ -228,7 +228,7 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .block-line__fill { display: block; width: 1.5px; height: 0%; }
 .block-line__fill::before { top: 0; left: -2.25px; }
 .block-line__fill::after { bottom: 0; left: -2.25px; }
-.hero-intro { font-size: clamp(1.1rem, 1.55vw, 1.45rem); line-height: 1.55; max-width: 36ch; margin: 0 0 1.75rem; }
+.hero-intro { font-size: clamp(1.1rem, 1.55vw, 1.45rem); line-height: 1.55; max-width: 46ch; margin: 0 0 1.75rem; }
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
 /* ---------- Faixas ornamentais (espirais Dayak / Bornéu) ----------
@@ -338,7 +338,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .product--feature .product-media { aspect-ratio: auto; flex: 1; min-height: 320px; }
 .product--feature h3 { font-size: clamp(1.4rem, 2.4vw, 2rem); }
 .product--feature .price { font-size: 1.3rem; }
-.product { position: relative; background: var(--bg-cotton); color: var(--ink-sumi); padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; box-shadow: 6px 6px 0 var(--ink-sumi); }
+.product { position: relative; background: var(--bg-cotton); color: var(--ink-sumi); padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .product-media { margin-bottom: 0.4rem; }
 .product .product-cat { margin: 0; }
 .product-avail { margin: 0; }
