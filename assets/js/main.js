@@ -47,20 +47,55 @@
      Mede as duas linhas (offsetWidth ignora as animações de giro) e ajusta o tamanho da linha pequena. */
   var heroBig = $('.hero-line:nth-child(2) > span');
   var heroSmall = $('.hero-line--small > span');
-  function fitHeroSub() {
+  function fitHeroSub(target) {
     if (!heroBig || !heroSmall) return;
     heroSmall.style.fontSize = '';
     var k = 1;
     for (var i = 0; i < 3; i++) { // o espaçamento entre letras não escala junto, então refina 3 vezes
       var w = heroSmall.offsetWidth;
       if (!w) return;
-      k *= heroBig.offsetWidth / w;
+      k *= target / w;
       heroSmall.style.fontSize = k + 'em';
     }
   }
-  fitHeroSub();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeroSub);
-  window.addEventListener('resize', fitHeroSub);
+
+  /* Imagens do topo: a imagem de baixo (Cerâmica) passa um pouquinho por cima do L de SURREAL.
+     Mede sem transformações (offsetLeft) e desloca o bloco com "left", porque a largura do título
+     muda com a fonte e o tamanho da tela. No celular as imagens ficam embaixo do texto. */
+  var heroHold = $('#hero-image');
+  var sideBySide = window.matchMedia('(min-width: 641px)');
+  function absLeft(el) { var x = 0; while (el) { x += el.offsetLeft; el = el.offsetParent; } return x; }
+  function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
+  function placeHeroImages() {
+    if (!heroHold || !heroBig) return;
+    var b = $('.hero-layer--b', heroHold), c = $('.hero-layer--c', heroHold);
+    heroHold.style.left = ''; heroHold.style.maxWidth = ''; b.style.top = ''; b.style.bottom = '';
+    if (!sideBySide.matches) return;
+    var overlap = heroBig.offsetWidth * 0.04; // um pouco: cerca de 4% da largura de SURREAL
+    var startX = absLeft(heroBig) + heroBig.offsetWidth - overlap;
+    // Se o título for largo e não couber tudo, as imagens diminuem em vez de cobrir mais o título.
+    // O conjunto vai de 42% antes até 20% depois da imagem principal: 1,62 × a largura dela.
+    var W = heroHold.offsetWidth, fitW = (document.documentElement.clientWidth - 16 - startX) / 1.62;
+    if (fitW < W) heroHold.style.maxWidth = Math.max(200, Math.floor(fitW)) + 'px';
+    var shift = startX - absLeft(b);
+    // Na altura, a imagem de baixo começa um pouco abaixo do topo de SURREAL, para encostar no L
+    // (e não na bio). Sem sair da seção embaixo.
+    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.3 - absTop(heroHold);
+    var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - absTop(heroHold);
+    b.style.top = Math.round(Math.min(bTop, bMax)) + 'px'; b.style.bottom = 'auto';
+    var maxShift = document.documentElement.clientWidth - 16 - (absLeft(c) + c.offsetWidth); // não sai da tela à direita
+    heroHold.style.left = Math.round(Math.min(shift, maxShift)) + 'px';
+  }
+  // Com as imagens ao lado, o subtítulo termina onde a imagem começa (ela cobre só um pouco do L).
+  function layoutHero() {
+    if (!heroBig) return;
+    var cut = sideBySide.matches ? heroBig.offsetWidth * 0.04 + 10 : 0;
+    fitHeroSub(heroBig.offsetWidth - cut);
+    placeHeroImages();
+  }
+  layoutHero();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero);
+  window.addEventListener('resize', layoutHero);
 
   /* ---------- Hero reveal ---------- */
   window.requestAnimationFrame(function () {
@@ -116,10 +151,10 @@
 
     if (!reduceMotion) {
       var big = desktop.matches;
-      // Na vertical, desconta o ponto de partida (p0 = topo da página) para as imagens não começarem
+      // Desconta o ponto de partida (p0 = topo da página) para as imagens não começarem
       // empurradas para baixo e cortadas; elas descem a partir dali conforme a rolagem.
       var p0 = window.innerHeight / (window.innerHeight + hero.offsetHeight);
-      heroHolder.style.transform = big ? 'translate3d(' + (-110 * heroP).toFixed(2) + 'px,' + (150 * (heroP - p0)).toFixed(2) + 'px,0)' : '';
+      heroHolder.style.transform = big ? 'translate3d(' + (-110 * (heroP - p0)).toFixed(2) + 'px,' + (150 * (heroP - p0)).toFixed(2) + 'px,0)' : '';
       heroLayers.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
         el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
@@ -277,11 +312,9 @@
   }
 
   /* ---------- [02] Loja: produtos em destaque ---------- */
-  // Vitrine: até 7 produtos. O primeiro aparece grande (2×2) e os outros preenchem ao redor.
+  // Vitrine: grade de 6 produtos (3 × 2). Se houver mais, ela desliza para o lado (setas, arrastar ou rolar).
   var shopGrid = $('#shop-grid');
-  var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; }).slice(0, 7);
-  // O produto marcado com grande: true vai para o começo, para ser o card grande
-  vitrine.sort(function (a, b) { return (b.grande ? 1 : 0) - (a.grande ? 1 : 0); });
+  var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; });
   shopGrid.innerHTML = vitrine.map(function (p) {
     var selo = p.edicao && /única/i.test(p.edicao) ? 'ÚNICA' : '';
     return '' +
@@ -302,14 +335,42 @@
       '</article>';
   }).join('');
 
-  // O destaque grande é o primeiro produto visível, inclusive depois de filtrar.
-  // Com menos de 5 produtos na tela ele ficaria com um buraco ao lado, então todos ficam do mesmo tamanho.
-  function markFeature() {
-    var visible = $$('.product', shopGrid).filter(function (c) { return !c.hidden; });
-    var first = visible.length >= 5 ? visible[0] : null;
-    $$('.product', shopGrid).forEach(function (c) { c.classList.toggle('product--feature', c === first); });
+  // Setas e arrastar com o mouse. As setas só aparecem quando há mais produtos do que cabem na tela.
+  var shopPrev = $('#shop-prev'), shopNext = $('#shop-next'), shopNav = $('#shop-nav');
+  function shopStep() { return shopGrid.clientWidth; }
+  function updateShopNav() {
+    var max = shopGrid.scrollWidth - shopGrid.clientWidth;
+    shopNav.hidden = max <= 2;
+    shopPrev.disabled = shopGrid.scrollLeft <= 2;
+    shopNext.disabled = shopGrid.scrollLeft >= max - 2;
   }
-  markFeature();
+  shopPrev.addEventListener('click', function () { shopGrid.scrollBy({ left: -shopStep(), behavior: 'smooth' }); });
+  shopNext.addEventListener('click', function () { shopGrid.scrollBy({ left: shopStep(), behavior: 'smooth' }); });
+  shopGrid.addEventListener('scroll', updateShopNav, { passive: true });
+  window.addEventListener('resize', updateShopNav);
+  var drag = null;
+  shopGrid.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button, a')) return; // no toque, o celular já rola sozinho
+    drag = { x: e.clientX, left: shopGrid.scrollLeft, moved: false };
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; shopGrid.classList.add('is-dragging'); }
+    if (drag.moved) { shopGrid.scrollLeft = drag.left - dx; e.preventDefault(); }
+  });
+  window.addEventListener('pointerup', function () {
+    if (!drag) return;
+    var moved = drag.moved; drag = null;
+    shopGrid.classList.remove('is-dragging');
+    if (!moved) return;
+    // ao soltar, encaixa na coluna mais próxima
+    var card = $('.product:not([hidden])', shopGrid);
+    var col = card ? card.offsetWidth + parseFloat(getComputedStyle(shopGrid).columnGap || 0) : shopStep();
+    shopGrid.scrollTo({ left: Math.round(shopGrid.scrollLeft / col) * col, behavior: 'smooth' });
+  });
+  shopGrid.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  updateShopNav();
 
   // Botões de categoria: só aparecem as categorias que existem na vitrine, e só se houver mais de uma
   var shopCats = vitrine.map(function (p) { return p.categoria; }).filter(function (c, i, a) { return a.indexOf(c) === i; });
@@ -334,7 +395,8 @@
       card.hidden = !show;
       if (show) { shown++; card.classList.add('is-visible'); }
     });
-    markFeature();
+    shopGrid.scrollLeft = 0;
+    updateShopNav();
     $('#shop-empty').hidden = shown > 0;
   });
 
@@ -636,4 +698,68 @@
   });
 
   $('#year').textContent = new Date().getFullYear();
+
+  /* ---------- Escamas preenchidas no fundo ----------
+     Algumas escamas da textura (seigaiha) ganham cor, em lugares sorteados. Cada uma aparece
+     devagar, fica alguns segundos e some; outra surge em outro lugar. Poucas por vez, bem fracas.
+     Só anima a seção que está na tela. Com "reduzir movimento" ativado, ficam paradas. */
+  (function scaleFills() {
+    var TW = 48, TH = 24, R = 24;               // mesmo tamanho do desenho da textura (background-size 48×24)
+    var LIGHT = ['rgba(31,78,120,0.10)', 'rgba(217,56,41,0.09)', 'rgba(226,160,37,0.13)', 'rgba(43,122,98,0.10)'];
+    var DARK_C = ['rgba(240,241,216,0.06)', 'rgba(226,160,37,0.09)', 'rgba(43,122,98,0.14)'];
+    var sprites = {};
+    function sprite(color) {
+      if (sprites[color]) return sprites[color];
+      // parte visível de uma escama: o círculo dela menos as três escamas que ficam por cima (embaixo e dos lados)
+      var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
+      var g = cv.getContext('2d'); g.scale(2, 2);
+      g.fillStyle = color; g.beginPath(); g.arc(24, 24, R, 0, Math.PI * 2); g.fill();
+      g.globalCompositeOperation = 'destination-out';
+      [[0, 36], [48, 36], [24, 48]].forEach(function (p) { g.beginPath(); g.arc(p[0], p[1], R, 0, Math.PI * 2); g.fill(); });
+      return (sprites[color] = cv.toDataURL());
+    }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+
+    $$('.seigaiha').forEach(function (sec) {
+      var dark = sec.matches('.theme-dark, .footer, .shop');
+      var colors = dark ? DARK_C : LIGHT;
+      var layer = document.createElement('div');
+      layer.className = 'scale-fx'; layer.setAttribute('aria-hidden', 'true');
+      sec.insertBefore(layer, sec.firstChild);
+      var cells = [], active = false, timers = [];
+
+      function spot(el) {
+        var w = sec.clientWidth, h = sec.clientHeight;
+        var odd = Math.random() < 0.5;
+        var i = Math.floor(rnd(0, w / TW + 1)), j = Math.floor(rnd(0, h / TH + 1));
+        var cx = i * TW + (odd ? TW / 2 : 0), cy = j * TH + (odd ? TH / 2 : 0);
+        el.style.left = (cx - R) + 'px'; el.style.top = (cy - R) + 'px';
+        el.style.backgroundImage = 'url(' + sprite(colors[Math.floor(Math.random() * colors.length)]) + ')';
+      }
+      function cycle(el) {
+        if (!active) return;
+        spot(el);
+        el.classList.add('is-on');
+        timers.push(setTimeout(function () {
+          el.classList.remove('is-on');
+          timers.push(setTimeout(function () { cycle(el); }, rnd(3500, 7000))); // tempo do apagar + pausa
+        }, rnd(5000, 10000)));
+      }
+      function build() {
+        layer.innerHTML = ''; cells = [];
+        var n = Math.max(3, Math.min(18, Math.round(sec.clientWidth * sec.clientHeight / (TW * TH) * 0.005)));
+        for (var k = 0; k < n; k++) { var el = document.createElement('span'); layer.appendChild(el); cells.push(el); }
+        if (reduceMotion) cells.forEach(function (el) { spot(el); el.classList.add('is-on'); });
+      }
+      build();
+      if (reduceMotion || !('IntersectionObserver' in window)) { if (!reduceMotion) cells.forEach(function (el) { spot(el); el.classList.add('is-on'); }); return; }
+      new IntersectionObserver(function (es) {
+        var on = es[0].isIntersecting;
+        if (on === active) return;
+        active = on;
+        if (on) cells.forEach(function (el) { timers.push(setTimeout(function () { cycle(el); }, rnd(0, 6000))); });
+        else { timers.forEach(clearTimeout); timers = []; }
+      }).observe(sec);
+    });
+  })();
 })();

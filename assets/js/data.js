@@ -30,7 +30,6 @@ window.SITE_DATA = {
    * estoque: quantidade máxima na sacola (peça única = 1)
    * disponibilidade: "disponivel" | "esgotado" | "sob-encomenda"
    * edicao: texto curto opcional (ex.: "Peça única", "Tiragem de 30")
- * grande: true → este produto abre a vitrine da página inicial em tamanho grande (use em um só)
    * detalhes: pares "Campo": "Valor" (materiais, dimensões, acabamento...) */
   produtos: [
     {
@@ -57,7 +56,7 @@ window.SITE_DATA = {
     {
       id: 'p-camiseta-01', nome: '[Camiseta — estampa]', categoria: 'camiseta',
       preco: null, estoque: 10, disponibilidade: 'disponivel', edicao: '',
-      destaque: true, grande: true, demo: true, imagens: [],
+      destaque: true, demo: true, imagens: [],
       descricao: '[A PREENCHER]',
       detalhes: { 'Tamanhos': '[—]', 'Tecido': '[—]' }
     },
@@ -67,6 +66,14 @@ window.SITE_DATA = {
       destaque: true, demo: true, imagens: [],
       descricao: '[A PREENCHER]',
       detalhes: { 'Tamanho': '[cm]' }
+    },
+    {
+      // Espaço reservado para completar a grade de 6 da vitrine; troque por um produto real
+      id: 'p-produto-06', nome: '[Produto — nome]', categoria: 'camiseta',
+      preco: null, estoque: 10, disponibilidade: 'disponivel', edicao: '',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER]',
+      detalhes: {}
     }
   ],
 
