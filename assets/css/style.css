@@ -172,15 +172,15 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 
 /* ---------- [01] Hero ---------- */
 .hero {
-  min-height: 100vh; padding: calc(var(--nav-h) + 2rem) var(--pad) 3rem;
+  min-height: 100vh; padding: calc(var(--nav-h) + 1rem) var(--pad) 1.5rem;
   /* Esquerda: título e biografia. Direita: imagens sobrepostas. */
-  display: grid; grid-template-columns: 1fr minmax(200px, 34vw); grid-template-rows: auto 1fr; gap: 2rem 2rem;
+  display: grid; grid-template-columns: 1fr minmax(200px, 37vw); grid-template-rows: auto 1fr; gap: 2rem 2rem;
   overflow: hidden;
 }
 .hero-title {
   grid-column: 1; grid-row: 1; align-self: start; z-index: 1; margin: 0; /* título no alto, a bio ganha espaço embaixo */
   font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
-  font-size: clamp(2.7rem, min(10.5vw, 19vh), 10.5rem); line-height: 0.88; letter-spacing: -0.01em;
+  font-size: clamp(2.5rem, min(9.5vw, 17vh), 9.5rem); line-height: 0.88; letter-spacing: -0.01em;
 }
 /* Alien "Animate On Load": cada palavra gira 90° no eixo Y e sobe 45px (1200ms outExpo, +100ms entre elas) */
 .hero-line { display: block; perspective: 1500px; }
@@ -209,7 +209,7 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 /* Três imagens sobrepostas; cada camada anda numa profundidade diferente (JS: data-depth) */
 .hero-image-holder {
   grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; width: 100%;
-  max-width: calc(66vh - 95px); /* em telas baixas as imagens diminuem para não cortar */
+  max-width: calc(66.6vh - 70px); /* em telas baixas as imagens diminuem para não cortar */
   margin: 8% 6vw 9% 0; /* reserva o espaço das imagens que saem para cima e para baixo; à direita, 6vw além da margem */
   z-index: 2; position: relative; will-change: transform; }
 .hero-layer { will-change: transform; }
