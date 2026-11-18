@@ -19,31 +19,18 @@
   <div class="paper-grain" aria-hidden="true"></div>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <!-- CABEÇALHO + MENU -->
+  <!-- CABEÇALHO: todos os destinos ficam visíveis na barra -->
   <header class="navbar">
     <a href="#topo" class="nav-logo" aria-label="Marco Surreal, início">MARCO SURREAL</a>
-    <div class="nav-actions">
-      <a href="#loja" class="nav-btn nav-btn--shop">Loja</a>
-      <button class="nav-btn" id="Menu" aria-expanded="false" aria-controls="nav-menu">#MENU</button>
-      <button class="nav-btn nav-btn--bag" id="bag-toggle" aria-controls="cart-drawer">Sacola [<span id="bag-count">0</span>]</button>
-    </div>
+    <nav class="nav-links" aria-label="Menu principal">
+      <a href="#trabalhos">Portfólio</a>
+      <a href="#flashes">Flashes</a>
+      <a href="#loja" class="is-shop">Loja</a>
+      <a href="#topo">Manifesto</a>
+      <a href="#contato">Agendar</a>
+    </nav>
+    <button class="nav-btn nav-btn--bag" id="bag-toggle" aria-controls="cart-drawer">Sacola [<span id="bag-count">0</span>]</button>
   </header>
-
-  <nav class="nav-menu-wrapper" id="nav-menu" aria-label="Menu principal" aria-hidden="true">
-    <div class="nav-menu-inner">
-      <ul class="nav-menu-links">
-        <li><a href="#topo">Início</a></li>
-        <li><a href="#trabalhos">Trabalhos</a></li>
-        <li><a href="#loja" class="is-shop">Loja</a></li>
-        <li><a href="#flashes">Flashes</a></li>
-        <li><a href="#contato">Contato</a></li>
-      </ul>
-      <aside class="nav-menu-side">
-        <p class="mono-small">Tatuagem · Design gráfico · Ilustração · Cerâmica</p>
-        <ul class="social" data-social></ul>
-      </aside>
-    </div>
-  </nav>
 
   <main id="conteudo">
     <!-- [01] APRESENTAÇÃO (Hero + About) -->
@@ -82,7 +69,7 @@
     <div class="ornament-band ornament-band--forest" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [02] SHOP -->
-    <section class="shop" id="loja" aria-labelledby="loja-title">
+    <section class="shop seigaiha" id="loja" aria-labelledby="loja-title">
       <div class="section-head section-head--light">
         <span class="mono-tag">#SHOP</span>
         <div class="lines _02" aria-hidden="true"></div>
@@ -98,7 +85,7 @@
     <div class="ornament-band ornament-band--terung ornament-band--reverse" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [03] SELECTED WORKS -->
-    <section class="portfolio" id="trabalhos" aria-labelledby="trabalhos-title">
+    <section class="portfolio seigaiha" id="trabalhos" aria-labelledby="trabalhos-title">
       <div class="section-head">
         <span class="mono-tag">#SELECTED WORKS</span>
         <div class="filters" role="group" aria-label="Filtrar trabalhos">
@@ -117,7 +104,7 @@
     <div class="ornament-band ornament-band--dark" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [04] FLASH BOOK -->
-    <section class="flashbook theme-dark" id="flashes" aria-labelledby="flashes-title">
+    <section class="flashbook theme-dark seigaiha" id="flashes" aria-labelledby="flashes-title">
       <div class="section-head">
         <span class="mono-tag">#FLASH BOOK</span>
         <div class="lines _02" aria-hidden="true"></div>
@@ -181,7 +168,7 @@
   </main>
 
   <!-- [06] RODAPÉ -->
-  <footer class="footer" id="rodape">
+  <footer class="footer seigaiha" id="rodape">
     <div class="footer-grid">
       <div>
         <span class="mono-tag">#MARCO SURREAL</span>

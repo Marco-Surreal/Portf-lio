@@ -29,22 +29,19 @@
     document.body.classList.toggle('is-locked', locks > 0);
   }
 
-  /* ---------- Menu fullscreen ---------- */
-  var menuBtn = $('#Menu');
-  var menu = $('#nav-menu');
-  function setMenu(open) {
-    menu.classList.toggle('is-open', open);
-    menu.setAttribute('aria-hidden', String(!open));
-    menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.textContent = open ? '#FECHAR' : '#MENU';
-    document.body.classList.toggle('menu-open', open);
-    lock(open);
+  /* ---------- Barra do topo: marca o destino da seção visível ---------- */
+  var navLinks = $$('.nav-links a');
+  var navTargets = navLinks.map(function (a) { return $(a.getAttribute('href')); });
+  function updateCurrent() {
+    var line = window.innerHeight * 0.35, current = null;
+    navTargets.forEach(function (sec, i) {
+      var r = sec.getBoundingClientRect();
+      if (r.top <= line && r.bottom > line && !current) current = navLinks[i];
+    });
+    navLinks.forEach(function (a) {
+      if (a === current) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+    });
   }
-  menuBtn.addEventListener('click', function () { setMenu(!menu.classList.contains('is-open')); });
-  $$('a', menu).forEach(function (a) {
-    a.addEventListener('click', function () { if (menu.classList.contains('is-open')) setMenu(false); });
-  });
-
 
   /* ---------- Hero reveal ---------- */
   window.requestAnimationFrame(function () {
@@ -79,7 +76,7 @@
   function near(a, b, eps) { return Math.abs(a - b) < eps; }
 
   /* A barra do topo fica escura quando passa sobre uma seção escura */
-  var DARK = '.theme-dark, .shop, .footer, .ornament-band--dark, .ornament-band--forest, .nav-menu-wrapper.is-open';
+  var DARK = '.theme-dark, .shop, .footer, .ornament-band--dark, .ornament-band--forest';
   var navH = $('.navbar').offsetHeight;
   function updateNav() {
     var el = document.elementFromPoint(window.innerWidth / 2, navH + 2);
@@ -89,6 +86,7 @@
   function render() {
     var settled = true;
     updateNav();
+    updateCurrent();
     var hp = progressOf(hero);
     heroP += (hp - heroP) * 0.19;
     mouse.x += (mouse.tx - mouse.x) * 0.08;
@@ -569,7 +567,6 @@
     if (e.key !== 'Escape') return;
     if (!modal.hidden) closeModal();
     else if (drawer.classList.contains('is-open')) setDrawer(false);
-    else if (menu.classList.contains('is-open')) setMenu(false);
   });
 
   $('#year').textContent = new Date().getFullYear();
