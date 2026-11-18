@@ -62,8 +62,17 @@
         </div>
       </div>
 
+      <!-- Imagens sobrepostas: cada camada tem profundidade própria (data-depth) no mouse e no scroll -->
       <div class="hero-image-holder" id="hero-image">
-        <div class="ph ph--tall" data-label="FLASH SHEET / IMAGEM HERO"></div>
+        <div class="hero-layer hero-layer--main" data-depth="1">
+          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph ph--tall" data-label="FLASH SHEET / IMAGEM HERO"></div></div></div>
+        </div>
+        <div class="hero-layer hero-layer--b" data-depth="2.2">
+          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE NA PELE"></div></div></div>
+        </div>
+        <div class="hero-layer hero-layer--c" data-depth="-1.5">
+          <div class="hero-float"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="PROCESSO / ESTÊNCIL"></div></div></div>
+        </div>
       </div>
     </section>
 
@@ -86,8 +95,9 @@
           <a href="#agendar" class="link-hash">#AGENDAR SESSÃO →</a>
         </div>
         <div class="about-images">
-          <div class="about-img about-img--a" data-parallax="0.08"><div class="ph" data-label="FOTO DO ATELIÊ"></div></div>
-          <div class="about-img about-img--b" data-parallax="-0.06"><div class="ph" data-label="TATUAGEM NA PELE"></div></div>
+          <div class="about-img about-img--a" data-parallax="0.08" data-depth="0.8"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="FOTO DO ATELIÊ"></div></div></div>
+          <div class="about-img about-img--b" data-parallax="-0.06" data-depth="-1.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="TATUAGEM NA PELE"></div></div></div>
+          <div class="about-img about-img--c" data-parallax="0.16" data-depth="2.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE"></div></div></div>
         </div>
       </div>
       <div class="lines _03" aria-hidden="true"></div>

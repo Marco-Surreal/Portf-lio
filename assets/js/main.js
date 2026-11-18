@@ -57,39 +57,88 @@
     setTimeout(function () { document.body.classList.add('is-loaded'); }, 80);
   });
 
-  /* ---------- Scroll: block-line + parallax ---------- */
+  /* ---------- Scroll + mouse: block-line e camadas em profundidade ----------
+   * Cada imagem com data-depth anda com o mouse e com o scroll numa velocidade diferente,
+   * então as camadas deslizam umas sobre as outras. O movimento é suavizado (lerp),
+   * como as interações "smooth" do template Alien. */
   var hero = $('.hero');
   var blockFill = $('.block-line__fill');
-  var heroImg = $('#hero-image');
-  var parallaxEls = $$('[data-parallax]');
-  var mouseX = 0, mouseY = 0, ticking = false;
+  var heroLayers = $$('.hero-layer');
+  var aboutImgs = $$('.about-img');
+  var target = { x: 0, y: 0 }, cur = { x: 0, y: 0, s: window.scrollY };
+  var running = false;
 
-  function onFrame() {
-    ticking = false;
+  function render() {
     var y = window.scrollY;
+    cur.x += (target.x - cur.x) * 0.08;
+    cur.y += (target.y - cur.y) * 0.08;
+    cur.s += (y - cur.s) * 0.12;
+
     var heroH = hero.offsetHeight || 1;
     var progress = Math.min(1, Math.max(0, (y + window.innerHeight * 0.6) / heroH));
     blockFill.style.height = (progress * 100) + '%';
-    if (reduceMotion) return;
 
-    heroImg.style.transform = 'translate3d(' + (mouseX * 18) + 'px,' + (-y * 0.15 + mouseY * 14) + 'px,0)';
-    parallaxEls.forEach(function (el) {
-      var rect = el.parentElement.getBoundingClientRect();
-      var offset = rect.top + rect.height / 2 - window.innerHeight / 2;
-      el.style.transform = 'translate3d(0,' + (offset * parseFloat(el.getAttribute('data-parallax'))) + 'px,0)';
-    });
+    if (!reduceMotion) {
+      heroLayers.forEach(function (el) {
+        var d = parseFloat(el.getAttribute('data-depth')) || 1;
+        el.style.transform = 'translate3d(' + (cur.x * 22 * d) + 'px,' + (-cur.s * 0.12 * d + cur.y * 16 * d) + 'px,0)';
+      });
+      aboutImgs.forEach(function (el) {
+        var rect = el.parentElement.getBoundingClientRect();
+        if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
+        var offset = rect.top + rect.height / 2 - window.innerHeight / 2;
+        var p = parseFloat(el.getAttribute('data-parallax')) || 0;
+        var d = parseFloat(el.getAttribute('data-depth')) || 0;
+        el.style.transform = 'translate3d(' + (cur.x * 14 * d) + 'px,' + (offset * p + cur.y * 10 * d) + 'px,0)';
+      });
+    }
+
+    var settled = Math.abs(target.x - cur.x) < 0.001 && Math.abs(target.y - cur.y) < 0.001 && Math.abs(y - cur.s) < 0.5;
+    if (settled) running = false; else window.requestAnimationFrame(render);
   }
-  function requestFrame() { if (!ticking) { ticking = true; window.requestAnimationFrame(onFrame); } }
-  window.addEventListener('scroll', requestFrame, { passive: true });
-  window.addEventListener('resize', requestFrame);
+  function wake() { if (!running) { running = true; window.requestAnimationFrame(render); } }
+  window.addEventListener('scroll', wake, { passive: true });
+  window.addEventListener('resize', wake);
   if (!reduceMotion) {
-    hero.addEventListener('mousemove', function (e) {
-      mouseX = e.clientX / window.innerWidth - 0.5;
-      mouseY = e.clientY / window.innerHeight - 0.5;
-      requestFrame();
+    window.addEventListener('mousemove', function (e) {
+      target.x = e.clientX / window.innerWidth - 0.5;
+      target.y = e.clientY / window.innerHeight - 0.5;
+      wake();
+    }, { passive: true });
+  }
+  wake();
+
+  /* ---------- Inclinação 3D + brilho de vidro ---------- */
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  function bindTilt(el) {
+    if (reduceMotion || !canHover || el._tilt) return;
+    el._tilt = true;
+    var zone = el.closest('.card, .product') || el;   // nos cards o botão de clique cobre a imagem
+    zone.addEventListener('pointerenter', function () { el.classList.add('is-hover'); el.style.setProperty('--s', '1.035'); });
+    zone.addEventListener('pointermove', function (e) {
+      var r = el.getBoundingClientRect();
+      var px = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      var py = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      el.style.setProperty('--ry', ((px - 0.5) * 14).toFixed(2) + 'deg');
+      el.style.setProperty('--rx', ((0.5 - py) * 11).toFixed(2) + 'deg');
+      el.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
+      el.style.setProperty('--my', (py * 100).toFixed(1) + '%');
+    });
+    zone.addEventListener('pointerleave', function () {
+      el.classList.remove('is-hover');
+      ['--rx', '--ry', '--s'].forEach(function (p) { el.style.removeProperty(p); });
     });
   }
-  onFrame();
+
+  /* Cortina de entrada das imagens, em cascata dentro de cada grupo */
+  function prepReveal(el, i, base) {
+    el.style.setProperty('--d', ((base || 0) + i * 0.14).toFixed(2) + 's');
+    el.addEventListener('transitionend', function (e) {
+      if (e.propertyName === 'clip-path' && el.classList.contains('is-visible')) el.classList.add('is-revealed');
+    });
+  }
+  $$('#hero-image .img-reveal').forEach(function (el, i) { prepReveal(el, i, 0.45); });  // entra depois do título
+  $$('.about-images .img-reveal').forEach(function (el, i) { prepReveal(el, i); });
 
   /* ---------- Portfólio ---------- */
   var grid = $('#portfolio-grid');
@@ -99,7 +148,7 @@
     for (var i = 0; i < 6; i++) strip += '<span>VER FICHA TÉCNICA ✦</span>';
     return '' +
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
-        '<div class="card-media">' + m +
+        '<div class="card-media tilt" data-tilt>' + m +
           '<div class="card-layer _02" aria-hidden="true">' + m + '</div>' +
           '<div class="card-layer _03" aria-hidden="true">' + m + '</div>' +
           '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
@@ -181,7 +230,7 @@
     return '' +
       '<article class="product" data-reveal>' +
         (p.selo ? '<span class="hanko">' + esc(p.selo) + '</span>' : '') +
-        '<div class="product-media">' + media(p.imagem, p.nome) + '</div>' +
+        '<div class="product-media tilt" data-tilt>' + media(p.imagem, p.nome) + '</div>' +
         '<h3>' + esc(p.nome) + '</h3>' +
         '<p class="mono-small">' + esc(p.detalhe) + '</p>' +
         '<div class="product-foot">' +
@@ -304,7 +353,8 @@
   });
 
   /* ---------- Reveal + linhas progressivas ---------- */
-  var targets = $$('[data-reveal], .lines');
+  $$('[data-tilt]').forEach(bindTilt);
+  var targets = $$('[data-reveal], .lines, .img-reveal');
   if ('IntersectionObserver' in window && !reduceMotion) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
