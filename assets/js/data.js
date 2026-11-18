@@ -1,112 +1,98 @@
 /*
- * CONTEÚDO EDITÁVEL DO SITE
+ * CONTEÚDO EDITÁVEL DO SITE — fonte única de dados
  * ------------------------------------------------------------
- * Preencha aqui o portfólio e a loja. Não é preciso mexer no HTML.
+ * Edite aqui textos, contatos, produtos, trabalhos e flashes. Não é preciso mexer no HTML.
  *
- * imagem: caminho da foto (ex.: "assets/img/flash-adaga.jpg").
- *         Deixe "" para mostrar o placeholder hachurado.
- * categoria (portfólio): "tatuagem" | "design" | "ceramica"
- * ficha: pares "Campo": "Valor" exibidos no modal de ficha técnica.
- *        Campos sugeridos estão em docs/pesquisa_fundamentos_e_conceito.md (seção 2).
- * estoque (loja): quantidade máxima na sacola. Flash 1/1 = 1.
+ * imagem / imagens: caminho da foto (ex.: "assets/img/vaso-olho-do-sol.jpg").
+ *                   Deixe "" (ou []) para mostrar o placeholder hachurado.
+ * destaque: true  → aparece na página inicial.
+ * demo: true      → dado de demonstração; mostra o selo "DEMO". Remova quando a informação for real.
  */
 window.SITE_DATA = {
-  portfolio: [
+  /* ---------- Contato e redes ---------- */
+  config: {
+    nome: 'Marco Surreal',
+    // Apresentação da abertura (texto provisório, 2 ou 3 frases)
+    apresentacao: 'Marco Surreal é um artista multidisciplinar com produção em tatuagem, design gráfico, ilustração e cerâmica. Seu trabalho se desenvolve através de diferentes técnicas e suportes, reunindo imagens, objetos e projetos autorais.',
+    email: 'omarcosurreal@gmail.com',
+    // WhatsApp só com números, com DDI e DDD. Ex.: '5511999998888'.
+    // Enquanto estiver vazio, o formulário envia por e-mail e o link de WhatsApp fica oculto.
+    whatsapp: '',
+    instagram: 'https://www.instagram.com/marcosurreal/',
+    behance: 'https://www.behance.net/marcomachado3',
+    spotify: 'https://open.spotify.com/user/tonikow'
+  },
+
+  /* ---------- Produtos (loja) ----------
+   * categoria: "camiseta" | "print" | "adesivo" | "ceramica" | "objeto"
+   * preco: número em reais, ou null para "Preço a definir" (sem botão de compra)
+   * estoque: quantidade máxima na sacola (peça única = 1)
+   * disponibilidade: "disponivel" | "esgotado" | "sob-encomenda"
+   * edicao: texto curto opcional (ex.: "Peça única", "Tiragem de 30")
+   * detalhes: pares "Campo": "Valor" (materiais, dimensões, acabamento...) */
+  produtos: [
     {
-      id: "p01",
-      titulo: "[Título da peça]",
-      categoria: "tatuagem",
-      vertente: "Old School Surreal",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER: história e referências da peça]",
-      ficha: {
-        "Agulhas": "[ex.: RL 9 / M 13]",
-        "Pigmentos": "[marca / cores]",
-        "Área": "[antebraço]",
-        "Tamanho": "[cm]",
-        "Sessões": "[n]"
-      }
+      id: 'p-vaso-olho-do-sol', nome: 'Vaso Totem "Olho do Sol"', categoria: 'ceramica',
+      preco: 540, estoque: 1, disponibilidade: 'disponivel', edicao: 'Peça única',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER: descrição da peça]',
+      detalhes: { 'Material': '[grés]', 'Acabamento': '[esmalte]', 'Dimensões': '[cm]' }
     },
     {
-      id: "p02",
-      titulo: "[Título da peça]",
-      categoria: "tatuagem",
-      vertente: "Oriental / Ukiyo-e",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER]",
-      ficha: {
-        "Agulhas": "[—]",
-        "Pigmentos": "[—]",
-        "Área": "[—]",
-        "Referência": "[ex.: Kuniyoshi, Suikoden]"
-      }
+      id: 'p-serigrafia-01', nome: '[Serigrafia — título] (A2)', categoria: 'print',
+      preco: 260, estoque: 30, disponibilidade: 'disponivel', edicao: '[Tiragem de 30]',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER]',
+      detalhes: { 'Técnica': '[serigrafia]', 'Papel': '[—]', 'Formato': 'A2' }
     },
     {
-      id: "p03",
-      titulo: "[Cartaz / Capa]",
-      categoria: "design",
-      vertente: "Psicodelia 60s",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER]",
-      ficha: {
-        "Formato": "[A2]",
-        "Técnica": "[serigrafia 4 cores]",
-        "Papel": "[algodão 300g]",
-        "Cliente": "[—]"
-      }
+      id: 'p-print-01', nome: '[Print — título] (A3)', categoria: 'print',
+      preco: 190, estoque: 10, disponibilidade: 'disponivel', edicao: '',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER]',
+      detalhes: { 'Papel': '[—]', 'Formato': 'A3' }
     },
     {
-      id: "p04",
-      titulo: "[Identidade visual]",
-      categoria: "design",
-      vertente: "Direção de Arte",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER]",
-      ficha: {
-        "Entregáveis": "[logo, tipografia, aplicações]",
-        "Cliente": "[—]"
-      }
+      id: 'p-camiseta-01', nome: '[Camiseta — estampa]', categoria: 'camiseta',
+      preco: null, estoque: 10, disponibilidade: 'disponivel', edicao: '',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER]',
+      detalhes: { 'Tamanhos': '[—]', 'Tecido': '[—]' }
     },
     {
-      id: "p05",
-      titulo: "[Vaso totêmico]",
-      categoria: "ceramica",
-      vertente: "Cerâmica Escultórica",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER]",
-      ficha: {
-        "Argila": "[grés]",
-        "Queima": "[1.260 °C]",
-        "Esmalte": "[—]",
-        "Dimensões": "[cm]"
-      }
-    },
-    {
-      id: "p06",
-      titulo: "[Título da peça]",
-      categoria: "tatuagem",
-      vertente: "Psicodelia 60s",
-      ano: "2026",
-      imagem: "",
-      descricao: "[A PREENCHER]",
-      ficha: {
-        "Agulhas": "[—]",
-        "Pigmentos": "[—]",
-        "Área": "[—]"
-      }
+      id: 'p-adesivo-01', nome: '[Adesivo — nome]', categoria: 'adesivo',
+      preco: null, estoque: 50, disponibilidade: 'disponivel', edicao: '',
+      destaque: true, demo: true, imagens: [],
+      descricao: '[A PREENCHER]',
+      detalhes: { 'Tamanho': '[cm]' }
     }
   ],
 
-  loja: [
-    { id: "s01", nome: "Flash 1/1: Adaga, Serpente & Rosa Old School", detalhe: "Tatuado apenas 1 vez", preco: 780, estoque: 1, selo: "1/1", imagem: "" },
-    { id: "s02", nome: "Flash 1/1: Máscara Kitsune & Lótus Cósmica", detalhe: "Oriental Contemporâneo", preco: 890, estoque: 1, selo: "1/1", imagem: "" },
-    { id: "s03", nome: "Serigrafia \"Cosmic Sound 1968\" (A2)", detalhe: "Design Gráfico · Tiragem 30 cópias", preco: 260, estoque: 30, selo: "/30", imagem: "" },
-    { id: "s04", nome: "Print Fine Art \"Fênix Ukiyo-e\" (A3)", detalhe: "Papel Algodão 300g", preco: 190, estoque: 10, selo: "", imagem: "" },
-    { id: "s05", nome: "Vaso Totem \"Olho do Sol\" em Grés", detalhe: "Cerâmica Escultórica · Peça Única", preco: 540, estoque: 1, selo: "ÚNICA", imagem: "" }
+  /* ---------- Trabalhos (portfólio) ----------
+   * categoria: "tatuagem" | "design" | "ceramica"
+   * produtoId: opcional. Liga o trabalho a um produto da loja (preço e estoque ficam só no produto). */
+  trabalhos: [
+    { id: 't01', titulo: '[Título do trabalho]', categoria: 'tatuagem', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: { 'Área': '[—]' } },
+    { id: 't02', titulo: '[Título do trabalho]', categoria: 'tatuagem', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: {} },
+    { id: 't03', titulo: '[Cartaz / Capa]', categoria: 'design', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: { 'Formato': '[—]', 'Cliente': '[—]' } },
+    { id: 't04', titulo: '[Identidade visual]', categoria: 'design', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: {} },
+    { id: 't05', titulo: 'Vaso Totem "Olho do Sol"', categoria: 'ceramica', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: {}, produtoId: 'p-vaso-olho-do-sol' },
+    { id: 't06', titulo: '[Título do trabalho]', categoria: 'ceramica', ano: '', imagem: '', destaque: true,
+      descricao: '[A PREENCHER]', ficha: {} }
+  ],
+
+  /* ---------- Flashes (desenhos para tatuagem) ----------
+   * estado: "disponivel" | "reservado" | "tatuado"
+   * tamanho, preco e exclusivo são opcionais. Não são vendidos pela sacola. */
+  flashes: [
+    { id: 'F01', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F02', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F03', nome: '[Nome do flash]', estado: 'reservado', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F04', nome: '[Nome do flash]', estado: 'tatuado', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true }
   ]
 };

@@ -1,10 +1,9 @@
 (function () {
   'use strict';
 
-  var DATA = window.SITE_DATA || { portfolio: [], loja: [] };
+  var DATA = window.SITE_DATA || { config: {}, produtos: [], trabalhos: [], flashes: [] };
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var CART_KEY = 'marcosurreal:sacola';
-  var CATEGORIAS = { tatuagem: 'Tatuagem', design: 'Design', ceramica: 'Cerâmica' };
 
   var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
   var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
@@ -46,11 +45,6 @@
     a.addEventListener('click', function () { if (menu.classList.contains('is-open')) setMenu(false); });
   });
 
-  /* Links ainda sem destino */
-  $$('[data-placeholder]').forEach(function (a) {
-    a.addEventListener('click', function (e) { e.preventDefault(); });
-    a.title = 'Link a preencher';
-  });
 
   /* ---------- Hero reveal ---------- */
   window.requestAnimationFrame(function () {
@@ -61,24 +55,18 @@
    * Valores tirados das interações do template (webflow.js):
    *  - "Hero Animation": com o progresso da seção, a linha vertical cresce 0→100% e o bloco
    *    de imagens anda até (-110px, 150px). Suavização 81 → lerp 0.19.
-   *  - "About Me Section": a foto principal desce 355px, a menor anda (80px, 126px) e o texto
-   *    desce 492px; as linhas chegam a 100% em 35% e 37% do progresso. Suavização 92 → lerp 0.08.
    *  - "Project Look At Mouse": o card gira até ±15° nos eixos X e Y. Suavização 93 → lerp 0.07.
-   * Os dois primeiros só rodam no desktop (≥ 992px), como no original.
+   * O deslocamento do bloco de imagens só roda no desktop (≥ 992px), como no original.
    * Além disso, cada imagem com data-depth acompanha o mouse em profundidade própria,
    * para as camadas deslizarem umas sobre as outras. */
   var hero = $('.hero');
-  var about = $('#manifesto');
   var blockFill = $('.block-line__fill');
   var heroHolder = $('#hero-image');
   var heroLayers = $$('.hero-layer');
-  var aboutMovers = $$('[data-scroll]', about);
-  var aboutLines = [$('.section-head .lines', about), $('.about > .lines', about)].filter(Boolean);
-  aboutLines.forEach(function (l) { l.classList.add('is-scrub'); });
   var desktop = window.matchMedia('(min-width: 992px)');
 
   var mouse = { tx: 0, ty: 0, x: 0, y: 0 };
-  var heroP = progressOf(hero), aboutP = progressOf(about);
+  var heroP = progressOf(hero);
   var cards = [];   // estados dos cards em movimento
   var running = false;
 
@@ -91,7 +79,7 @@
   function near(a, b, eps) { return Math.abs(a - b) < eps; }
 
   /* A barra do topo fica escura quando passa sobre uma seção escura */
-  var DARK = '.theme-dark, .shop, .footer, .ornament-band--dark, .ornament-band--forest';
+  var DARK = '.theme-dark, .shop, .footer, .ornament-band--dark, .ornament-band--forest, .nav-menu-wrapper.is-open';
   var navH = $('.navbar').offsetHeight;
   function updateNav() {
     var el = document.elementFromPoint(window.innerWidth / 2, navH + 2);
@@ -101,17 +89,13 @@
   function render() {
     var settled = true;
     updateNav();
-    var hp = progressOf(hero), ap = progressOf(about);
+    var hp = progressOf(hero);
     heroP += (hp - heroP) * 0.19;
-    aboutP += (ap - aboutP) * 0.08;
     mouse.x += (mouse.tx - mouse.x) * 0.08;
     mouse.y += (mouse.ty - mouse.y) * 0.08;
-    if (!near(hp, heroP, 0.0005) || !near(ap, aboutP, 0.0005) || !near(mouse.tx, mouse.x, 0.0005) || !near(mouse.ty, mouse.y, 0.0005)) settled = false;
+    if (!near(hp, heroP, 0.0005) || !near(mouse.tx, mouse.x, 0.0005) || !near(mouse.ty, mouse.y, 0.0005)) settled = false;
 
     blockFill.style.height = (heroP * 100).toFixed(2) + '%';
-    aboutLines.forEach(function (l, i) {
-      l.style.width = (clamp01(aboutP / (i ? 0.37 : 0.35)) * 100).toFixed(2) + '%';
-    });
 
     if (!reduceMotion) {
       var big = desktop.matches;
@@ -119,12 +103,6 @@
       heroLayers.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
         el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
-      });
-      aboutMovers.forEach(function (el) {
-        var xy = el.getAttribute('data-scroll').split(',').map(Number);
-        var d = parseFloat(el.getAttribute('data-depth')) || 0;
-        var sx = big ? xy[0] * aboutP : 0, sy = big ? xy[1] * aboutP : 0;
-        el.style.transform = 'translate3d(' + (sx + mouse.x * 14 * d).toFixed(2) + 'px,' + (sy + mouse.y * 10 * d).toFixed(2) + 'px,0)';
       });
       cards.forEach(function (c) {
         c.rx += (c.tgx - c.rx) * 0.07;
@@ -195,20 +173,119 @@
     });
   }
 
-  /* Cortina de entrada das imagens do manifesto, em cascata */
-  $$('.about-images .img-reveal').forEach(function (el, i) {
-    el.style.setProperty('--d', (i * 0.14).toFixed(2) + 's');
-    el.addEventListener('transitionend', function (e) {
-      if (e.propertyName === 'clip-path' && el.classList.contains('is-visible')) el.classList.add('is-revealed');
-    });
+  /* ---------- Textos e links vindos de data.js ---------- */
+  var CFG = DATA.config || {};
+  $$('[data-text]').forEach(function (el) { el.textContent = CFG[el.getAttribute('data-text')] || ''; });
+
+  function waLink(text) {
+    return 'https://wa.me/' + CFG.whatsapp + (text ? '?text=' + encodeURIComponent(text) : '');
+  }
+  // Só entram links que existem de verdade: nada de "#" quebrado
+  var socials = [
+    CFG.instagram && { href: CFG.instagram, label: '#INSTAGRAM' },
+    CFG.behance && { href: CFG.behance, label: '#BEHANCE' },
+    CFG.spotify && { href: CFG.spotify, label: '#SPOTIFY' }
+  ].filter(Boolean);
+  var contacts = [
+    CFG.email && { href: 'mailto:' + CFG.email, label: CFG.email },
+    CFG.whatsapp && { href: waLink(''), label: 'WhatsApp' }
+  ].filter(Boolean);
+  function linkHTML(l, li) {
+    var ext = /^https?:/.test(l.href) ? ' target="_blank" rel="noopener"' : '';
+    var a = '<a href="' + esc(l.href) + '"' + ext + '>' + esc(l.label) + '</a>';
+    return li ? '<li>' + a + '</li>' : a;
+  }
+  $$('[data-social]').forEach(function (el) {
+    var li = el.tagName === 'UL';
+    el.innerHTML = socials.concat(li ? contacts : []).map(function (l) { return linkHTML(l, li); }).join('');
+  });
+  $$('[data-contact-links]').forEach(function (el) {
+    el.innerHTML = contacts.map(function (l) { return linkHTML(l, false); }).join('');
   });
 
-  /* ---------- Portfólio ---------- */
+  /* ---------- Modal genérico (ficha de trabalho ou detalhes de produto) ---------- */
+  var modal = $('#modal');
+  var lastFocus = null;
+  function openModal(o) {
+    $('#modal-media').innerHTML = media(o.imagem, o.titulo);
+    $('#modal-cat').textContent = o.cat;
+    $('#modal-title').textContent = o.titulo;
+    $('#modal-desc').textContent = o.descricao || '';
+    var spec = o.spec || {};
+    $('#modal-spec').innerHTML = Object.keys(spec).filter(function (k) { return spec[k]; }).map(function (k) {
+      return '<dt>' + esc(k) + '</dt><dd>' + esc(spec[k]) + '</dd>';
+    }).join('');
+    $('#modal-actions').innerHTML = o.actions || '';
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    lock(true);
+    $('.modal-close', modal).focus();
+  }
+  function closeModal() {
+    if (modal.hidden) return;
+    modal.hidden = true;
+    lock(false);
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  $$('[data-close]', modal).forEach(function (el) { el.addEventListener('click', closeModal); });
+
+  /* ---------- Loja: dados e textos de produto ---------- */
+  var PROD_CAT = { camiseta: 'Camiseta', print: 'Print', adesivo: 'Adesivo', ceramica: 'Cerâmica', objeto: 'Objeto' };
+  var DISP = { disponivel: 'Disponível', esgotado: 'Esgotado', 'sob-encomenda': 'Sob encomenda' };
+  var products = {};
+  (DATA.produtos || []).forEach(function (p) { products[p.id] = p; });
+
+  function canBuy(p) { return p.preco != null && p.disponibilidade === 'disponivel' && p.estoque > 0; }
+  function priceText(p) { return p.preco != null ? brl.format(p.preco) : 'Preço a definir'; }
+
+  function openProduct(id) {
+    var p = products[id];
+    if (!p) return;
+    var spec = Object.assign({
+      'Categoria': PROD_CAT[p.categoria] || p.categoria,
+      'Edição': p.edicao,
+      'Disponibilidade': DISP[p.disponibilidade] || p.disponibilidade,
+      'Preço': priceText(p)
+    }, p.detalhes || {});
+    openModal({
+      imagem: (p.imagens || [])[0], titulo: p.nome, descricao: p.descricao, spec: spec,
+      cat: '#LOJA · ' + (PROD_CAT[p.categoria] || p.categoria).toUpperCase() + (p.demo ? ' · DEMO' : ''),
+      actions: canBuy(p) ? '<button class="btn btn--primary" data-add="' + esc(p.id) + '">+ Sacola</button>' : ''
+    });
+  }
+
+  /* ---------- [02] Loja: produtos em destaque ---------- */
+  var shopGrid = $('#shop-grid');
+  shopGrid.innerHTML = (DATA.produtos || []).filter(function (p) { return p.destaque; }).slice(0, 6).map(function (p) {
+    var selo = p.edicao && /única/i.test(p.edicao) ? 'ÚNICA' : '';
+    return '' +
+      '<article class="product" data-reveal>' +
+        (selo ? '<span class="hanko">' + selo + '</span>' : '') +
+        (p.demo ? '<span class="demo-tag">DEMO</span>' : '') +
+        '<div class="product-media tilt" data-tilt>' + media((p.imagens || [])[0], p.nome) + '</div>' +
+        '<p class="mono-small product-cat">' + esc(PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + esc(p.edicao) : '') + '</p>' +
+        '<h3>' + esc(p.nome) + '</h3>' +
+        '<p class="mono-small product-avail is-' + esc(p.disponibilidade) + '">' + esc(DISP[p.disponibilidade] || '') + '</p>' +
+        '<div class="product-foot">' +
+          '<span class="price">' + priceText(p) + '</span>' +
+          '<span class="product-btns">' +
+            '<button class="btn btn--small btn--line" data-view="' + esc(p.id) + '" aria-label="Detalhes: ' + esc(p.nome) + '">Detalhes</button>' +
+            (canBuy(p) ? '<button class="btn btn--small" data-add="' + esc(p.id) + '" aria-label="Adicionar à sacola: ' + esc(p.nome) + '">+ Sacola</button>' : '') +
+          '</span>' +
+        '</div>' +
+      '</article>';
+  }).join('');
+
+  /* ---------- [03] Trabalhos selecionados ---------- */
+  var CATEGORIAS = { tatuagem: 'Tatuagem', design: 'Design', ceramica: 'Cerâmica' };
+  var works = {};
   var grid = $('#portfolio-grid');
-  grid.innerHTML = DATA.portfolio.map(function (p) {
+  var selected = (DATA.trabalhos || []).filter(function (t) { return t.destaque; }).slice(0, 6);
+  grid.innerHTML = selected.map(function (p) {
+    works[p.id] = p;
     var m = media(p.imagem, p.titulo);
     var strip = '';
-    for (var i = 0; i < 6; i++) strip += '<span>VER FICHA TÉCNICA ✦</span>';
+    for (var i = 0; i < 6; i++) strip += '<span>VER DETALHES ✦</span>';
     return '' +
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         '<div class="card-item">' +
@@ -219,108 +296,175 @@
           '</div>' +
           '<div class="card-info">' +
             '<div class="card-title-wrap"><h3 class="card-title">' + esc(p.titulo) + '</h3></div>' +
-            '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + ' · ' + esc(p.ano) + '</span>' +
+            '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + (p.ano ? ' · ' + esc(p.ano) : '') + '</span>' +
           '</div>' +
         '</div>' +
-        '<button class="card-open" data-id="' + esc(p.id) + '" aria-label="Ver ficha técnica: ' + esc(p.titulo) + '"></button>' +
+        '<button class="card-open" data-id="' + esc(p.id) + '" aria-label="Ver detalhes: ' + esc(p.titulo) + '"></button>' +
       '</article>';
   }).join('');
 
   $$('.filter').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var f = btn.getAttribute('data-filter');
+      var f = btn.getAttribute('data-filter'), shown = 0;
       $$('.filter').forEach(function (b) {
         var active = b === btn;
         b.classList.toggle('is-active', active);
         b.setAttribute('aria-pressed', String(active));
       });
       $$('.card', grid).forEach(function (card) {
-        card.hidden = !(f === 'todos' || card.getAttribute('data-cat') === f);
+        var show = f === 'todos' || card.getAttribute('data-cat') === f;
+        card.hidden = !show;
+        if (show) { shown++; card.classList.add('is-visible'); }
       });
+      $('#portfolio-empty').hidden = shown > 0;
     });
   });
 
-  /* ---------- Modal ficha técnica ---------- */
-  var modal = $('#modal');
-  var lastFocus = null;
-  function openModal(id) {
-    var p = DATA.portfolio.filter(function (x) { return x.id === id; })[0];
-    if (!p) return;
-    $('#modal-media').innerHTML = media(p.imagem, p.titulo);
-    $('#modal-cat').textContent = '#' + (CATEGORIAS[p.categoria] || p.categoria).toUpperCase() + ' · ' + p.vertente;
-    $('#modal-title').textContent = p.titulo;
-    $('#modal-desc').textContent = p.descricao;
-    var ficha = Object.assign({ 'Ano': p.ano }, p.ficha || {});
-    $('#modal-spec').innerHTML = Object.keys(ficha).map(function (k) {
-      return '<dt>' + esc(k) + '</dt><dd>' + esc(ficha[k]) + '</dd>';
-    }).join('');
-    lastFocus = document.activeElement;
-    modal.hidden = false;
-    lock(true);
-    $('.modal-close', modal).focus();
-  }
-  function closeModal() {
-    if (modal.hidden) return;
-    modal.hidden = true;
-    lock(false);
-    if (lastFocus) lastFocus.focus();
-  }
   grid.addEventListener('click', function (e) {
     var btn = e.target.closest('.card-open');
-    if (btn) openModal(btn.getAttribute('data-id'));
+    if (!btn) return;
+    var p = works[btn.getAttribute('data-id')];
+    var prod = p.produtoId && products[p.produtoId];
+    var actions = prod ? '<p class="mono-small">Disponível na loja · ' + priceText(prod) + '</p><button class="btn btn--primary" data-view="' + esc(prod.id) + '">Ver na loja</button>' : '';
+    openModal({
+      imagem: p.imagem, titulo: p.titulo, descricao: p.descricao,
+      cat: '#' + (CATEGORIAS[p.categoria] || p.categoria).toUpperCase(),
+      spec: Object.assign({ 'Ano': p.ano }, p.ficha || {}), actions: actions
+    });
   });
-  $$('[data-close]', modal).forEach(function (el) { el.addEventListener('click', closeModal); });
 
-  /* ---------- Loja + Sacola ---------- */
-  var products = {};
-  DATA.loja.forEach(function (p) { products[p.id] = p; });
+  /* ---------- [04] Flash Book ---------- */
+  var ESTADO = { disponivel: 'Disponível', reservado: 'Reservado', tatuado: 'Tatuado' };
+  var flashes = {};
+  $('#flash-grid').innerHTML = (DATA.flashes || []).filter(function (f) { return f.destaque; }).slice(0, 5).map(function (f) {
+    flashes[f.id] = f;
+    var info = [f.tamanho && 'Tamanho sugerido: ' + f.tamanho, f.preco != null && brl.format(f.preco), f.exclusivo && 'Exclusivo'].filter(Boolean).join(' · ');
+    var action = f.estado === 'tatuado'
+      ? '<span class="btn btn--small btn--line is-off" aria-disabled="true">Já tatuado</span>'
+      : '<button class="btn btn--small" data-flash="' + esc(f.id) + '" aria-label="Tenho interesse no flash ' + esc(f.id) + '">Tenho interesse</button>';
+    return '' +
+      '<article class="flash is-' + esc(f.estado) + '" data-reveal>' +
+        '<span class="flash-state">' + esc(ESTADO[f.estado] || f.estado) + '</span>' +
+        (f.demo ? '<span class="demo-tag">DEMO</span>' : '') +
+        '<div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div>' +
+        '<p class="mono-small">' + esc(f.id) + '</p>' +
+        '<h3>' + esc(f.nome) + '</h3>' +
+        (info ? '<p class="mono-small">' + esc(info) + '</p>' : '') +
+        '<div class="flash-foot">' + action + '</div>' +
+      '</article>';
+  }).join('');
 
+  /* ---------- [05] Contato ---------- */
+  var form = $('#contact-form');
+  var fAssunto = $('#f-assunto'), fMsg = $('#f-mensagem'), fFlash = $('#f-flash');
+  var ASSUNTO = { tatuagem: 'Sessão de tatuagem', ceramica: 'Cerâmica sob encomenda', outro: 'Outro assunto' };
+  var via = CFG.whatsapp ? 'whatsapp' : (CFG.email ? 'email' : '');
+  $('#contact-submit').textContent = via === 'whatsapp' ? 'Enviar pelo WhatsApp' : via === 'email' ? 'Enviar por e-mail' : 'Envio indisponível';
+  $('#contact-submit').disabled = !via;
+  $('#contact-hint').textContent = via === 'whatsapp'
+    ? 'Abre o WhatsApp com a mensagem pronta.'
+    : via === 'email' ? 'Abre seu aplicativo de e-mail com a mensagem pronta para ' + CFG.email + '.'
+    : 'Envio ainda não configurado.';
+
+  /** Preenche o formulário a partir de um flash (clique aqui ou ?assunto=tatuagem&flash=F01 vindo de outra página). */
+  function prefillFlash(id, scroll) {
+    var f = flashes[id] || (DATA.flashes || []).filter(function (x) { return x.id === id; })[0];
+    if (!f) return;
+    fAssunto.value = 'tatuagem';
+    fFlash.value = f.id;
+    var line = 'Tenho interesse no flash ' + f.id + ' (' + f.nome + ').';
+    if (fMsg.value.indexOf(f.id) === -1) fMsg.value = fMsg.value.trim() ? line + '\n' + fMsg.value : line;
+    if (scroll) {
+      $('#contato').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      setTimeout(function () { $('#f-nome').focus({ preventScroll: true }); }, reduceMotion ? 0 : 700);
+    }
+  }
+  $('#flash-grid').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-flash]');
+    if (b) prefillFlash(b.getAttribute('data-flash'), true);
+  });
+  (function fromURL() {
+    var q = new URLSearchParams(window.location.search);
+    if (q.get('flash')) prefillFlash(q.get('flash'), false);
+    else if (ASSUNTO[q.get('assunto')]) fAssunto.value = q.get('assunto');
+  })();
+
+  var RULES = {
+    nome: function (v) { return v ? '' : 'Informe seu nome.'; },
+    contato: function (v) {
+      if (!v) return 'Informe um e-mail ou WhatsApp.';
+      var mail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), phone = v.replace(/\D/g, '').length >= 10;
+      return mail || phone ? '' : 'Use um e-mail válido ou um telefone com DDD.';
+    },
+    assunto: function (v) { return v ? '' : 'Escolha um assunto.'; },
+    mensagem: function (v) { return v ? '' : 'Escreva uma mensagem.'; }
+  };
+  function validate(name) {
+    var input = form.elements[name], msg = RULES[name](input.value.trim());
+    var field = input.closest('.field');
+    field.classList.toggle('has-error', !!msg);
+    input.setAttribute('aria-invalid', String(!!msg));
+    var err = $('#e-' + name);
+    err.textContent = msg;
+    if (msg) input.setAttribute('aria-describedby', 'e-' + name); else input.removeAttribute('aria-describedby');
+    return !msg;
+  }
+  Object.keys(RULES).forEach(function (n) {
+    form.elements[n].addEventListener('blur', function () { if (this.value.trim()) validate(n); });
+    form.elements[n].addEventListener('input', function () { if (this.closest('.field').classList.contains('has-error')) validate(n); });
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var status = $('#form-status');
+    var bad = Object.keys(RULES).filter(function (n) { return !validate(n); });
+    if (bad.length) {
+      status.className = 'form-status err';
+      status.textContent = 'Revise os campos destacados.';
+      form.elements[bad[0]].focus();
+      return;
+    }
+    var d = {};
+    new FormData(form).forEach(function (v, k) { d[k] = String(v).trim(); });
+    var assunto = ASSUNTO[d.assunto] + (d.flash ? ' · Flash ' + d.flash : '');
+    var texto = 'Olá, Marco! Sou ' + d.nome + '.\n\nAssunto: ' + assunto + '\n\n' + d.mensagem + '\n\nContato: ' + d.contato;
+    // O site não envia sozinho: abre o WhatsApp ou o e-mail com tudo preenchido.
+    // A mensagem só chega quando a pessoa confirma o envio no aplicativo, e o aviso diz isso.
+    if (via === 'whatsapp') {
+      var w = window.open(waLink(texto), '_blank', 'noopener');
+      if (!w) window.location.href = waLink(texto);
+    } else {
+      window.location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent('[Site] ' + assunto) + '&body=' + encodeURIComponent(texto);
+    }
+    status.className = 'form-status ok';
+    status.textContent = via === 'whatsapp'
+      ? 'Abrimos o WhatsApp com sua mensagem. Para concluir, toque em enviar por lá.'
+      : 'Abrimos seu e-mail com a mensagem pronta. Para concluir, envie por lá. Se nada abriu, escreva para ' + CFG.email + '.';
+  });
+
+  /* ---------- Sacola ---------- */
   var cart = loadCart();
   function loadCart() {
     try {
       var raw = JSON.parse(localStorage.getItem(CART_KEY)) || {};
       var clean = {};
       Object.keys(raw).forEach(function (id) {
-        if (products[id]) clean[id] = Math.min(products[id].estoque, Math.max(1, parseInt(raw[id], 10) || 1));
+        var p = products[id];
+        if (p && canBuy(p)) clean[id] = Math.min(p.estoque, Math.max(1, parseInt(raw[id], 10) || 1));
       });
       return clean;
-    } catch (e) { return {}; }
+    } catch (err) { return {}; }
   }
   function saveCart() {
-    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { /* modo privado */ }
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (err) { /* modo privado */ }
   }
-
-  var shopGrid = $('#shop-grid');
-  shopGrid.innerHTML = DATA.loja.map(function (p) {
-    return '' +
-      '<article class="product" data-reveal>' +
-        (p.selo ? '<span class="hanko">' + esc(p.selo) + '</span>' : '') +
-        '<div class="product-media tilt" data-tilt>' + media(p.imagem, p.nome) + '</div>' +
-        '<h3>' + esc(p.nome) + '</h3>' +
-        '<p class="mono-small">' + esc(p.detalhe) + '</p>' +
-        '<div class="product-foot">' +
-          '<span class="price">' + brl.format(p.preco) + '</span>' +
-          '<button class="btn btn--small" data-add="' + esc(p.id) + '">+ Sacola</button>' +
-        '</div>' +
-      '</article>';
-  }).join('');
-
-  shopGrid.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-add]');
-    if (!btn) return;
-    var id = btn.getAttribute('data-add');
-    var max = products[id].estoque;
-    cart[id] = Math.min(max, (cart[id] || 0) + 1);
-    $('#cart-status').textContent = '';
-    renderCart();
-    setDrawer(true);
-  });
 
   var drawer = $('#cart-drawer');
   var drawerBackdrop = $('#drawer-backdrop');
   var bagBtn = $('#bag-toggle');
+  $('#drawer-note').hidden = window.Commerce && window.Commerce.connected;
 
-  function renderCart() {
+  function renderCart(bump) {
     var ids = Object.keys(cart);
     var list = $('#cart-list');
     var total = 0, count = 0;
@@ -334,9 +478,9 @@
           '<li class="cart-item">' +
             '<div><h4>' + esc(p.nome) + '</h4><p class="mono-small">' + brl.format(p.preco) + (p.estoque === 1 ? ' · peça única' : '') + '</p></div>' +
             '<div class="qty">' +
-              '<button data-dec="' + esc(id) + '" aria-label="Diminuir">−</button>' +
-              '<span>' + q + '</span>' +
-              '<button data-inc="' + esc(id) + '" aria-label="Aumentar"' + (q >= p.estoque ? ' disabled' : '') + '>+</button>' +
+              '<button data-dec="' + esc(id) + '" aria-label="Diminuir quantidade de ' + esc(p.nome) + '">−</button>' +
+              '<span aria-live="polite">' + q + '</span>' +
+              '<button data-inc="' + esc(id) + '" aria-label="Aumentar quantidade de ' + esc(p.nome) + '"' + (q >= p.estoque ? ' disabled' : '') + '>+</button>' +
             '</div>' +
           '</li>';
       }).join('');
@@ -344,9 +488,26 @@
     $('#cart-total').textContent = brl.format(total);
     $('#bag-count').textContent = count;
     $('#checkout').disabled = !ids.length;
-    bagBtn.classList.remove('bump'); void bagBtn.offsetWidth; bagBtn.classList.add('bump');
+    if (bump) { bagBtn.classList.remove('bump'); void bagBtn.offsetWidth; bagBtn.classList.add('bump'); }
     saveCart();
   }
+  function addToCart(id) {
+    var p = products[id];
+    if (!p || !canBuy(p)) return;
+    cart[id] = Math.min(p.estoque, (cart[id] || 0) + 1);
+    $('#cart-status').textContent = '';
+    renderCart(true);
+    closeModal();
+    setDrawer(true);
+  }
+
+  // Botões de produto podem estar na loja ou dentro do modal
+  document.addEventListener('click', function (e) {
+    var add = e.target.closest('[data-add]');
+    var view = e.target.closest('[data-view]');
+    if (add) addToCart(add.getAttribute('data-add'));
+    else if (view) openProduct(view.getAttribute('data-view'));
+  });
 
   $('#cart-list').addEventListener('click', function (e) {
     var inc = e.target.closest('[data-inc]');
@@ -359,7 +520,7 @@
       cart[d] -= 1;
       if (cart[d] <= 0) delete cart[d];
     } else return;
-    renderCart();
+    renderCart(true);
   });
 
   function setDrawer(open) {
@@ -375,67 +536,30 @@
   drawerBackdrop.addEventListener('click', function () { setDrawer(false); });
 
   $('#checkout').addEventListener('click', function () {
-    // PLACEHOLDER: integrar pagamento ou envio da reserva (WhatsApp / e-mail / backend).
-    var notes = $('#cart-notes').value.trim();
-    var resumo = Object.keys(cart).map(function (id) { return cart[id] + '× ' + products[id].nome; });
-    console.info('[Reserva placeholder]', { itens: resumo, observacoes: notes });
-    cart = {};
-    $('#cart-notes').value = '';
-    renderCart();
     var st = $('#cart-status');
-    st.className = 'form-status ok';
-    st.textContent = '✦ Reserva registrada. Entraremos em contato. (placeholder)';
-  });
-
-  renderCart();
-  bagBtn.classList.remove('bump');
-
-  /* ---------- Formulário de agendamento ---------- */
-  var form = $('#booking-form');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var status = $('#form-status');
-    var ok = true;
-    $$('.field', form).forEach(function (f) { f.classList.remove('has-error'); });
-    $$('[required]', form).forEach(function (input) {
-      var valid = input.type === 'radio'
-        ? !!form.querySelector('input[name="' + input.name + '"]:checked')
-        : input.value.trim() !== '';
-      if (!valid) { ok = false; input.closest('.field').classList.add('has-error'); }
+    var items = Object.keys(cart).map(function (id) { return { id: id, nome: products[id].nome, preco: products[id].preco, quantidade: cart[id] }; });
+    window.Commerce.checkout(items).catch(function () {
+      // Sem plataforma conectada: nenhum pedido é criado e a sacola fica como está.
+      st.className = 'form-status err';
+      st.textContent = 'Demonstração: a loja ainda não está conectada a uma plataforma de pagamento. Nenhum pedido foi feito.';
     });
-    if (!ok) {
-      status.className = 'form-status err';
-      status.textContent = 'Preencha os campos destacados.';
-      return;
-    }
-    // PLACEHOLDER: enviar para WhatsApp, e-mail ou plataforma de agenda.
-    var dados = {};
-    new FormData(form).forEach(function (v, k) { dados[k] = v; });
-    console.info('[Briefing placeholder]', dados);
-    form.reset();
-    status.className = 'form-status ok';
-    status.textContent = '✦ Briefing recebido. Obrigado, ' + dados.nome.split(' ')[0] + '. (placeholder)';
   });
 
-  /* ---------- Reveal + linhas progressivas ---------- */
+  renderCart(false);
+
+  /* ---------- Entrada dos elementos + linhas ---------- */
   $$('[data-tilt]').forEach(bindTilt);
   $$('.card', grid).forEach(bindCard);
-  var targets = $$('[data-reveal], .lines:not(.is-scrub), .img-reveal');
+  var targets = $$('[data-reveal], .lines');
   if ('IntersectionObserver' in window && !reduceMotion) {
-    // .img-reveal começa com clip-path de área zero e o navegador nunca o considera visível;
-    // por isso observamos o elemento pai e marcamos o filho.
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        var el = en.target._revealChild || en.target;
-        el.classList.add('is-visible');
+        en.target.classList.add('is-visible');
         io.unobserve(en.target);
       });
     }, { threshold: 0.15 });
-    targets.forEach(function (t) {
-      if (t.classList.contains('img-reveal')) { t.parentElement._revealChild = t; io.observe(t.parentElement); }
-      else io.observe(t);
-    });
+    targets.forEach(function (t) { io.observe(t); });
   } else {
     targets.forEach(function (t) { t.classList.add('is-visible'); });
   }

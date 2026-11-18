@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marco Surreal — Tattoo &amp; Design</title>
-  <meta name="description" content="Marco Surreal (@marcosurreal): tatuagem Old School, Oriental e Psicodélica, design gráfico e cerâmica autoral." />
+  <title>Marco Surreal — Artista multidisciplinar</title>
+  <meta name="description" content="Marco Surreal é um artista multidisciplinar com produção em tatuagem, design gráfico, ilustração e cerâmica. Loja, trabalhos selecionados, flashes e contato." />
+  <meta property="og:title" content="Marco Surreal — Artista multidisciplinar" />
+  <meta property="og:description" content="Tatuagem, design gráfico, ilustração e cerâmica. Loja, trabalhos e flashes." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#F0F1D8" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,10 +19,11 @@
   <div class="paper-grain" aria-hidden="true"></div>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <!-- [00] NAVBAR + MENU -->
+  <!-- CABEÇALHO + MENU -->
   <header class="navbar">
-    <a href="#topo" class="nav-logo">@MARCOSURREAL</a>
+    <a href="#topo" class="nav-logo" aria-label="Marco Surreal, início">MARCO SURREAL</a>
     <div class="nav-actions">
+      <a href="#loja" class="nav-btn nav-btn--shop">Loja</a>
       <button class="nav-btn" id="Menu" aria-expanded="false" aria-controls="nav-menu">#MENU</button>
       <button class="nav-btn nav-btn--bag" id="bag-toggle" aria-controls="cart-drawer">Sacola [<span id="bag-count">0</span>]</button>
     </div>
@@ -27,188 +32,164 @@
   <nav class="nav-menu-wrapper" id="nav-menu" aria-label="Menu principal" aria-hidden="true">
     <div class="nav-menu-inner">
       <ul class="nav-menu-links">
-        <li><a href="#portfolio">Portfólio</a></li>
-        <li><a href="#loja">Flash &amp; Loja</a></li>
-        <li><a href="#manifesto">Manifesto</a></li>
-        <li><a href="#agendar">Agendar</a></li>
+        <li><a href="#topo">Início</a></li>
+        <li><a href="#trabalhos">Trabalhos</a></li>
+        <li><a href="#loja" class="is-shop">Loja</a></li>
+        <li><a href="#flashes">Flashes</a></li>
+        <li><a href="#contato">Contato</a></li>
       </ul>
       <aside class="nav-menu-side">
-        <p class="editorial">A agulha marca, o grid ordena, o barro guarda.</p>
-        <p class="mono-small">[A PREENCHER: frase de filosofia do menu]</p>
-        <ul class="social">
-          <li><a href="#" data-placeholder>#INSTAGRAM</a></li>
-          <li><a href="#" data-placeholder>#BEHANCE</a></li>
-          <li><a href="#" data-placeholder>#SPOTIFY</a></li>
-        </ul>
+        <p class="mono-small">Tatuagem · Design gráfico · Ilustração · Cerâmica</p>
+        <ul class="social" data-social></ul>
       </aside>
     </div>
   </nav>
 
   <main id="conteudo">
-    <!-- [01] HERO -->
-    <section class="hero seigaiha" id="topo">
-      <h1 class="hero-title">
+    <!-- [01] APRESENTAÇÃO (Hero + About) -->
+    <section class="hero seigaiha" id="topo" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title">
         <span class="hero-line"><span>MARCO</span></span>
         <span class="hero-line"><span>SURREAL</span></span>
-        <span class="hero-line hero-line--small"><span>TATTOO &amp; DESIGN</span></span>
+        <span class="hero-line hero-line--small"><span>ARTISTA MULTIDISCIPLINAR</span></span>
       </h1>
 
       <div class="hero-meta">
         <div class="block-line" aria-hidden="true"><span class="block-line__fill"></span></div>
         <div class="hero-bio">
-          <p class="editorial">Old School surreal, Ukiyo-e e psicodelia de 1968, em pele, papel e barro.</p>
-          <p class="mono-small">[A PREENCHER: bio curta, 2 linhas]</p>
-          <p class="mono-small">📍 [CIDADE — BAIRRO] · Ateliê com hora marcada</p>
+          <p class="hero-intro" data-text="apresentacao"></p>
+          <div class="hero-ctas">
+            <a href="#loja" class="btn btn--primary">Ver loja</a>
+            <a href="#trabalhos" class="btn">Explorar trabalhos</a>
+          </div>
         </div>
       </div>
 
       <!-- Imagens sobrepostas: cada camada tem profundidade própria (data-depth) no mouse e no scroll -->
       <div class="hero-image-holder" id="hero-image">
         <div class="hero-layer hero-layer--main" data-depth="1">
-          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph ph--tall" data-label="FLASH SHEET / IMAGEM HERO"></div></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph ph--tall" data-label="TRABALHO AUTORAL"></div></div></div></div>
         </div>
         <div class="hero-layer hero-layer--b" data-depth="2.2">
-          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="DETALHE NA PELE"></div></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="CERÂMICA"></div></div></div></div>
         </div>
         <div class="hero-layer hero-layer--c" data-depth="-1.5">
-          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="PROCESSO / ESTÊNCIL"></div></div></div></div>
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="ATELIÊ / RETRATO"></div></div></div></div>
         </div>
       </div>
     </section>
 
-    <!-- [02] FAIXA 01 (abre o manifesto escuro) -->
-    <div class="ornament-band ornament-band--dark" aria-hidden="true"><div class="ornament-track"></div></div>
+    <div class="ornament-band ornament-band--forest" aria-hidden="true"><div class="ornament-track"></div></div>
 
-    <!-- [03] MANIFESTO -->
-    <section class="about theme-dark" id="manifesto">
-      <div class="section-head">
-        <span class="mono-tag">#ABOUT ME</span>
+    <!-- [02] SHOP -->
+    <section class="shop" id="loja" aria-labelledby="loja-title">
+      <div class="section-head section-head--light">
+        <span class="mono-tag">#SHOP</span>
         <div class="lines _02" aria-hidden="true"></div>
       </div>
-
-      <div class="about-grid">
-        <div class="about-text" data-scroll="0,492">
-          <h2 class="section-title">A agulha, o grid<br />e o barro</h2>
-          <p class="editorial">Três ofícios irreversíveis feitos à mão. A pele não se apaga, a tiragem não se reimprime, o grés não volta a ser argila.</p>
-          <p>[A PREENCHER: manifesto, primeiro parágrafo. Como o Marco chegou à tatuagem, ao design e à cerâmica.]</p>
-          <p>[A PREENCHER: manifesto, segundo parágrafo. O que "surreal" significa no trabalho dele: a colisão entre tradições que nunca se encontraram.]</p>
-          <a href="#agendar" class="link-hash">#AGENDAR SESSÃO →</a>
-        </div>
-        <div class="about-images">
-          <!-- data-scroll="x,y": deslocamento em px ao fim da seção (valores do Alien: 0,355 e 80,126) -->
-          <div class="about-img about-img--a" data-scroll="0,355" data-depth="0.8"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="FOTO DO ATELIÊ"></div></div></div>
-          <div class="about-img about-img--b" data-scroll="80,126" data-depth="-1.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="TATUAGEM NA PELE"></div></div></div>
-          <div class="about-img about-img--c" data-scroll="-40,230" data-depth="2.4"><div class="tilt img-reveal" data-tilt><div class="ph" data-label="DETALHE"></div></div></div>
-        </div>
+      <div class="section-intro">
+        <h2 class="section-title" id="loja-title">Loja</h2>
+        <p class="section-lead">Prints, camisetas, adesivos e cerâmicas.</p>
       </div>
-      <div class="lines _03" aria-hidden="true"></div>
+      <div class="shop-grid" id="shop-grid"></div>
+      <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os produtos <em>em breve</em></span></div>
     </section>
 
-    <!-- [04] MARQUEE 02 -->
     <div class="ornament-band ornament-band--terung ornament-band--reverse" aria-hidden="true"><div class="ornament-track"></div></div>
 
-    <!-- [05] PORTFÓLIO -->
-    <section class="portfolio" id="portfolio">
+    <!-- [03] SELECTED WORKS -->
+    <section class="portfolio" id="trabalhos" aria-labelledby="trabalhos-title">
       <div class="section-head">
-        <span class="mono-tag">#PROJECTS</span>
-        <div class="filters" role="group" aria-label="Filtrar portfólio">
+        <span class="mono-tag">#SELECTED WORKS</span>
+        <div class="filters" role="group" aria-label="Filtrar trabalhos">
           <button class="filter is-active" data-filter="todos" aria-pressed="true">Todos</button>
           <button class="filter" data-filter="tatuagem" aria-pressed="false">Tatuagem</button>
           <button class="filter" data-filter="design" aria-pressed="false">Design</button>
           <button class="filter" data-filter="ceramica" aria-pressed="false">Cerâmica</button>
         </div>
       </div>
+      <h2 class="section-title" id="trabalhos-title">Trabalhos selecionados</h2>
       <div class="portfolio-grid" id="portfolio-grid"></div>
+      <p class="empty-note" id="portfolio-empty" hidden>Nenhum trabalho selecionado nesta categoria.</p>
+      <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os trabalhos <em>em breve</em></span></div>
     </section>
 
-    <!-- [06] MARQUEE 03 -->
-    <div class="ornament-band ornament-band--forest" aria-hidden="true"><div class="ornament-track"></div></div>
+    <div class="ornament-band ornament-band--dark" aria-hidden="true"><div class="ornament-track"></div></div>
 
-    <!-- [07] LOJA -->
-    <section class="shop" id="loja">
-      <div class="section-head section-head--light">
-        <span class="mono-tag">#FLASH BOOK</span>
-        <p class="editorial">Cada flash é tatuado uma única vez. Depois sai da parede.</p>
-      </div>
-      <div class="shop-grid" id="shop-grid"></div>
-    </section>
-
-    <!-- [08] AGENDAMENTO -->
-    <section class="booking seigaiha" id="agendar">
+    <!-- [04] FLASH BOOK -->
+    <section class="flashbook theme-dark" id="flashes" aria-labelledby="flashes-title">
       <div class="section-head">
-        <span class="mono-tag">#AGENDAR</span>
+        <span class="mono-tag">#FLASH BOOK</span>
         <div class="lines _02" aria-hidden="true"></div>
       </div>
-      <h2 class="section-title">Briefing &amp; Sessão</h2>
-      <p class="editorial booking-lead">Conte a ideia. A resposta chega em até [X] dias úteis.</p>
-
-      <form class="booking-form" id="booking-form" novalidate>
-        <div class="field">
-          <label for="f-nome">Nome</label>
-          <input id="f-nome" name="nome" type="text" required autocomplete="name" />
-        </div>
-        <div class="field">
-          <label for="f-contato">E-mail ou WhatsApp</label>
-          <input id="f-contato" name="contato" type="text" required autocomplete="email" />
-        </div>
-        <div class="field">
-          <label for="f-servico">Serviço</label>
-          <select id="f-servico" name="servico" required>
-            <option value="">Selecione</option>
-            <option>Tatuagem</option>
-            <option>Design Gráfico / Direção de Arte</option>
-            <option>Cerâmica (encomenda)</option>
-          </select>
-        </div>
-        <fieldset class="field field--full">
-          <legend>Vertente estética</legend>
-          <div class="chips">
-            <label class="chip"><input type="radio" name="vertente" value="Old School Surreal" required /><span>Old School Surreal</span></label>
-            <label class="chip"><input type="radio" name="vertente" value="Oriental / Ukiyo-e" /><span>Oriental / Ukiyo-e</span></label>
-            <label class="chip"><input type="radio" name="vertente" value="Psicodelia 60s" /><span>Psicodelia 60s</span></label>
-            <label class="chip"><input type="radio" name="vertente" value="Livre" /><span>Deixo com o artista</span></label>
-          </div>
-        </fieldset>
-        <div class="field">
-          <label for="f-local">Parte do corpo / formato</label>
-          <input id="f-local" name="local" type="text" placeholder="Ex.: antebraço, cartaz A2, vaso 30cm" />
-        </div>
-        <div class="field">
-          <label for="f-tamanho">Tamanho aproximado</label>
-          <input id="f-tamanho" name="tamanho" type="text" placeholder="Ex.: 15 cm" />
-        </div>
-        <div class="field field--full">
-          <label for="f-ideia">A ideia</label>
-          <textarea id="f-ideia" name="ideia" rows="5" required placeholder="Referências, significado, prazo..."></textarea>
-        </div>
-        <div class="field field--full form-actions">
-          <button type="submit" class="btn btn--primary">Enviar briefing ✦</button>
-          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-        </div>
-      </form>
+      <div class="section-intro">
+        <h2 class="section-title" id="flashes-title">Flash Book</h2>
+        <p class="section-lead">Desenhos disponíveis para tatuagem.</p>
+      </div>
+      <div class="flash-grid" id="flash-grid"></div>
+      <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os flashes <em>em breve</em></span></div>
     </section>
 
-    <!-- [09] FAIXA 04 (abre o rodapé escuro) -->
+    <!-- [05] CONTATO -->
+    <section class="contact seigaiha" id="contato" aria-labelledby="contato-title">
+      <div class="section-head">
+        <span class="mono-tag">#CONTATO</span>
+        <div class="lines _02" aria-hidden="true"></div>
+      </div>
+      <div class="contact-grid">
+        <div>
+          <h2 class="section-title" id="contato-title">Contato</h2>
+          <p class="section-lead">Entre em contato para sessões de tatuagem, cerâmicas sob encomenda ou outros projetos.</p>
+        </div>
+        <form class="contact-form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="f-nome">Nome</label>
+            <input id="f-nome" name="nome" type="text" required autocomplete="name" />
+            <span class="field-error" id="e-nome"></span>
+          </div>
+          <div class="field">
+            <label for="f-contato">E-mail ou WhatsApp</label>
+            <input id="f-contato" name="contato" type="text" required autocomplete="email" />
+            <span class="field-error" id="e-contato"></span>
+          </div>
+          <div class="field field--full">
+            <label for="f-assunto">Assunto</label>
+            <select id="f-assunto" name="assunto" required>
+              <option value="">Selecione</option>
+              <option value="tatuagem">Sessão de tatuagem</option>
+              <option value="ceramica">Cerâmica sob encomenda</option>
+              <option value="outro">Outro assunto</option>
+            </select>
+            <span class="field-error" id="e-assunto"></span>
+          </div>
+          <div class="field field--full">
+            <label for="f-mensagem">Mensagem</label>
+            <textarea id="f-mensagem" name="mensagem" rows="3" required></textarea>
+            <span class="field-error" id="e-mensagem"></span>
+          </div>
+          <input type="hidden" name="flash" id="f-flash" />
+          <div class="field field--full form-actions">
+            <button type="submit" class="btn btn--primary" id="contact-submit">Enviar mensagem</button>
+            <p class="form-hint" id="contact-hint"></p>
+          </div>
+          <p class="form-status field--full" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
     <div class="ornament-band ornament-band--dark ornament-band--reverse" aria-hidden="true"><div class="ornament-track"></div></div>
   </main>
 
-  <!-- [10] FOOTER -->
-  <footer class="footer" id="contato">
+  <!-- [06] RODAPÉ -->
+  <footer class="footer" id="rodape">
     <div class="footer-grid">
       <div>
-        <span class="mono-tag">#CONTATO</span>
-        <p class="footer-big">@MARCOSURREAL</p>
+        <span class="mono-tag">#MARCO SURREAL</span>
+        <p class="footer-big">MARCO SURREAL</p>
+        <p class="mono-small footer-roles">Tatuagem · Design gráfico · Ilustração · Cerâmica</p>
       </div>
-      <div class="footer-col">
-        <p class="mono-small">[E-MAIL]</p>
-        <p class="mono-small">[WHATSAPP]</p>
-        <p class="mono-small">[ENDEREÇO DO ATELIÊ]</p>
-      </div>
-      <div class="footer-col">
-        <a href="#" data-placeholder>#INSTAGRAM</a>
-        <a href="#" data-placeholder>#BEHANCE</a>
-        <a href="#" data-placeholder>#SPOTIFY</a>
-      </div>
+      <div class="footer-col" data-contact-links></div>
+      <div class="footer-col" data-social></div>
     </div>
     <div class="footer-bottom">
       <span class="mono-small">© <span id="year"></span> Marco Surreal</span>
@@ -216,7 +197,7 @@
     </div>
   </footer>
 
-  <!-- MODAL FICHA TÉCNICA -->
+  <!-- MODAL (ficha de trabalho ou detalhes de produto) -->
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel">
@@ -227,28 +208,29 @@
         <h3 id="modal-title"></h3>
         <p id="modal-desc"></p>
         <dl class="spec" id="modal-spec"></dl>
+        <div class="modal-actions" id="modal-actions"></div>
       </div>
     </div>
   </div>
 
-  <!-- DRAWER SACOLA -->
+  <!-- SACOLA -->
   <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
   <aside class="drawer" id="cart-drawer" aria-label="Sacola" aria-hidden="true">
     <div class="drawer-head">
       <span class="mono-tag">#SACOLA</span>
       <button class="modal-close" id="drawer-close" aria-label="Fechar sacola">✕</button>
     </div>
+    <p class="drawer-note" id="drawer-note">Loja em demonstração: ainda não é possível finalizar compras pelo site.</p>
     <ul class="cart-list" id="cart-list"></ul>
     <div class="drawer-foot">
-      <label for="cart-notes" class="mono-small">Observações (local do corpo, cupom...)</label>
-      <textarea id="cart-notes" rows="3"></textarea>
       <div class="cart-total"><span>Total</span><strong id="cart-total">R$ 0,00</strong></div>
-      <button class="btn btn--primary" id="checkout">Concluir reserva</button>
+      <button class="btn btn--primary" id="checkout">Finalizar compra</button>
       <p class="form-status" id="cart-status" role="status" aria-live="polite"></p>
     </div>
   </aside>
 
   <script src="assets/js/data.js"></script>
+  <script src="assets/js/commerce.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

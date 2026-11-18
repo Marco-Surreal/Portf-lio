@@ -12,19 +12,29 @@ Site-portfólio de tatuagem, design gráfico e cerâmica. HTML, CSS e JavaScript
 ```text
 index.html             Estrutura das seções [00]–[10] do blueprint
 assets/css/style.css   Design system (tokens, tipografia, animações)
-assets/js/data.js      CONTEÚDO EDITÁVEL: portfólio e loja
-assets/js/main.js      Menu, filtros, modal, sacola, formulário
+assets/js/data.js      CONTEÚDO EDITÁVEL: contatos, produtos, trabalhos e flashes
+assets/js/commerce.js  Ponto de conexão com a futura plataforma de loja (Shopify/Nuvemshop)
+assets/js/main.js      Menu, filtros, modal, sacola, flashes, formulário de contato
 assets/img/            Faixas ornamentais em SVG (estilo Dayak / Bornéu)
 tools/                 Gerador das faixas ornamentais
 ```
 
 ## Como preencher
 
-- **Portfólio e loja:** edite `assets/js/data.js`. Para trocar um placeholder por foto, coloque o arquivo em `assets/img/` e preencha o campo `imagem`.
-- **Textos (bio, manifesto, contato):** procure por `[A PREENCHER]` e `[` no `index.html`.
-- **Faixas ornamentais (espirais Dayak):** ficam em `assets/img/ornamento-*.svg` e são geradas por `node tools/gerar-ornamentos.js`. Para usar um desenho próprio, exporte um SVG com 120 de altura no mesmo nome e, se a largura mudar, atualize o `--ratio` correspondente em `style.css`.
-- **Links sociais:** troque `href="#"` e remova o atributo `data-placeholder`.
-- **Envio do formulário e da sacola:** hoje só confirmam na tela. Os pontos de integração estão marcados com `PLACEHOLDER` em `main.js`.
+Tudo fica em `assets/js/data.js`:
+
+- **`config`:** texto de apresentação, e-mail, WhatsApp e redes. Link vazio não aparece no site.
+- **`produtos`:** loja. `destaque: true` coloca o produto na página inicial (até 6). `preco: null` mostra "Preço a definir" e esconde o botão de compra. `demo: true` mostra o selo DEMO.
+- **`trabalhos`:** portfólio (até 6 em destaque). `produtoId` liga um trabalho a um produto da loja, como uma cerâmica à venda.
+- **`flashes`:** `estado` pode ser `disponivel`, `reservado` ou `tatuado`. "Tenho interesse" preenche o contato.
+- **Fotos:** coloque em `assets/img/` e preencha `imagem` (ou `imagens`).
+- **Faixas ornamentais:** `assets/img/ornamento-*.svg`, geradas por `node tools/gerar-ornamentos.js`.
+
+## Pendências conhecidas
+
+- **WhatsApp:** com `config.whatsapp` vazio, o formulário abre o e-mail com a mensagem pronta. Preenchendo o número, passa a abrir o WhatsApp.
+- **Loja:** sem plataforma conectada, "Finalizar compra" avisa que é demonstração e não cria pedido (`commerce.js`).
+- **Páginas internas** (`loja/`, `trabalhos/`, `flashes/`, `produto/`): parte 2. Os botões "Ver todos" aparecem como "em breve".
 
 ## Visualizar
 
