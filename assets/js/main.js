@@ -60,31 +60,33 @@
   }
 
   /* Imagens do topo: a imagem de baixo (Cerâmica) passa um pouquinho por cima do L de SURREAL.
-     Mede sem transformações (offsetLeft) e desloca o bloco com "left", porque a largura do título
-     muda com a fonte e o tamanho da tela. No celular as imagens ficam embaixo do texto. */
+     Mede sem transformações (offsetLeft), porque a largura do título muda com a fonte e o
+     tamanho da tela. No celular as imagens ficam embaixo do texto. */
   var heroHold = $('#hero-image');
   var sideBySide = window.matchMedia('(min-width: 641px)');
   function absLeft(el) { var x = 0; while (el) { x += el.offsetLeft; el = el.offsetParent; } return x; }
   function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
   function placeHeroImages() {
     if (!heroHold || !heroBig) return;
-    var b = $('.hero-layer--b', heroHold), c = $('.hero-layer--c', heroHold);
-    heroHold.style.left = ''; heroHold.style.maxWidth = ''; b.style.top = ''; b.style.bottom = '';
+    var b = $('.hero-layer--b', heroHold);
+    heroHold.style.maxWidth = ''; b.style.left = ''; b.style.top = ''; b.style.bottom = '';
     if (!sideBySide.matches) return;
-    var overlap = heroBig.offsetWidth * 0.04; // um pouco: cerca de 4% da largura de SURREAL
-    var startX = absLeft(heroBig) + heroBig.offsetWidth - overlap;
-    // Se o título for largo e não couber tudo, as imagens diminuem em vez de cobrir mais o título.
-    // O conjunto vai de 42% antes até 20% depois da imagem principal: 1,62 × a largura dela.
-    var W = heroHold.offsetWidth, fitW = (document.documentElement.clientWidth - 16 - startX) / 1.62;
-    if (fitW < W) heroHold.style.maxWidth = Math.max(200, Math.floor(fitW)) + 'px';
-    var shift = startX - absLeft(b);
-    // Na altura, a imagem de baixo começa um pouco abaixo do topo de SURREAL, para encostar no L
-    // (e não na bio). Sem sair da seção embaixo.
-    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.3 - absTop(heroHold);
-    var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - absTop(heroHold);
+    // A imagem principal termina à direita na mesma distância que o título tem da esquerda
+    // (o CSS já alinha pela margem da seção). Aqui se acerta o tamanho para a imagem de baixo
+    // ir da beirada do L até a principal: ela fica 42% da largura para a esquerda da principal.
+    var right = absLeft(heroHold) + heroHold.offsetWidth;
+    var startX = absLeft(heroBig) + heroBig.offsetWidth - heroBig.offsetWidth * 0.04; // cobre só ~4% de SURREAL
+    var W = heroHold.offsetWidth, fitW = (right - startX) / 1.42;
+    if (fitW < W) { W = Math.max(200, Math.floor(fitW)); heroHold.style.maxWidth = W + 'px'; }
+    // Se a altura da tela limitou o tamanho, a imagem de baixo se afasta um pouco da principal
+    // para continuar encostando no L (no máximo 55% para fora, para não soltar dela).
+    var bLeft = Math.max(startX - (right - W), -0.55 * W);
+    b.style.left = Math.round(bLeft) + 'px';
+    // Na altura: começa na metade de SURREAL, cobrindo só o pé do L. Sem sair da seção embaixo.
+    var holdTop = absTop(heroHold);
+    var bTop = absTop(heroBig) + heroBig.offsetHeight * 0.55 - holdTop;
+    var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - holdTop;
     b.style.top = Math.round(Math.min(bTop, bMax)) + 'px'; b.style.bottom = 'auto';
-    var maxShift = document.documentElement.clientWidth - 16 - (absLeft(c) + c.offsetWidth); // não sai da tela à direita
-    heroHold.style.left = Math.round(Math.min(shift, maxShift)) + 'px';
   }
   // Com as imagens ao lado, o subtítulo termina onde a imagem começa (ela cobre só um pouco do L).
   function layoutHero() {
@@ -414,8 +416,6 @@
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         '<div class="card-item">' +
           '<div class="card-media glass">' + m +
-            '<div class="card-layer _02" aria-hidden="true">' + m + '</div>' +
-            '<div class="card-layer _03" aria-hidden="true">' + m + '</div>' +
             '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
           '</div>' +
           '<div class="card-info">' +
@@ -699,67 +699,58 @@
 
   $('#year').textContent = new Date().getFullYear();
 
-  /* ---------- Escamas preenchidas no fundo ----------
-     Algumas escamas da textura (seigaiha) ganham cor, em lugares sorteados. Cada uma aparece
-     devagar, fica alguns segundos e some; outra surge em outro lugar. Poucas por vez, bem fracas.
-     Só anima a seção que está na tela. Com "reduzir movimento" ativado, ficam paradas. */
-  (function scaleFills() {
-    var TW = 48, TH = 24, R = 24;               // mesmo tamanho do desenho da textura (background-size 48×24)
-    var LIGHT = ['rgba(31,78,120,0.10)', 'rgba(217,56,41,0.09)', 'rgba(226,160,37,0.13)', 'rgba(43,122,98,0.10)'];
-    var DARK_C = ['rgba(240,241,216,0.06)', 'rgba(226,160,37,0.09)', 'rgba(43,122,98,0.14)'];
+  /* ---------- Textura "despadronizada" ----------
+     Em algumas escamas sorteadas da textura (seigaiha), um dos anéis fica preenchido com a cor
+     das linhas. É fixo (sem animação) e raro: cerca de 2% das escamas. As escamas da frente
+     continuam cobrindo o anel, como no desenho original. */
+  (function scaleRings() {
+    var TW = 48, TH = 24;                        // mesmo tamanho da textura (background-size 48×24)
+    var BANDS = [[18, 24], [12, 18], [6, 12]];   // anéis entre os círculos (raios 20/15/10/5 × 1,2)
     var sprites = {};
-    function sprite(color) {
-      if (sprites[color]) return sprites[color];
-      // parte visível de uma escama: o círculo dela menos as três escamas que ficam por cima (embaixo e dos lados)
+    function sprite(color, band) {
+      var key = color + band;
+      if (sprites[key]) return sprites[key];
       var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
       var g = cv.getContext('2d'); g.scale(2, 2);
-      g.fillStyle = color; g.beginPath(); g.arc(24, 24, R, 0, Math.PI * 2); g.fill();
-      g.globalCompositeOperation = 'destination-out';
-      [[0, 36], [48, 36], [24, 48]].forEach(function (p) { g.beginPath(); g.arc(p[0], p[1], R, 0, Math.PI * 2); g.fill(); });
-      return (sprites[color] = cv.toDataURL());
+      var r = BANDS[band];
+      g.fillStyle = color; g.beginPath();
+      g.arc(24, 24, r[1], 0, Math.PI * 2); g.arc(24, 24, r[0], 0, Math.PI * 2, true);
+      g.fill();
+      // tira o que as três escamas da frente (embaixo e dos lados) cobrem
+      g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000'; // cor opaca para recortar por inteiro
+      [[0, 36], [48, 36], [24, 48]].forEach(function (p) { g.beginPath(); g.arc(p[0], p[1], 24, 0, Math.PI * 2); g.fill(); });
+      return (sprites[key] = cv.toDataURL());
     }
-    function rnd(a, b) { return a + Math.random() * (b - a); }
-
-    $$('.seigaiha').forEach(function (sec) {
-      var dark = sec.matches('.theme-dark, .footer, .shop');
-      var colors = dark ? DARK_C : LIGHT;
+    var layers = $$('.seigaiha').map(function (sec) {
       var layer = document.createElement('div');
       layer.className = 'scale-fx'; layer.setAttribute('aria-hidden', 'true');
       sec.insertBefore(layer, sec.firstChild);
-      var cells = [], active = false, timers = [];
-
-      function spot(el) {
-        var w = sec.clientWidth, h = sec.clientHeight;
-        var odd = Math.random() < 0.5;
-        var i = Math.floor(rnd(0, w / TW + 1)), j = Math.floor(rnd(0, h / TH + 1));
-        var cx = i * TW + (odd ? TW / 2 : 0), cy = j * TH + (odd ? TH / 2 : 0);
-        el.style.left = (cx - R) + 'px'; el.style.top = (cy - R) + 'px';
-        el.style.backgroundImage = 'url(' + sprite(colors[Math.floor(Math.random() * colors.length)]) + ')';
-      }
-      function cycle(el) {
-        if (!active) return;
-        spot(el);
-        el.classList.add('is-on');
-        timers.push(setTimeout(function () {
-          el.classList.remove('is-on');
-          timers.push(setTimeout(function () { cycle(el); }, rnd(3500, 7000))); // tempo do apagar + pausa
-        }, rnd(5000, 10000)));
-      }
-      function build() {
-        layer.innerHTML = ''; cells = [];
-        var n = Math.max(3, Math.min(18, Math.round(sec.clientWidth * sec.clientHeight / (TW * TH) * 0.005)));
-        for (var k = 0; k < n; k++) { var el = document.createElement('span'); layer.appendChild(el); cells.push(el); }
-        if (reduceMotion) cells.forEach(function (el) { spot(el); el.classList.add('is-on'); });
-      }
-      build();
-      if (reduceMotion || !('IntersectionObserver' in window)) { if (!reduceMotion) cells.forEach(function (el) { spot(el); el.classList.add('is-on'); }); return; }
-      new IntersectionObserver(function (es) {
-        var on = es[0].isIntersecting;
-        if (on === active) return;
-        active = on;
-        if (on) cells.forEach(function (el) { timers.push(setTimeout(function () { cycle(el); }, rnd(0, 6000))); });
-        else { timers.forEach(clearTimeout); timers = []; }
-      }).observe(sec);
+      // mesma cor e força das linhas da textura de cada fundo
+      var color = sec.matches('.theme-dark, .footer, .shop') ? 'rgba(240,241,216,0.08)' : 'rgba(31,78,120,0.12)';
+      return { sec: sec, layer: layer, color: color, w: 0, h: 0 };
     });
+    function build(L) {
+      var w = L.sec.clientWidth, h = L.sec.clientHeight;
+      if (w === L.w && Math.abs(h - L.h) < TH * 4) return;   // só refaz quando o tamanho muda de verdade
+      L.w = w; L.h = h;
+      var cols = Math.ceil(w / TW) + 1, rows = Math.ceil(h / TH) + 1;
+      var n = Math.round(cols * rows * 2 * 0.02), used = {}, html = '';
+      for (var k = 0; k < n; k++) {
+        var odd = Math.random() < 0.5 ? 1 : 0;
+        var i = Math.floor(Math.random() * cols), j = Math.floor(Math.random() * rows);
+        var id = i + ':' + j + ':' + odd;
+        if (used[id]) continue;
+        used[id] = true;
+        var cx = i * TW + odd * TW / 2, cy = j * TH + odd * TH / 2;
+        html += '<span style="left:' + (cx - 24) + 'px;top:' + (cy - 24) + 'px;background-image:url(' +
+          sprite(L.color, Math.floor(Math.random() * BANDS.length)) + ')"></span>';
+      }
+      L.layer.innerHTML = html;
+    }
+    function buildAll() { layers.forEach(build); }
+    buildAll();
+    var t;
+    window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(buildAll, 300); });
+    window.addEventListener('load', buildAll);
   })();
 })();

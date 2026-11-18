@@ -62,10 +62,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
    miolo de cada escama é pintado com a cor do fundo para as ondas se sobreporem. */
 .theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
 .shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
-/* Escamas preenchidas aos poucos (JS cria os elementos). Ficam embaixo da textura, sobre o fundo da seção. */
-.scale-fx { position: absolute; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
-.scale-fx span { position: absolute; width: 48px; height: 48px; background-size: 48px 48px; opacity: 0; transition: opacity 3.5s ease-in-out; }
-.scale-fx span.is-on { opacity: 1; }
+/* Textura "despadronizada": anéis preenchidos em escamas sorteadas (JS cria os elementos), por cima das linhas */
+.scale-fx { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.scale-fx span { position: absolute; width: 48px; height: 48px; background-size: 48px 48px; }
 
 /* ---------- Ritmo claro / escuro ----------
    Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
@@ -214,16 +213,15 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-image-holder {
   grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; width: 100%;
   max-width: calc(70vh - 100px); /* em telas baixas as imagens diminuem para não cortar */
-  margin: 8% 5vw 3% 0; /* reserva o espaço da imagem que sai para cima */
-  left: 0; /* o JS ajusta para a imagem de baixo encostar um pouco no L de SURREAL */
+  margin: 8% 0 3% 0; /* reserva o espaço da imagem que sai para cima; à direita, a mesma margem do título */
   z-index: 2; position: relative; will-change: transform; }
 .hero-layer { will-change: transform; }
 .hero-layer--main { position: relative; z-index: 1; }
 .hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -8%; }
-.hero-layer--c { position: absolute; z-index: 0; width: 46%; right: -20%; top: -6%; }
+.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: 0; top: -6%; } /* na frente, alinhada à margem direita */
 .hero-layer--b .ph, .hero-layer--c .ph { aspect-ratio: 4 / 5; min-height: 0; }
 .hero-layer--c .ph { background-color: var(--bg-cream); }
-.hero-layer:hover { z-index: 3; }
+.hero-layer:hover { z-index: 4; }
 .hero-float { animation: float 8s ease-in-out infinite; }
 .hero-layer--b .hero-float { animation-duration: 10s; animation-delay: -3s; }
 .hero-layer--c .hero-float { animation-duration: 12s; animation-delay: -6s; }
@@ -299,13 +297,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .card-media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; }
 .card-media .ph, .card-media img { border: 0; position: absolute; inset: 0; }
 
-/* Cortina dupla do Alien: _02 (contraste 200%) desce até 100% em 1400ms;
-   _03 (imagem normal) desce até 80% com 150ms de atraso. Na saída (600ms) a ordem inverte. */
-.card-layer { position: absolute; inset: 0; clip-path: inset(0 0 100% 0); }
-.card-layer._02 { filter: contrast(200%); transition: clip-path 0.6s var(--ease-expo) 0.2s; }
-.card-layer._03 { transition: clip-path 0.6s var(--ease-expo); }
-.card:hover .card-layer._02, .card:focus-within .card-layer._02 { clip-path: inset(0 0 0 0); transition: clip-path 1.4s var(--ease-expo); }
-.card:hover .card-layer._03, .card:focus-within .card-layer._03 { clip-path: inset(0 0 20% 0); transition: clip-path 1.4s var(--ease-expo) 0.15s; }
+/* No hover os cards usam o mesmo brilho de vidro das outras imagens (.glass), sem a cortina branca */
 
 .view-project {
   position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 2;
