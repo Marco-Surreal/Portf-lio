@@ -62,19 +62,43 @@ window.FL = (function () {
     o.ball = true;
     return o;
   }
+  // Espiral aberta (de Arquimedes) que continua o traço: primeiro estica a serifa (ext) na mesma direção,
+  // depois enrola. O passo entre as voltas é grande o bastante para o vão aparecer.
+  // side: +1 enrola para a esquerda (anti-horário), -1 para a direita (horário)
+  function spiral(P, side, o = {}) {
+    const r0 = (o.r0 ?? 70) * (o.k ?? 1.3), turns = Math.max(o.turns ?? 1.2, 1.2), rEnd = o.rEnd ?? 0.2, w1 = o.w1 ?? 15;
+    const L = P[P.length - 1], Q = P[Math.max(0, P.length - 4)];
+    let tx = L.x - Q.x, ty = L.y - Q.y; const n = Math.hypot(tx, ty) || 1; tx /= n; ty /= n;
+    const w0 = L.w, wS = Math.min(o.wStart ?? 40, r0 * 0.5, w0);
+    // a serifa se estica e afina antes de enrolar, para a espiral não sumir dentro do traço
+    const ext = Math.max(o.ext ?? 40, (w0 - wS) * 0.45 + 18);
+    const o2 = P.slice();
+    const NE = Math.max(1, Math.ceil(ext / 2));
+    for (let k = 1; k <= NE; k++) { const f = k / NE; o2.push({ x: L.x + tx * ext * f, y: L.y + ty * ext * f, w: w0 + (wS - w0) * f, k: 0 }); }
+    const E = o2[o2.length - 1];
+    const nx = side > 0 ? -ty : ty, ny = side > 0 ? tx : -tx;
+    const cx = E.x + nx * r0, cy = E.y + ny * r0;
+    const th0 = Math.atan2(E.y - cy, E.x - cx), N = Math.ceil(turns * 220);
+    for (let k = 1; k <= N; k++) {
+      const f = k / N, th = th0 + side * f * turns * TAU, r = r0 * (1 - (1 - rEnd) * f);
+      o2.push({ x: cx + r * Math.cos(th), y: cy + r * Math.sin(th), w: wS + (w1 - wS) * Math.pow(f, 0.55), k: f });
+    }
+    o2.ball = true; o2.ballR = o.ball ?? w1 * 1.05;
+    return o2;
+  }
   function taper(P, from, to, w1) { // afina o traço no fim (0..1 do comprimento)
     const n = P.length;
     return P.map((p, i) => { const f = i / (n - 1); if (f < from) return p; const k = Math.min(1, (f - from) / (to - from)); return { x: p.x, y: p.y, w: p.w + (w1 - p.w) * k }; });
   }
   let late = null, boldNow = 0;
   function draw(P, ballK = 0.62) {
-    if (P.ball && late) { const Q = P.map((p) => ({ x: p.x, y: p.y, w: p.w + 2 * boldNow * (1 - Math.min(1, (p.k || 0) * 3.5)) })); Q.ball = true; const t = c.getTransform(); late.push(() => { c.setTransform(t); drawNow(Q, ballK); }); return; }
+    if (P.ball && late) { const Q = P.map((p) => ({ x: p.x, y: p.y, w: p.w + 2 * boldNow * (1 - Math.min(1, (p.k || 0) * 3.5)) })); Q.ball = true; Q.ballR = P.ballR; const t = c.getTransform(); late.push(() => { c.setTransform(t); drawNow(Q, ballK); }); return; }
     drawNow(P, ballK);
   }
   function drawNow(P, ballK) {
     const R = resample(P, 0.9);
     for (const p of R) disc(p.x, p.y, p.w / 2);
-    if (P.ball) { const e = P[P.length - 1]; disc(e.x, e.y, Math.max(e.w * ballK, e.w / 2)); }
+    if (P.ball) { const e = P[P.length - 1]; disc(e.x, e.y, P.ballR || Math.max(e.w * ballK, e.w / 2)); }
   }
   function rev(P) { const o = P.slice().reverse(); return o; }
   // anel (elipse com furo) — furo pode ser deslocado
@@ -96,6 +120,7 @@ window.FL = (function () {
     const b = document.createElement('canvas'); b.width = W; b.height = H;
     const y = b.getContext('2d');
     if (opt.bold) y.filter = 'blur(' + (opt.bold * sc / 1.28) + 'px)';
+    else if (opt.soft) y.filter = 'blur(' + (opt.soft * sc) + 'px)';
     y.drawImage(a, 0, 0); y.filter = 'none';
     y.drawImage(lc, 0, 0);
     const img = y.getImageData(0, 0, W, H), d = img.data;
@@ -108,5 +133,5 @@ window.FL = (function () {
     y.putImageData(img, 0, 0);
     return b;
   }
-  return { setCurl, render, set, disc, poly, rr, bez, arc, line, join, pen, mono, curl, taper, draw, rev, ring, cut, clip, rnd, get c() { return c; } };
+  return { spiral, setCurl, render, set, disc, poly, rr, bez, arc, line, join, pen, mono, curl, taper, draw, rev, ring, cut, clip, rnd, get c() { return c; } };
 })();
