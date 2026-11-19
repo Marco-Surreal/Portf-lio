@@ -7,7 +7,7 @@ async (page) => {
     if (u.endsWith('.js')) return route.fulfill({ path: D + u.split('/').pop(), contentType: 'application/javascript' });
     return route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<meta charset="utf-8"><body><script src="/potrace.js"></script><script src="/fontlib.js"></script><script src="/__FONT__.js"></script></body>' });
   });
-  await page.goto('https://font.test/');
+  await page.goto('https://font.test/'); await page.waitForFunction(() => window.__VAR__ && window.FL && window.Potrace);
   const res = await page.evaluate(async () => {
     const FONT = window.__VAR__, m = FONT.metrics, sc = 1.5, pad = 40, out = [];
     for (const g of FONT.glyphs) {

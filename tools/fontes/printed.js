@@ -138,47 +138,15 @@ window.PRINTED = (function () {
   Object.keys(COMP).forEach((ch) => list.push({ ch, base: COMP[ch][0], accent: COMP[ch][1], ay: COMP[ch][2] }));
   const glyphs = list.map((it) => {
     const g = G[it.base];
-    return { ch: it.ch, adv: g.w, draw() { F.c.fillStyle = '#000'; g.d(); if (it.accent) { const x = XC[it.base] ?? g.w / 2; if (it.accent === 'ced') ACC.ced(x); else ACC[it.accent](x, it.ay); } } };
+    const seed = (it.base.codePointAt(0) * 2246822519) >>> 0;
+    return { ch: it.ch, adv: g.w, draw(ctx) {
+      // desalinhamento leve e fixo por letra (giro até 1,4° e até 10 unidades para cima ou para baixo)
+      const r = F.rnd(seed); r(); const isL = /[A-Za-z0-9ı]/.test(it.base);
+      const rot = isL ? (r() - 0.5) * 2.8 : 0, dy = isL ? (r() - 0.5) * 20 : 0;
+      ctx.save(); ctx.translate(g.w / 2, 300 + dy); ctx.rotate(rot * Math.PI / 180); ctx.translate(-g.w / 2, -300);
+      F.c.fillStyle = '#000'; g.d(); if (it.accent) { const x = XC[it.base] ?? g.w / 2; if (it.accent === 'ced') ACC.ced(x); else ACC[it.accent](x, it.ay); }
+      ctx.restore();
+    } };
   });
-  // ---------- tinta impressa: borda irregular + respingos leves ----------
-  function hash(x, y, s) { let n = (x * 374761393 + y * 668265263 + s * 2147483647) | 0; n = (n ^ (n >>> 13)) * 1274126177 | 0; return ((n ^ (n >>> 16)) >>> 0) / 4294967296; }
-  function vnoise(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi; const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-    const a = hash(xi, yi, s), b = hash(xi + 1, yi, s), c = hash(xi, yi + 1, s), d = hash(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
-  function boxBlur(src, W, H, r) { // 3 passadas ~ gaussiana
-    let a = Float32Array.from(src), b = new Float32Array(W * H);
-    for (let pass = 0; pass < 3; pass++) {
-      for (let y = 0; y < H; y++) { let acc = 0; const o = y * W; for (let x = -r; x <= r; x++) acc += a[o + Math.min(W - 1, Math.max(0, x))]; for (let x = 0; x < W; x++) { b[o + x] = acc / (2 * r + 1); acc += a[o + Math.min(W - 1, x + r + 1)] - a[o + Math.max(0, x - r)]; } }
-      for (let x = 0; x < W; x++) { let acc = 0; for (let y = -r; y <= r; y++) acc += b[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { a[y * W + x] = acc / (2 * r + 1); acc += b[Math.min(H - 1, y + r + 1) * W + x] - b[Math.max(0, y - r) * W + x]; } }
-    }
-    return a;
-  }
-  function distress(mask, info, g) {
-    const { W: Wd, H: Hd, sc, pad, m } = info;
-    const seed = g.ch.codePointAt(0);
-    const v = boxBlur(mask, Wd, Hd, Math.max(1, Math.round(4 * sc)));
-    const out = new Uint8Array(Wd * Hd);
-    for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) {
-      const i = y * Wd + x, val = v[i];
-      if (val < 0.02) { out[i] = 0; continue; }
-      if (val > 0.98) { out[i] = 1; continue; }
-      const ux = x / sc, uy = y / sc;
-      const n = 0.7 * vnoise(ux / 11, uy / 11, seed) + 0.3 * vnoise(ux / 6, uy / 6, seed + 7);
-      out[i] = val + (n - 0.5) * 0.46 > 0.5 ? 1 : 0;
-    }
-    // respingos pequenos perto da borda (fora) e furinhos (dentro)
-    const r = FL.rnd(seed * 97 + 13);
-    let placed = 0, tries = 0;
-    while (placed < 4 && tries++ < 4000) {
-      const x = Math.floor(r() * Wd), y = Math.floor(r() * Hd), i = y * Wd + x, val = v[i];
-      const outside = val > 0.04 && val < 0.22, inside = val > 0.8 && val < 0.93;
-      if (!outside && !inside) continue;
-      const rad = (outside ? 2.2 + r() * 3.2 : 2 + r() * 2.6) * sc;
-      for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) {
-        if (xx * xx + yy * yy > rad * rad) continue; const X = x + xx, Y = y + yy; if (X < 0 || Y < 0 || X >= Wd || Y >= Hd) continue; out[Y * Wd + X] = outside ? 1 : 0;
-      }
-      placed++;
-    }
-    return out;
-  }
-  return { name: 'PRINTED BOY SURREAL', glyphs, metrics: { asc: 900, desc: -230, cap: 718, x: 480 }, opts: { soft: 13, post: distress } };
+  return { name: 'PRINTED BOY SURREAL', glyphs, metrics: { asc: 900, desc: -230, cap: 718, x: 480 }, opts: { soft: 13, post: FL.ink({ amp: 1.15, feat: 6, blur: 8, bias: -0.03, rough: 0.5, specks: 14, sMin: 2.5, sMax: 6.5, blobs: 6 }) } };
 })();

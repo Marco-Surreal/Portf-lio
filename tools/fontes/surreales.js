@@ -173,7 +173,7 @@ window.SURREALES = (function () {
   const list = [];
   Object.keys(G).filter((k) => k !== 'ı').forEach((ch, i) => list.push({ ch, base: ch, seed: i * 7 + 11 }));
   Object.keys(COMP).forEach((ch, i) => list.push({ ch, base: COMP[ch][0], accent: COMP[ch][1], ay: COMP[ch][2], ax: COMP[ch][3], seed: COMP[ch][0].charCodeAt(0) * 7 + 11 }));
-  const PAD = 12;
+  const PAD = -3; // letras mais juntas
   const glyphs = list.map((it) => {
     const g = G[it.base];
     return {
@@ -181,7 +181,9 @@ window.SURREALES = (function () {
       draw(ctx) {
         const r = F.rnd(it.seed * 2654435761); r(); r();
         const isLetter = /[A-Za-zı]/.test(it.base);
-        const rot = isLetter ? (r() - 0.5) * 2 * 2.2 : 0, dy = isLetter ? (r() - 0.5) * 2 * 14 : 0;
+        // padrão próprio: altura alterna em onda (sobe/desce) + giro aleatório, mesma intensidade de antes
+        const k = it.base.codePointAt(0), wave = Math.sin(k * 1.7) * 0.6 + (r() - 0.5) * 0.8;
+        const rot = isLetter ? (r() - 0.5) * 2 * 2.6 : 0, dy = isLetter ? wave * 18 : 0;
         ctx.save(); ctx.translate(PAD, 0);
         ctx.translate(g.w / 2, 300 + dy); ctx.rotate(rot * Math.PI / 180); ctx.translate(-g.w / 2, -300);
         g.d();
@@ -190,5 +192,5 @@ window.SURREALES = (function () {
       }
     };
   });
-  return { name: 'SURREALES', glyphs, metrics: { asc: 930, desc: -280, cap: 700, x: X }, opts: { soft: 5 } };
+  return { name: 'SURREALES', glyphs, metrics: { asc: 930, desc: -280, cap: 700, x: X }, opts: { soft: 5, post: FL.ink({ amp: 0.6, feat: 10, blur: 4, bias: 0.02, rough: 0.35, specks: 3, sMin: 2, sMax: 4 }) } };
 })();

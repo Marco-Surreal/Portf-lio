@@ -7,7 +7,7 @@ async (page) => {
     return route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<meta charset="utf-8"><body style="margin:0;background:#F0F1D8"><script src="/fontlib.js"></script><script src="/__FONT__.js"></script><canvas id="c"></canvas></body>' });
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('https://font.test/');
+  await page.goto('https://font.test/'); await page.waitForFunction(() => window.__VAR__ && window.FL);
   await page.evaluate(() => {
     const FONT = window.__VAR__, cv = document.getElementById('c'), S = __S__, W = 1440, ROW = Math.round(1300 * S);
     const ONLY = __ONLY__; const gl = ONLY ? FONT.glyphs.filter((g) => ONLY.includes(g.ch)) : FONT.glyphs; let x = 10, y = 0; const pos = [];

@@ -42,8 +42,8 @@ Abra `index.html` no navegador ou rode um servidor estático na pasta (ex.: `npx
 ## Fontes e logo
 - **Logo:** `assets/img/logo-marco-surreal.svg` (vetor) e `logo-marco-surreal-face.svg` (só a face das letras, usada no eco da animação). Vetorizadas a partir de `LOGO MARCO SURREAL/A LOGO FINAL.png`; as linhas do túnel foram redesenhadas como curvas contínuas que se encontram no ponto de fuga.
 - **Fontes próprias** em `assets/fonts`:
-  - `SURREALES.ttf`: títulos e subtítulos. Peso e proporções no estilo da Reagan, serifas que se esticam e enrolam em espiral, letras levemente desalinhadas, preenchimento liso. Tem maiúsculas e minúsculas.
-  - `PRINTED BOY SURREAL.ttf`: menus, filtros e botões. Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios) e borda de tinta impressa leve. Tem maiúsculas e minúsculas.
+  - `SURREALES.ttf`: títulos e subtítulos. Desenho próprio no estilo da Reagan (não é cópia nem derivada dela): serifas que se esticam e enrolam em espiral, desalinhamento leve com padrão próprio, letras mais próximas e um distress de tinta preta leve, sem manchas brancas dentro das letras. Tem maiúsculas e minúsculas.
+  - `PRINTED BOY SURREAL.ttf`: menus, filtros e botões. Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios), distress de tinta preta mais forte (borda irregular e respingos) e desalinhamento leve. Tem maiúsculas e minúsculas.
   - Os arquivos `.woff` são as mesmas fontes comprimidas, usadas pelo site.
   - Ambas têm A–Z, a–z, números, pontuação, acentos do português (á à â ã é ê í ó ô õ ú ç) e a estrela ✦.
 - As duas são desenhos originais feitos em código (`tools/fontes/`), sem copiar contornos de outras fontes.
