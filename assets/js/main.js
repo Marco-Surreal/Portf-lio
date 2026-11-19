@@ -43,23 +43,7 @@
     });
   }
 
-  /* ---------- "ARTISTA MULTIDISCIPLINAR" com a mesma largura de "SURREAL" ----------
-     Mede as duas linhas (offsetWidth ignora as animações de giro) e ajusta o tamanho da linha pequena. */
-  // A logo tem uma margem de brilho em volta; as letras ocupam LOGO_INNER da largura da imagem.
-  var LOGO_INNER = 0.94;
   var heroBig = $('#hero-logo');
-  var heroSmall = $('.hero-line--small > span');
-  function fitHeroSub(target) {
-    if (!heroBig || !heroSmall) return;
-    heroSmall.style.fontSize = '';
-    var k = 1;
-    for (var i = 0; i < 3; i++) { // o espaçamento entre letras não escala junto, então refina 3 vezes
-      var w = heroSmall.offsetWidth;
-      if (!w) return;
-      k *= target / w;
-      heroSmall.style.fontSize = k + 'em';
-    }
-  }
 
   /* Imagens do topo: posição da Cerâmica em relação à imagem principal e à bio.
      Mede sem transformações (offsetLeft/offsetTop). No celular as imagens ficam embaixo do texto. */
@@ -67,12 +51,11 @@
   var sideBySide = window.matchMedia('(min-width: 641px)');
   function absLeft(el) { var x = 0; while (el) { x += el.offsetLeft; el = el.offsetParent; } return x; }
   function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
-  // Retorna a posição da Cerâmica na página (para o subtítulo saber se precisa terminar antes dela).
   function placeHeroImages() {
-    if (!heroHold || !heroBig) return null;
+    if (!heroHold) return;
     var b = $('.hero-layer--b', heroHold);
     b.style.left = ''; b.style.top = ''; b.style.bottom = '';
-    if (!sideBySide.matches) return null;
+    if (!sideBySide.matches) return;
     // A Cerâmica acompanha a principal: fica até 50% da largura para a esquerda dela,
     // mas nunca por cima da bio (aí ela chega mais perto da principal).
     var W = heroHold.offsetWidth, holdLeft = absLeft(heroHold), holdTop = absTop(heroHold);
@@ -86,18 +69,8 @@
     var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - holdTop;
     bTop = Math.round(Math.min(bTop, bMax));
     b.style.top = bTop + 'px'; b.style.bottom = 'auto';
-    return { left: holdLeft + bLeft, top: holdTop + bTop };
   }
-  // "ARTISTA MULTIDISCIPLINAR" tem a largura de SURREAL; só termina antes se a Cerâmica estiver na altura dele.
-  function layoutHero() {
-    if (!heroBig) return;
-    fitHeroSub(heroBig.offsetWidth * LOGO_INNER);
-    var pos = placeHeroImages();
-    if (!pos) return;
-    var subTop = absTop(heroSmall), subBottom = subTop + heroSmall.offsetHeight;
-    var subLeft = absLeft(heroSmall);
-    if (pos.top < subBottom && pos.left < subLeft + heroSmall.offsetWidth + 10) fitHeroSub(Math.max(100, pos.left - 10 - subLeft));
-  }
+  function layoutHero() { placeHeroImages(); }
   layoutHero();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero);
   window.addEventListener('resize', layoutHero);
@@ -122,16 +95,6 @@
       heroBig.classList.add('is-echo');
     });
   }
-
-  /* ---------- TESTE DE FONTES: etiqueta com o nome da fonte em cada seção ----------
-     Para tirar: apague os atributos data-fonte do index.html (e o bloco "TESTE DE FONTES" do CSS, se quiser). */
-  $$('[data-fonte]').forEach(function (sec) {
-    var tag = document.createElement('p');
-    tag.className = 'font-tag';
-    tag.setAttribute('aria-hidden', 'true');
-    tag.textContent = 'Teste de fonte · ' + sec.getAttribute('data-fonte');
-    sec.insertBefore(tag, sec.firstChild);
-  });
 
   /* ---------- Movimento ligado ao scroll e ao mouse (coreografia do Alien) ----------
    * Valores tirados das interações do template (webflow.js):

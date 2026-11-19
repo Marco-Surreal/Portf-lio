@@ -143,7 +143,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .nav-links a:hover::after, .nav-links a[aria-current]::after { transform: scaleX(1); }
 .nav-links a.is-shop { color: var(--accent-vermilion); }
-.nav-links a.is-shop::before { content: "✦ "; font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", sans-serif; font-weight: 400; } /* as fontes novas não têm a estrela */
+.nav-links a.is-shop::before { content: "✦ "; } /* a estrela vem da PRINTED BOY SURREAL */
 body.nav-dark .nav-links a.is-shop { color: var(--accent-ochre); }
 .nav-btn { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.75rem; font-weight: 700; white-space: nowrap; transition: background 0.25s, color 0.25s; }
 .nav-btn--bag { background: var(--accent-ochre); color: #121110; }
@@ -182,21 +182,12 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
   font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
   font-size: clamp(2.5rem, min(9.5vw, 17vh), 9.5rem); line-height: 0.88; letter-spacing: -0.01em;
 }
-/* Alien "Animate On Load": cada palavra gira 90° no eixo Y e sobe 45px (1200ms outExpo, +100ms entre elas) */
-.hero-line { display: block; perspective: 1500px; }
-.hero-line > span {
-  display: inline-block;
-  transform: translate3d(0, 45px, 0) rotateY(90deg); opacity: 0;
-  transition: transform 1.2s var(--ease-expo), opacity 1.2s var(--ease-expo);
-}
-.hero-line--small > span { transition-delay: 0.55s; } /* entra depois da logo */
-
 /* Logo no lugar do título. Ela tem perspectiva para baixo (o "túnel"), então nasce do ponto de fuga
    embaixo, no centro (transform-origin 50% 100%): sobe, desdobra e se revela de baixo para cima.
    Em seguida, três ecos da face das letras saem de trás dela, como ondas subindo pelo túnel. */
 .hero-logo {
   position: relative; display: block; line-height: 0;
-  width: min(100%, 46vw, calc((100vh - 400px) * 1.74)); min-width: 260px;
+  width: min(100%, 35vw, calc((100vh - 400px) * 1.3)); min-width: 240px; /* ~75% do tamanho anterior */
   margin: -1% 0 0 -1.5%; /* a margem de brilho da imagem fica fora da linha da grade */
 }
 .hero-logo img { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
@@ -229,9 +220,6 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-layer--c .hero-enter { --d: 1s; }
 .hero + .ornament-band { transform: translate3d(30%, 0, 0); opacity: 0; }
 .is-loaded .hero-meta, .is-loaded .hero-enter, .is-loaded .hero + .ornament-band { transform: none; opacity: 1; }
-.hero-line--small { font-family: var(--font-display-alt); font-weight: 800; font-size: 0.24em; letter-spacing: 0.06em; margin-top: 0.5em; }
-@media (max-width: 640px) { .hero-line--small { font-size: 0.3em; letter-spacing: 0.02em; } }
-.is-loaded .hero-line > span { transform: none; opacity: 1; }
 
 /* Três imagens sobrepostas; cada camada anda numa profundidade diferente (JS: data-depth) */
 .hero-image-holder {
@@ -563,35 +551,21 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 [data-reveal].is-visible { opacity: 1; transform: none; }
 
 /* ==========================================================================
-   TESTE DE FONTES (fontes do Marco em assets/fonts)
-   Cada seção escolhe 2 fontes: --f-titulo (títulos e subtítulos) e --f-ui (menus, filtros e botões).
+   FONTES DO MARCO (assets/fonts)
+   SURREALES: títulos e subtítulos. PRINTED BOY SURREAL: menus, filtros e botões.
    O texto corrido continua na fonte padrão (--font-body) e as etiquetas pequenas em --font-mono.
-   Para trocar a fonte de uma seção, mude só as duas variáveis dela aqui embaixo.
    ========================================================================== */
-@font-face { font-family: 'Choco Recipes'; src: url('../fonts/choco-recipes.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'Reagan'; src: url('../fonts/reagan.otf') format('opentype'); font-display: swap; }
-@font-face { font-family: 'Brian James Contour'; src: url('../fonts/brian-james-contour.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'Squid Boy'; src: url('../fonts/squid-boy.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'Squid Boy'; src: url('../fonts/squid-boy-bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
-@font-face { font-family: 'Printvetica'; src: url('../fonts/printvetica.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'SURREALES'; src: url('../fonts/SURREALES.woff') format('woff'), url('../fonts/SURREALES.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'PRINTED BOY SURREAL'; src: url('../fonts/PRINTED%20BOY%20SURREAL.woff') format('woff'), url('../fonts/PRINTED%20BOY%20SURREAL.ttf') format('truetype'); font-display: swap; }
 
-:root { --f-titulo: 'Squid Boy', var(--font-display-alt); --f-ui: 'Squid Boy', var(--font-mono); }
-.navbar          { --f-ui: 'Squid Boy'; }
-.hero            { --f-titulo: 'Squid Boy'; --f-ui: 'Squid Boy'; }
-.shop            { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
-.portfolio       { --f-titulo: 'Reagan'; --f-ui: 'Printvetica'; }
-.flashbook       { --f-titulo: 'Brian James Contour'; --f-ui: 'Squid Boy'; }
-.contact         { --f-titulo: 'Printvetica'; --f-ui: 'Printvetica'; }
-.footer          { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
-.modal, .drawer  { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
+:root { --f-titulo: 'SURREALES'; --f-ui: 'PRINTED BOY SURREAL'; }
 
 /* títulos e subtítulos */
-.section-title, .hero-line--small, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
+.section-title, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
   font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none;
 }
-.hero-line--small { font-weight: 700; } /* Squid Boy Bold */
 .section-title { letter-spacing: 0; line-height: 1; }
-.portfolio .section-title { letter-spacing: 0.01em; font-size: clamp(2rem, 4.4vw, 4rem); } /* Reagan é larga: cabe numa linha ao lado dos filtros */
+.portfolio .section-title { font-size: clamp(2rem, 3.8vw, 3.6rem); } /* cabe numa linha ao lado dos filtros */
 /* menus, filtros e botões */
 .nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
   font-family: var(--f-ui), var(--font-mono); font-synthesis: none;
@@ -602,15 +576,6 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 .btn { font-size: 0.85rem; }
 .filter { font-size: 0.8rem; }
 .portfolio .filter, .portfolio .btn, .contact .btn { font-weight: 400; font-size: 0.9rem; letter-spacing: 0.06em; }
-
-/* etiqueta do teste (some quando os data-fonte forem apagados) */
-[data-fonte] { position: relative; }
-.font-tag {
-  position: absolute; z-index: 5; left: var(--pad); bottom: 0.6rem; margin: 0; pointer-events: none;
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 0.25rem 0.5rem; background: var(--accent-ochre); color: #121110;
-}
-.footer > .font-tag { left: 50%; transform: translateX(-50%); }
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 960px) {
@@ -630,7 +595,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
   .portfolio-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
-  .hero-logo { width: 90%; }
+  .hero-logo { width: 70%; }
   .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
   .footer-col a { overflow-wrap: anywhere; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }
@@ -647,7 +612,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0s !important; }
   .marquee-track, .ornament-track, .hero-float { animation: none !important; }
   .tilt::before, .glass::before { display: none; }
-  .hero-meta, .hero-enter, .hero + .ornament-band, .hero-line > span { transform: none !important; opacity: 1 !important; }
-  .hero-line > span, [data-reveal] { opacity: 1; transform: none; }
+  .hero-meta, .hero-enter, .hero + .ornament-band { transform: none !important; opacity: 1 !important; }
+  [data-reveal] { opacity: 1; transform: none; }
   .lines { width: 100%; }
 }
