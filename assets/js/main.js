@@ -247,8 +247,13 @@
   ].filter(Boolean);
   var contacts = [
     CFG.email && { href: 'mailto:' + CFG.email, label: CFG.email },
-    CFG.whatsapp && { href: waLink(''), label: 'WhatsApp' }
+    CFG.whatsapp && { href: waLink(''), label: 'WhatsApp ' + fmtPhone(CFG.whatsapp) }
   ].filter(Boolean);
+  // '5562982869136' → '(62) 98286-9136'
+  function fmtPhone(n) {
+    var m = String(n).replace(/\D/g, '').replace(/^55/, '').match(/^(\d{2})(\d{4,5})(\d{4})$/);
+    return m ? '(' + m[1] + ') ' + m[2] + '-' + m[3] : '';
+  }
   function linkHTML(l, li) {
     var ext = /^https?:/.test(l.href) ? ' target="_blank" rel="noopener"' : '';
     var a = '<a href="' + esc(l.href) + '"' + ext + '>' + esc(l.label) + '</a>';

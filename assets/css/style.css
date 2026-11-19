@@ -8,7 +8,7 @@
   --bg-cream: #E3E7C3;
   --ink-sumi: #121110;
   --bg-forest: #162A24;
-  --accent-vermilion: #D93829;
+  --accent-vermilion: #B94A32; /* antes: #D93829 */
   --accent-ochre: #E2A025;
   --accent-indigo: #1F4E78;
   --accent-plum: #7B2D5B;
@@ -271,7 +271,12 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 }
 
 /* ---------- Cabeçalho de seção: título, texto curto e "ver todos" ---------- */
-.section-intro { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.5rem 2rem; margin-bottom: 2.5rem; }
+/* Cabeçalho de seção: título à esquerda e ferramentas (filtros) à direita, na mesma linha.
+   As duas colunas se alinham pela base: a linha de baixo dos botões fica na linha de base do título.
+   Se o título for longo, ele quebra em duas linhas em vez de empurrar os filtros para baixo. */
+.section-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 1rem 2.5rem; margin-bottom: 2.5rem; }
+.section-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 0.5rem; margin: 0 0 0.35em; max-width: 46rem; }
+.section-tools .filters { justify-content: flex-end; margin: 0; }
 .section-intro .section-title { margin: 0; }
 .section-lead { font-family: var(--font-editorial); font-style: italic; font-weight: 600; font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.3; margin: 0; max-width: 42ch; }
 .section-more { display: flex; justify-content: center; margin-top: 3rem; }
@@ -320,18 +325,16 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 /* ---------- [07] Loja ---------- */
 .shop { background: var(--bg-forest); padding: 6rem var(--pad); }
 /* Textos da seção ficam claros sobre o verde; os cartões continuam em papel claro com tinta escura */
-.shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-bar, .shop > .shop-grid, .shop > .empty-note {
+.shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-grid, .shop > .empty-note {
   --ink-sumi: #F0F1D8; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #F0F1D8;
   color: var(--ink-sumi);
 }
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
 .product[hidden], .filters[hidden] { display: none; }
-.shop-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 0 0 1.75rem; }
-.shop-bar .filters { margin-left: 0; }
-.shop-bar .filter { color: var(--ink-sumi); }
-.shop-bar .filter:hover { background: rgba(240, 241, 216, 0.12); }
-.shop-bar .filter.is-active { background: var(--ink-sumi); color: #162A24; }
-.shop-nav { display: flex; gap: 0.5rem; margin-left: auto; }
+.shop .filter { color: var(--ink-sumi); }
+.shop .filter:hover { background: rgba(240, 241, 216, 0.12); }
+.shop .filter.is-active { background: var(--ink-sumi); color: #162A24; }
+.shop-nav { display: flex; gap: 0.5rem; margin-left: 0.75rem; }
 .shop-nav[hidden] { display: none; }
 .shop-arrow { width: 2.75rem; height: 2.75rem; border: var(--border); background: none; color: var(--ink-sumi); font-size: 1.2rem; line-height: 1; transition: background 0.25s, color 0.25s, opacity 0.25s; }
 .shop-arrow:hover:not(:disabled) { background: var(--ink-sumi); color: #162A24; }
@@ -432,11 +435,15 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 
 /* ---------- [10] Footer ---------- */
 .footer { background: var(--bg-forest); color: var(--bg-cotton); padding: 0.75rem var(--pad) 2rem; } /* em cima: mesmo espaço das outras faixas */
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-bottom: 3rem; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-bottom: 3rem; align-items: start; }
 .footer-roles { margin-top: 1rem; opacity: 0.7; }
 .footer-big { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 5vw, 4rem); margin: 0.5rem 0 0; line-height: 1; }
-.footer-col { display: flex; flex-direction: column; gap: 0.5rem; }
-.footer-col a { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.18em; text-decoration: none; }
+/* Redes e Contato: mesmo estilo (mono, maiúsculas). Contato encosta na margem direita. */
+.footer-col { display: flex; flex-direction: column; gap: 0.9rem; padding-top: 0.6rem; }
+.footer-col--end { align-items: flex-end; text-align: right; }
+.footer-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.55; margin: 0; }
+.footer-links { display: flex; flex-direction: column; gap: 0.5rem; align-items: inherit; }
+.footer-col a { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; }
 .footer-col a:hover { color: var(--accent-ochre); }
 .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; flex-wrap: wrap; gap: 1rem; }
 .back-to-top { display: inline-flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; }
@@ -533,6 +540,9 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+  .section-intro { grid-template-columns: 1fr; }
+  .section-tools { justify-content: flex-start; margin: 0; }
+  .section-tools .filters { justify-content: flex-start; }
   .footer-grid > :first-child { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
@@ -542,6 +552,9 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .hero-meta { grid-row: 2; }
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
   .portfolio-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
+  .footer-col a { overflow-wrap: anywhere; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }
   .contact-form { grid-template-columns: 1fr; }
   .modal-panel { grid-template-columns: 1fr; }

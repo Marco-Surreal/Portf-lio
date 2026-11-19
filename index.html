@@ -70,16 +70,15 @@
 
     <!-- [02] SHOP -->
     <section class="shop seigaiha" id="loja" aria-labelledby="loja-title">
+      <!-- Título à esquerda; à direita, os filtros por categoria e as setas (só com mais de 6 produtos) -->
       <div class="section-intro">
         <h2 class="section-title" id="loja-title">Loja</h2>
-        <p class="section-lead">Prints, camisetas, adesivos e cerâmicas.</p>
-      </div>
-      <!-- Vitrine: grade de 6 produtos; com mais produtos ela desliza para o lado. Os botões filtram por categoria -->
-      <div class="shop-bar">
-        <div class="filters shop-filters" id="shop-filters" role="group" aria-label="Filtrar produtos"></div>
-        <div class="shop-nav" id="shop-nav" hidden>
-          <button class="shop-arrow" id="shop-prev" aria-label="Produtos anteriores">&larr;</button>
-          <button class="shop-arrow" id="shop-next" aria-label="Mais produtos">&rarr;</button>
+        <div class="section-tools">
+          <div class="filters shop-filters" id="shop-filters" role="group" aria-label="Filtrar produtos"></div>
+          <div class="shop-nav" id="shop-nav" hidden>
+            <button class="shop-arrow" id="shop-prev" aria-label="Produtos anteriores">&larr;</button>
+            <button class="shop-arrow" id="shop-next" aria-label="Mais produtos">&rarr;</button>
+          </div>
         </div>
       </div>
       <div class="shop-grid vitrine" id="shop-grid"></div>
@@ -93,7 +92,7 @@
     <section class="portfolio seigaiha" id="trabalhos" aria-labelledby="trabalhos-title">
       <div class="section-intro">
         <h2 class="section-title" id="trabalhos-title">Trabalhos selecionados</h2>
-        <div class="filters" role="group" aria-label="Filtrar trabalhos">
+        <div class="section-tools filters" role="group" aria-label="Filtrar trabalhos">
           <button class="filter is-active" data-filter="todos" aria-pressed="true">Todos</button>
           <button class="filter" data-filter="tatuagem" aria-pressed="false">Tatuagem</button>
           <button class="filter" data-filter="design" aria-pressed="false">Design</button>
@@ -170,8 +169,14 @@
         <p class="footer-big">MARCO SURREAL</p>
         <p class="mono-small footer-roles">Tatuagem · Design gráfico · Ilustração · Cerâmica</p>
       </div>
-      <div class="footer-col" data-contact-links></div>
-      <div class="footer-col" data-social></div>
+      <div class="footer-col">
+        <p class="footer-label">Redes</p>
+        <div class="footer-links" data-social></div>
+      </div>
+      <div class="footer-col footer-col--end">
+        <p class="footer-label">Contato</p>
+        <div class="footer-links" data-contact-links></div>
+      </div>
     </div>
     <div class="footer-bottom">
       <span class="mono-small">© <span id="year"></span> Marco Surreal</span>
