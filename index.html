@@ -12,7 +12,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
@@ -34,10 +34,15 @@
 
   <main id="conteudo">
     <!-- [01] APRESENTAÇÃO (Hero + About) -->
-    <section class="hero seigaiha" id="topo" aria-labelledby="hero-title">
+    <section class="hero seigaiha" id="topo" data-fonte="Topo: logo + Squid Boy Bold" aria-labelledby="hero-title">
       <h1 class="hero-title" id="hero-title">
-        <span class="hero-line"><span>MARCO</span></span>
-        <span class="hero-line"><span>SURREAL</span></span>
+        <!-- Logo: a imagem inteira sobe do ponto de fuga do "túnel"; cópias da face das letras sobem atrás como eco -->
+        <span class="hero-logo is-echo" id="hero-logo" role="img" aria-label="Marco Surreal">
+          <img class="hero-logo__full" src="assets/img/logo-marco-surreal.png" alt="" width="1240" height="712" />
+          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.png" alt="" width="1240" height="712" />
+          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.png" alt="" width="1240" height="712" />
+          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.png" alt="" width="1240" height="712" />
+        </span>
         <span class="hero-line hero-line--small"><span>ARTISTA MULTIDISCIPLINAR</span></span>
       </h1>
 
@@ -69,7 +74,7 @@
     <div class="ornament-band ornament-band--forest" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [02] SHOP -->
-    <section class="shop seigaiha" id="loja" aria-labelledby="loja-title">
+    <section class="shop seigaiha" id="loja" data-fonte="Loja: Choco Recipes + Squid Boy" aria-labelledby="loja-title">
       <!-- Título à esquerda; à direita, os filtros por categoria e as setas (só com mais de 6 produtos) -->
       <div class="section-intro">
         <h2 class="section-title" id="loja-title">Loja</h2>
@@ -89,7 +94,7 @@
     <div class="ornament-band ornament-band--terung ornament-band--reverse" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [03] SELECTED WORKS -->
-    <section class="portfolio seigaiha" id="trabalhos" aria-labelledby="trabalhos-title">
+    <section class="portfolio seigaiha" id="trabalhos" data-fonte="Trabalhos: Reagan + Printvetica" aria-labelledby="trabalhos-title">
       <div class="section-intro">
         <h2 class="section-title" id="trabalhos-title">Trabalhos selecionados</h2>
         <div class="section-tools filters" role="group" aria-label="Filtrar trabalhos">
@@ -107,7 +112,7 @@
     <div class="ornament-band ornament-band--dark" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [04] FLASH BOOK -->
-    <section class="flashbook theme-dark seigaiha" id="flashes" aria-labelledby="flashes-title">
+    <section class="flashbook theme-dark seigaiha" id="flashes" data-fonte="Flashes: Brian James Contour + Squid Boy" aria-labelledby="flashes-title">
       <div class="section-intro">
         <h2 class="section-title" id="flashes-title">Flash Book</h2>
         <p class="section-lead">Desenhos disponíveis para tatuagem.</p>
@@ -117,7 +122,7 @@
     </section>
 
     <!-- [05] CONTATO -->
-    <section class="contact seigaiha" id="contato" aria-labelledby="contato-title">
+    <section class="contact seigaiha" id="contato" data-fonte="Contato: Printvetica" aria-labelledby="contato-title">
       <div class="contact-grid">
         <div>
           <h2 class="section-title" id="contato-title">Contato</h2>
@@ -163,7 +168,7 @@
   </main>
 
   <!-- [06] RODAPÉ -->
-  <footer class="footer seigaiha" id="rodape">
+  <footer class="footer seigaiha" id="rodape" data-fonte="Rodapé: Choco Recipes + Squid Boy">
     <div class="footer-grid">
       <div>
         <p class="footer-big">MARCO SURREAL</p>

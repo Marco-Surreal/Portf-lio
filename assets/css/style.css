@@ -143,7 +143,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .nav-links a:hover::after, .nav-links a[aria-current]::after { transform: scaleX(1); }
 .nav-links a.is-shop { color: var(--accent-vermilion); }
-.nav-links a.is-shop::before { content: "✦ "; }
+.nav-links a.is-shop::before { content: "✦ "; font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", sans-serif; font-weight: 400; } /* as fontes novas não têm a estrela */
 body.nav-dark .nav-links a.is-shop { color: var(--accent-ochre); }
 .nav-btn { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.75rem; font-weight: 700; white-space: nowrap; transition: background 0.25s, color 0.25s; }
 .nav-btn--bag { background: var(--accent-ochre); color: #121110; }
@@ -189,8 +189,35 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
   transform: translate3d(0, 45px, 0) rotateY(90deg); opacity: 0;
   transition: transform 1.2s var(--ease-expo), opacity 1.2s var(--ease-expo);
 }
-.hero-line:nth-child(2) > span { transition-delay: 0.1s; color: var(--accent-vermilion); }
-.hero-line:nth-child(3) > span { transition-delay: 0.2s; }
+.hero-line--small > span { transition-delay: 0.55s; } /* entra depois da logo */
+
+/* Logo no lugar do título. Ela tem perspectiva para baixo (o "túnel"), então nasce do ponto de fuga
+   embaixo, no centro (transform-origin 50% 100%): sobe, desdobra e se revela de baixo para cima.
+   Em seguida, três ecos da face das letras saem de trás dela, como ondas subindo pelo túnel. */
+.hero-logo {
+  position: relative; display: block; line-height: 0;
+  width: min(100%, 46vw, calc((100vh - 400px) * 1.74)); min-width: 260px;
+  margin: -1% 0 0 -1.5%; /* a margem de brilho da imagem fica fora da linha da grade */
+}
+.hero-logo img { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
+.hero-logo__full { position: relative; z-index: 2; opacity: 0; }
+.hero-logo__echo { position: absolute; inset: 0; z-index: 1; opacity: 0; pointer-events: none; }
+.is-loaded .hero-logo__full { animation: logo-rise 1.5s var(--ease-expo) both; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo { animation: logo-echo 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) both; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(2) { animation-delay: 0.7s; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(3) { animation-delay: 0.9s; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(4) { animation-delay: 1.1s; }
+.hero-logo:not(.is-echo) .hero-logo__echo { animation: none; }
+@keyframes logo-rise {
+  0% { opacity: 0; clip-path: inset(100% 0 0 0); transform: perspective(900px) translate3d(0, 18%, 0) rotateX(60deg) scale(0.5); }
+  35% { opacity: 1; }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); transform: none; }
+}
+@keyframes logo-echo {
+  0% { opacity: 0; transform: translate3d(0, 6%, 0) scale(0.9); }
+  25% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(0, -7%, 0) scale(1.1); }
+}
 
 /* bio sobe 250px girando 45° (+500ms); imagens idem (+700ms, em cascata); 1ª faixa entra da direita (+500ms) */
 .hero-meta, .hero-enter, .hero + .ornament-band {
@@ -535,6 +562,56 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s; }
 [data-reveal].is-visible { opacity: 1; transform: none; }
 
+/* ==========================================================================
+   TESTE DE FONTES (fontes do Marco em assets/fonts)
+   Cada seção escolhe 2 fontes: --f-titulo (títulos e subtítulos) e --f-ui (menus, filtros e botões).
+   O texto corrido continua na fonte padrão (--font-body) e as etiquetas pequenas em --font-mono.
+   Para trocar a fonte de uma seção, mude só as duas variáveis dela aqui embaixo.
+   ========================================================================== */
+@font-face { font-family: 'Choco Recipes'; src: url('../fonts/choco-recipes.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Reagan'; src: url('../fonts/reagan.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Brian James Contour'; src: url('../fonts/brian-james-contour.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Squid Boy'; src: url('../fonts/squid-boy.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Squid Boy'; src: url('../fonts/squid-boy-bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Printvetica'; src: url('../fonts/printvetica.otf') format('opentype'); font-display: swap; }
+
+:root { --f-titulo: 'Squid Boy', var(--font-display-alt); --f-ui: 'Squid Boy', var(--font-mono); }
+.navbar          { --f-ui: 'Squid Boy'; }
+.hero            { --f-titulo: 'Squid Boy'; --f-ui: 'Squid Boy'; }
+.shop            { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
+.portfolio       { --f-titulo: 'Reagan'; --f-ui: 'Printvetica'; }
+.flashbook       { --f-titulo: 'Brian James Contour'; --f-ui: 'Squid Boy'; }
+.contact         { --f-titulo: 'Printvetica'; --f-ui: 'Printvetica'; }
+.footer          { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
+.modal, .drawer  { --f-titulo: 'Choco Recipes'; --f-ui: 'Squid Boy'; }
+
+/* títulos e subtítulos */
+.section-title, .hero-line--small, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
+  font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none;
+}
+.hero-line--small { font-weight: 700; } /* Squid Boy Bold */
+.section-title { letter-spacing: 0; line-height: 1; }
+.portfolio .section-title { letter-spacing: 0.01em; font-size: clamp(2rem, 4.4vw, 4rem); } /* Reagan é larga: cabe numa linha ao lado dos filtros */
+/* menus, filtros e botões */
+.nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
+  font-family: var(--f-ui), var(--font-mono); font-synthesis: none;
+}
+.nav-logo, .nav-links a, .nav-btn, .hero .btn { font-weight: 700; }
+.nav-links a, .nav-btn, .filter, .btn { letter-spacing: 0.1em; }
+.nav-links a { font-size: 0.8rem; }
+.btn { font-size: 0.85rem; }
+.filter { font-size: 0.8rem; }
+.portfolio .filter, .portfolio .btn, .contact .btn { font-weight: 400; font-size: 0.9rem; letter-spacing: 0.06em; }
+
+/* etiqueta do teste (some quando os data-fonte forem apagados) */
+[data-fonte] { position: relative; }
+.font-tag {
+  position: absolute; z-index: 5; left: var(--pad); bottom: 0.6rem; margin: 0; pointer-events: none;
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.25rem 0.5rem; background: var(--accent-ochre); color: #121110;
+}
+.footer > .font-tag { left: 50%; transform: translateX(-50%); }
+
 /* ---------- Responsivo ---------- */
 @media (max-width: 960px) {
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
@@ -553,6 +630,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
   .portfolio-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
+  .hero-logo { width: 90%; }
   .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
   .footer-col a { overflow-wrap: anywhere; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }

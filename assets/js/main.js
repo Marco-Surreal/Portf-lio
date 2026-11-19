@@ -45,7 +45,9 @@
 
   /* ---------- "ARTISTA MULTIDISCIPLINAR" com a mesma largura de "SURREAL" ----------
      Mede as duas linhas (offsetWidth ignora as animações de giro) e ajusta o tamanho da linha pequena. */
-  var heroBig = $('.hero-line:nth-child(2) > span');
+  // A logo tem uma margem de brilho em volta; as letras ocupam LOGO_INNER da largura da imagem.
+  var LOGO_INNER = 0.94;
+  var heroBig = $('#hero-logo');
   var heroSmall = $('.hero-line--small > span');
   function fitHeroSub(target) {
     if (!heroBig || !heroSmall) return;
@@ -89,7 +91,7 @@
   // "ARTISTA MULTIDISCIPLINAR" tem a largura de SURREAL; só termina antes se a Cerâmica estiver na altura dele.
   function layoutHero() {
     if (!heroBig) return;
-    fitHeroSub(heroBig.offsetWidth);
+    fitHeroSub(heroBig.offsetWidth * LOGO_INNER);
     var pos = placeHeroImages();
     if (!pos) return;
     var subTop = absTop(heroSmall), subBottom = subTop + heroSmall.offsetHeight;
@@ -103,6 +105,32 @@
   /* ---------- Hero reveal ---------- */
   window.requestAnimationFrame(function () {
     setTimeout(function () { document.body.classList.add('is-loaded'); }, 80);
+  });
+
+  /* ---------- Logo: os ecos sobem do túnel de novo quando o mouse passa ----------
+     A entrada inicial é só CSS (.is-loaded). Aqui o eco é reiniciado tirando e recolocando a classe. */
+  if (heroBig && !reduceMotion) {
+    var echoes = $$('.hero-logo__echo', heroBig);
+    var lastEcho = echoes[echoes.length - 1];
+    var echoBusy = true; // a entrada já toca os ecos
+    if (lastEcho) lastEcho.addEventListener('animationend', function () { echoBusy = false; });
+    heroBig.addEventListener('mouseenter', function () {
+      if (echoBusy || !lastEcho) return;
+      echoBusy = true;
+      heroBig.classList.remove('is-echo');
+      void heroBig.offsetWidth; // força o navegador a reiniciar a animação
+      heroBig.classList.add('is-echo');
+    });
+  }
+
+  /* ---------- TESTE DE FONTES: etiqueta com o nome da fonte em cada seção ----------
+     Para tirar: apague os atributos data-fonte do index.html (e o bloco "TESTE DE FONTES" do CSS, se quiser). */
+  $$('[data-fonte]').forEach(function (sec) {
+    var tag = document.createElement('p');
+    tag.className = 'font-tag';
+    tag.setAttribute('aria-hidden', 'true');
+    tag.textContent = 'Teste de fonte · ' + sec.getAttribute('data-fonte');
+    sec.insertBefore(tag, sec.firstChild);
   });
 
   /* ---------- Movimento ligado ao scroll e ao mouse (coreografia do Alien) ----------

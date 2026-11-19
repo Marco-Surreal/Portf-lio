@@ -38,3 +38,9 @@ Tudo fica em `assets/js/data.js`:
 ## Visualizar
 
 Abra `index.html` no navegador ou rode um servidor estático na pasta (ex.: `npx serve .`).
+
+## Fontes e logo (teste)
+- A logo do topo fica em `assets/img/logo-marco-surreal.png` (versão amarela) e `logo-marco-surreal-face.png` (só a face das letras, usada no eco da animação). Foram geradas a partir de `LOGO MARCO SURREAL/A LOGO FINAL.png`.
+- As fontes ficam em `assets/fonts`. Cada seção usa duas: uma para títulos e outra para menus e botões. Para trocar, edite o bloco "TESTE DE FONTES" no fim do `style.css`.
+- A etiqueta amarela "Teste de fonte" em cada seção some se você apagar os atributos `data-fonte` do `index.html`.
+- Licenças: Reagan (Typodermic) e Brian James Contour são fontes pagas, e Printvetica é grátis só para uso pessoal. Antes de publicar o site, confira se você tem licença para uso na web.
