@@ -147,18 +147,19 @@ window.FL = (function () {
   }
   function ink(o = {}) {
     const amp = o.amp ?? 0.5, feat = o.feat ?? 10, blurU = o.blur ?? 4, bias = o.bias ?? 0.03, rough = o.rough ?? 0.3;
-    const specks = o.specks ?? 4, sMin = o.sMin ?? 2, sMax = o.sMax ?? 5, blobs = o.blobs ?? 0;
+    const specks = o.specks ?? 4, sMin = o.sMin ?? 2, sMax = o.sMax ?? 5, blobs = o.blobs ?? 0, inward = o.inward ?? 0, chips = o.chips ?? 0;
     return function (mask, info, g) {
       const { W, H, sc } = info, seed = g.ch.codePointAt(0) * 31 + (o.seed || 0);
       const v = boxBlur(mask, W, H, Math.max(1, Math.round(blurU * sc)));
       const out = new Uint8Array(W * H);
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const i = y * W + x, val = v[i];
-        if (mask[i]) { out[i] = 1; continue; } // nunca abre furo dentro da letra
+        // sem 'inward', nunca morde a letra; com 'inward', a borda também é gasta para dentro (só perto da borda, nunca no miolo)
+        if (mask[i] && (!inward || val > 0.97)) { out[i] = 1; continue; }
         if (val < 0.02) continue;
         const ux = x / sc, uy = y / sc;
         const n = (1 - rough) * vnoise(ux / feat, uy / feat, seed) + rough * vnoise(ux / (feat * 0.35), uy / (feat * 0.35), seed + 7);
-        out[i] = val + (n - 0.5) * amp + bias > 0.5 ? 1 : 0;
+        out[i] = val + (n - 0.5) * (mask[i] ? inward : amp) + bias > 0.5 ? 1 : 0;
       }
       const r = rnd(seed * 97 + 13);
       const stamp = (x, y, rad) => { for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) { if (xx * xx + yy * yy > rad * rad) continue; const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = 1; } };
@@ -168,9 +169,13 @@ window.FL = (function () {
       // borrões de tinta grudados na borda
       placed = 0; tries = 0;
       while (placed < blobs && tries++ < 6000) { const x = Math.floor(r() * W), y = Math.floor(r() * H), val = v[y * W + x]; if (val > 0.3 && val < 0.5) { stamp(x, y, (4 + r() * 5) * sc); placed++; } }
+      // lascas: mordidas brancas na borda das partes grossas
+      placed = 0; tries = 0;
+      const thick = chips ? boxBlur(mask, W, H, Math.max(1, Math.round(28 * sc))) : null;
+      while (placed < chips && tries++ < 20000) { const x = Math.floor(r() * W), y = Math.floor(r() * H), i = y * W + x; if (v[i] > 0.42 && v[i] < 0.58 && thick[i] > 0.55) { const rad = (9 + r() * 10) * sc; for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) { if (xx * xx + yy * yy * 1.6 > rad * rad) continue; const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = 0; } placed++; } }
       // alisa os degraus de pixel (mantém a textura, tira pontos inúteis do contorno)
       const sm = boxBlur(out, W, H, Math.max(1, Math.round(1.2 * sc)));
-      for (let i = 0; i < W * H; i++) out[i] = mask[i] || sm[i] > 0.5 ? 1 : 0;
+      for (let i = 0; i < W * H; i++) out[i] = (inward ? false : mask[i]) || sm[i] > 0.5 ? 1 : 0;
       return out;
     };
   }
