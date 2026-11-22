@@ -61,12 +61,21 @@ window.GL = (() => {
   }
 
   // funde as emendas: desfoque leve + limiar (não apaga detalhes de 3 px ou mais)
-  function finish(c, blur = 1.6) {
+  function finish(c, blur = 1.6, open = 0) {
     const t = document.createElement('canvas'); t.width = c.width; t.height = c.height;
     const x = t.getContext('2d'); x.filter = 'blur(' + blur + 'px)'; x.drawImage(c, 0, 0); x.filter = 'none';
     const im = x.getImageData(0, 0, t.width, t.height), d = im.data;
     let x0 = t.width, x1 = -1;
     for (let i = 0; i < d.length; i += 4) { const on = d[i + 3] > 127; d[i] = d[i + 1] = d[i + 2] = 0; d[i + 3] = on ? 255 : 0; if (on) { const px = (i / 4) % t.width; if (px < x0) x0 = px; if (px > x1) x1 = px; } }
+    if (open) {
+      const W2 = t.width, H2 = t.height, ink = new Uint8Array(W2 * H2), ext = new Uint8Array(W2 * H2);
+      for (let i = 0; i < W2 * H2; i++) ink[i] = d[i * 4 + 3] ? 1 : 0;
+      const st = []; for (let xx = 0; xx < W2; xx++) { st.push(xx, (H2 - 1) * W2 + xx); } for (let y = 0; y < H2; y++) { st.push(y * W2, y * W2 + W2 - 1); }
+      while (st.length) { const i = st.pop(); if (ext[i] || ink[i]) continue; ext[i] = 1; const px = i % W2; if (px > 0) st.push(i - 1); if (px < W2 - 1) st.push(i + 1); if (i >= W2) st.push(i - W2); if (i < W2 * (H2 - 1)) st.push(i + W2); }
+      let hole = new Uint8Array(W2 * H2); for (let i = 0; i < W2 * H2; i++) hole[i] = !ink[i] && !ext[i] ? 1 : 0;
+      for (let k = 0; k < open; k++) { const h2 = hole.slice(); for (let i = W2; i < W2 * (H2 - 1); i++) if (!hole[i] && (hole[i - 1] || hole[i + 1] || hole[i - W2] || hole[i + W2])) h2[i] = 1; hole = h2; }
+      for (let i = 0; i < W2 * H2; i++) if (hole[i]) d[i * 4 + 3] = 0;
+    }
     x.putImageData(im, 0, 0);
     return { ink: t, x0, x1 };
   }
@@ -76,17 +85,49 @@ window.GL = (() => {
       if (only && !only.includes(d.ch)) { /* ainda monta: outros glifos podem depender dele */ }
       if (d.o.space) { U[d.ch] = { ch: d.ch, adv: d.o.space, space: true }; continue; }
       const g = glyph(); d.fn(g);
-      const f = finish(g.c, d.o.blur);
-      const sbL = d.o.sbL ?? d.o.sb ?? 13, sbR = d.o.sbR ?? d.o.sb ?? 13;
+      const f = finish(g.c, d.o.blur, d.o.open || 0);
+      const sbL = d.o.sbL ?? d.o.sb ?? 6, sbR = d.o.sbR ?? d.o.sb ?? 6;
       U[d.ch] = { ch: d.ch, ink: f.ink, ox: f.x0, adv: Math.round(f.x1 - f.x0 + 1 + sbL + sbR), sbL, w: f.x1 - f.x0 + 1, o: d.o };
     }
     return U;
   }
   // canvas final do glifo (com espaçamento), linha de base em ASC
-  function out(ch) {
+  function out(ch, distress) {
     const u = U[ch], c = document.createElement('canvas'); c.width = Math.max(1, u.adv); c.height = ASC + DESC;
     if (!u.space) c.getContext('2d').drawImage(u.ink, -u.ox + u.sbL, 0);
+    if (distress && !u.space) rough(c, ch.codePointAt(0));
     return c;
+  }
+  // ---------- distress: borda gasta de impressão ----------
+  // Feito para aparecer em tamanho pequeno: a borda ganha mordidas e ondulações de ~10-20 px
+  // (na escala do desenho, versal = 292 px), lascas nas partes grossas e respingos de tinta.
+  // Não abre buracos no meio das letras.
+  function hash(x, y, s) { let h = (x * 374761393 + y * 668265263 + s * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+  function vnoise(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const a = hash(xi, yi, s), b = hash(xi + 1, yi, s), c = hash(xi, yi + 1, s), d = hash(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+  function boxBlur(src, W, H, r) { const tmp = new Float32Array(W * H), out = new Float32Array(W * H), n = 2 * r + 1;
+    for (let y = 0; y < H; y++) { let acc = 0; for (let x = -r; x <= r; x++) acc += src[y * W + Math.min(W - 1, Math.max(0, x))]; for (let x = 0; x < W; x++) { tmp[y * W + x] = acc / n; acc += src[y * W + Math.min(W - 1, x + r + 1)] - src[y * W + Math.max(0, x - r)]; } }
+    for (let x = 0; x < W; x++) { let acc = 0; for (let y = -r; y <= r; y++) acc += tmp[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { out[y * W + x] = acc / n; acc += tmp[Math.min(H - 1, y + r + 1) * W + x] - tmp[Math.max(0, y - r) * W + x]; } }
+    return out; }
+  const DS = { amp: 0.95, feat: 15, fine: 5, fineAmp: 0.35, chips: 5, specks: 7 };
+  function rough(c, seed) {
+    const W = c.width, H = c.height, x = c.getContext('2d'), im = x.getImageData(0, 0, W, H), d = im.data, m = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) m[i] = d[i * 4 + 3] > 127 ? 1 : 0;
+    const v = boxBlur(m, W, H, 4), thick = boxBlur(m, W, H, 13), out = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) for (let xx = 0; xx < W; xx++) { const i = y * W + xx; if (v[i] < 0.01) continue; if (v[i] > 0.99) { out[i] = 1; continue; }
+      const n = vnoise(xx / DS.feat, y / DS.feat, seed) - 0.5, f = vnoise(xx / DS.fine, y / DS.fine, seed + 11) - 0.5;
+      // nas partes finas (pontas das espirais) a mordida é menor, para não quebrar o traço
+      const k = Math.min(1, thick[i] * 1.6);
+      out[i] = v[i] + n * DS.amp * k + f * DS.fineAmp * k > 0.5 ? 1 : 0; }
+    let r = seed * 9301 + 49297; const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+    const stamp = (cx, cy, rad, val) => { for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) { const q = xx * xx / (rad * rad) + yy * yy / (rad * rad * 0.6); if (q > 1) continue; const X = cx + xx, Y = cy + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = val; } };
+    let placed = 0, tries = 0; // lascas na borda das partes grossas
+    while (placed < DS.chips && tries++ < 20000) { const px = (rnd() * W) | 0, py = (rnd() * H) | 0, i = py * W + px; if (v[i] > 0.4 && v[i] < 0.6 && thick[i] > 0.62) { stamp(px, py, 6 + rnd() * 6, 0); placed++; } }
+    placed = 0; tries = 0; // respingos soltos perto da letra
+    while (placed < DS.specks && tries++ < 20000) { const px = (rnd() * W) | 0, py = (rnd() * H) | 0, i = py * W + px; if (v[i] < 0.01 && thick[i] > 0.04 && thick[i] < 0.16) { stamp(px, py, 2.5 + rnd() * 3.5, 1); placed++; } }
+    const sm = boxBlur(out, W, H, 1);
+    for (let i = 0; i < W * H; i++) { d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = 0; d[i * 4 + 3] = sm[i] > 0.5 ? 255 : 0; }
+    x.putImageData(im, 0, 0);
   }
   return { def, build, out, U, ASC, DESC, CAP, XH, defs, norm };
 })();
@@ -96,8 +137,14 @@ window.GL = (() => {
 // =====================================================================
 (() => {
   const { def } = GL;
-  for (const [ch, k] of Object.entries({ A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', H: 'H', I: 'I', J: 'J', K: 'K', L: 'L2', M: 'M', N: 'N', O: 'O', R: 'R', S: 'S', T: 'T' }))
+  for (const [ch, k] of Object.entries({ A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', H: 'H', J: 'J', L: 'L2', M: 'M', N: 'N', R: 'R', S: 'S', T: 'T' }))
     def(ch, (g) => g.P(k, { y: /[OCGS]/.test(ch) ? 4 : 0 }));
+  // O com o miolo mais aberto
+  def('O', (g) => g.P('O', { y: 4 }), { open: 7 });
+  // I mais fino
+  def('I', (g) => g.P('I', { sx: 0.8 }));
+  // K mais fino, com o braço de cima solto da haste (para não parecer um R)
+  def('K', (g) => g.P('K', { sx: 0.88, cut: [[62, -10], [128, -10], [96, 52], [70, 78], [64, 78]] }));
 
   // ---------- maiúsculas montadas com partes das letras dele ----------
   // P: o R sem a perna; a parte de baixo do bojo segue a borda do miolo do R
@@ -111,16 +158,15 @@ window.GL = (() => {
   // Z: o N deitado (as hastes viram as barras de cima e de baixo, a diagonal fica no meio)
   def('Z', (g) => { const N = SL.G.N, n = GL.norm('N'); g.P('N', { rot: 90, at: [0, N.height, 0, -N.width * n * 1.0], sx: 1.0, sy: 1.0 }); });
   // U: as duas hastes do H (sem a barra) e o fundo redondo com o mesmo peso do traço
+  // U: a metade de baixo do O (com a ponta em espiral) e as hastes do I, que afinam até a parede do O
   def('U', (g) => {
-    const H = SL.G.H, n = GL.norm('H');
-    g.P('H', { clip: [[-5, -5], [H.width + 5, -5], [H.width + 5, 205], [-5, 205]], cut: [[96, 40], [158, 40], [160, 215], [92, 215]] });
-    g.x.save(); g.x.lineWidth = 64; g.x.lineCap = 'butt'; g.x.strokeStyle = '#000'; g.x.beginPath();
-    g.x.moveTo(58 * n, -95); g.x.bezierCurveTo(56 * n, -10, 196 * n, -10, 192 * n, -95); g.x.stroke(); g.x.restore();
+    g.G('O', { y: 0, clip: [[-50, -165], [400, -165], [400, 40], [-50, 40]], cut: [[58, -175], [176, -175], [176, -116], [58, -116]] });
+    const w = GL.U.O.w, iw = GL.U.I.w * 0.8;
+    for (const cx of [33, w - 33]) g.G('I', { x: cx - iw / 2, sx: 0.8, clip: [[-50, -400], [400, -400], [400, -150], [-50, -150]] });
   });
   function CAPH() { return GL.CAP; }
   // V: o A de cabeça para baixo, com o miolo triangular preenchido (a espiral fica no alto)
-  def('V', (g) => { g.P('A', { rot: 180, add: [[102, 18], [162, 132], [78, 140]], at: [0, 0, SL.G.A.width * GL.norm('A'), 0] });
-    g.poly([[30, -150], [92, 8], [-20, 8]], true); g.poly([[262, -150], [188, 8], [320, 8]], true); });
+  def('V', (g) => g.P('A', { rot: 180, cut: [[86, 110], [143, 104], [136, 172], [74, 178]], at: [0, 0, SL.G.A.width * GL.norm('A'), 0] }));
   // W: o M de cabeça para baixo
   def('W', (g) => g.P('M', { rot: 180, at: [0, 0, SL.G.M.width * GL.norm('M'), 0] }));
   // X: duas diagonais com o peso das letras dele, pés e topo do A, espiral do H no vão de cima
@@ -145,17 +191,17 @@ window.GL = (() => {
   const { def } = GL; const X = GL.XH, CP = GL.CAP, AS = 312, DS = 108;
   const sy = X / CP, sya = AS / CP, syd = (X + DS) / CP;
   const stem = (g, x, y0, y1, sx = 0.58) => { // haste do I entre y0 (alto) e y1 (baixo)
-    g.G('I', { x, y: y1, sx, sy: (y1 - y0) / CP });
+    g.G('I', { x, y: y1, sx: sx / 0.8, sy: (y1 - y0) / CP });
   };
-  def('o', (g) => g.G('O', { sx: 0.84, sy }));
+  def('o', (g) => g.G('O', { sx: 0.84, sy }), { open: 4 });
   def('c', (g) => g.G('C', { sx: 0.86, sy }));
   def('s', (g) => g.G('S', { sx: 0.86, sy }));
   def('e', (g) => { g.G('C', { sx: 0.88, sy }); g.stroke([[30, -104], [80, -100], [130, -106], [176, -112]], [30, 26, 26, 34]); });
-  def('a', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -X, 0); });
-  def('d', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -AS, 0); });
-  def('b', (g) => { stem(g, 0, -AS, 0); g.G('O', { x: 40, sx: 0.8, sy, fx: false }); });
-  def('p', (g) => { stem(g, 0, -X, DS); g.G('O', { x: 40, sx: 0.8, sy }); });
-  def('q', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -X, DS); });
+  def('a', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -X, 0); }, { open: 6 });
+  def('d', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -AS, 0); }, { open: 5 });
+  def('b', (g) => { stem(g, 0, -AS, 0); g.G('O', { x: 40, sx: 0.8, sy, fx: false }); }, { open: 5 });
+  def('p', (g) => { stem(g, 0, -X, DS); g.G('O', { x: 40, sx: 0.8, sy }); }, { open: 6 });
+  def('q', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -X, DS); }, { open: 5 });
   def('g', (g) => { g.G('O', { sx: 0.8, sy }); g.stroke([[166, -196], [168, -120], [166, -40]], [50, 46, 50]); g.G('J', { x: 14, y: DS, sx: 0.9, sy: 0.75, clip: [[-50, -70], [400, -70], [400, 200], [-50, 200]] }); });
   def('n', (g) => g.G('U', { rot: 180, x: GL.U.U.w * 0.86, y: -X, sx: 0.86, sy }));
   def('h', (g) => { g.G('n'); stem(g, 0, -AS, 0, 0.56); });
@@ -180,7 +226,7 @@ window.GL = (() => {
 // =====================================================================
 (() => {
   const { def } = GL; const C = GL.CAP, X = GL.XH;
-  const stem = (g, x, y0, y1, sx = 0.58) => g.G('I', { x, y: y1, sx, sy: (y1 - y0) / C });
+  const stem = (g, x, y0, y1, sx = 0.58) => g.G('I', { x, y: y1, sx: sx / 0.8, sy: (y1 - y0) / C });
   def(' ', null, { space: 112 });
   def('0', (g) => g.G('O', { sx: 0.72 }));
   def('1', (g) => { stem(g, 40, -C, 0, 0.62); g.stroke([[60, -270], [30, -250], [4, -232]], [44, 30, 16]); g.dot(8, -236, 13); });

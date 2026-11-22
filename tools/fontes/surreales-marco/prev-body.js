@@ -1,8 +1,8 @@
   const ONLY = __ONLY__, NAME = '__NAME__', ROW = __ROW__;
-  await page.evaluate(async ([ONLY, ROW]) => { await SL.load(); await GL.build();
+  await page.evaluate(async ([ONLY, ROW]) => { window.DIS = __DIS__; await SL.load(); await GL.build();
     const chars = ONLY ? [...ONLY] : GL.defs.map((d) => d.ch);
     const c = document.createElement('canvas'); c.width = 2400; const lines = []; let line = [], w = 0;
-    for (const ch of chars) { const o = GL.out(ch); if (w + o.width > 2300 || (ROW && line.length >= ROW)) { lines.push(line); line = []; w = 0; } line.push([ch, o]); w += o.width; }
+    for (const ch of chars) { const o = GL.out(ch, window.DIS); if (w + o.width > 2300 || (ROW && line.length >= ROW)) { lines.push(line); line = []; w = 0; } line.push([ch, o]); w += o.width; }
     lines.push(line); const LH = GL.ASC + GL.DESC + 30; c.height = lines.length * LH + 20;
     const x = c.getContext('2d'); x.fillStyle = '#F0F1D8'; x.fillRect(0, 0, c.width, c.height);
     lines.forEach((ln, i) => { let px = 30; const by = 20 + i * LH; x.fillStyle = 'rgba(185,74,50,.35)'; x.fillRect(0, by + GL.ASC, c.width, 1); x.fillRect(0, by + GL.ASC - GL.CAP, c.width, 1); x.fillRect(0, by + GL.ASC - GL.XH, c.width, 1);
