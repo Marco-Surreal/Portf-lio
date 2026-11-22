@@ -144,8 +144,8 @@ window.GL = (() => {
   // I mais fino
   def('I', (g) => g.P('I', { sx: 0.8 }));
   // K mais fino, com o braço de cima solto da haste (para não parecer um R)
-  // K mais fino, com um entalhe em V separando o braço de cima da haste (para não parecer um R)
-  def('K', (g) => g.P('K', { sx: 0.88, cut: [[78, -10], [106, -10], [88, 62], [83, 62]] }));
+  // K mais fino, com o braço de cima solto da haste (para não parecer um R)
+  def('K', (g) => g.P('K', { sx: 0.88, cut: [[62, -10], [128, -10], [96, 52], [70, 78], [64, 78]] }));
 
   // ---------- maiúsculas montadas com partes das letras dele ----------
   // P: o R sem a perna; a parte de baixo do bojo segue a borda do miolo do R
