@@ -42,7 +42,7 @@ Abra `index.html` no navegador ou rode um servidor estático na pasta (ex.: `npx
 ## Fontes e logo
 - **Logo:** `assets/img/logo-marco-surreal.svg` (vetor) e `logo-marco-surreal-face.svg` (só a face das letras, usada no eco da animação). Vetorizadas a partir de `LOGO MARCO SURREAL/A LOGO FINAL.png`; as linhas do túnel foram redesenhadas como curvas contínuas que se encontram no ponto de fuga.
 - **Fontes próprias** em `assets/fonts`:
-  - `SURREALES.ttf`: títulos e subtítulos. Desenho próprio no estilo da Reagan (não é cópia nem derivada dela): serifas que se esticam e enrolam em espiral, desalinhamento leve com padrão próprio, letras mais próximas e um distress de tinta preta leve, sem manchas brancas dentro das letras. Tem maiúsculas e minúsculas.
+  - `SURREALES.ttf`: títulos e subtítulos. Feita a partir das letras desenhadas à mão pelo Marco (`FONTES SITE SURREAL/SURREALES EXAMPLE.png`, na branch `main`). As letras A B C D E F G H I J K L M N O R S T são o desenho dele vetorizado, sem simplificar. As que faltavam (P Q U V W X Y Z, minúsculas, números, acentos e pontuação) foram montadas com partes das letras dele: as mesmas hastes, espirais, pontas e serifas. O código fica em `tools/fontes/surreales-marco/`.
   - `PRINTED BOY SURREAL.ttf`: menus, filtros e botões. Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios), distress de tinta preta mais forte (borda irregular e respingos) e desalinhamento leve. Tem maiúsculas e minúsculas.
   - Os arquivos `.woff` são as mesmas fontes comprimidas, usadas pelo site.
   - Ambas têm A–Z, a–z, números, pontuação, acentos do português (á à â ã é ê í ó ô õ ú ç) e a estrela ✦.

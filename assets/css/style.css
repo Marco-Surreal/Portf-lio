@@ -364,7 +364,8 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .shop .filter.is-active { background: var(--ink-sumi); color: #162A24; }
 .shop-nav { display: flex; gap: 0.5rem; margin-left: 0.75rem; }
 .shop-nav[hidden] { display: none; }
-.shop-arrow { width: 2.75rem; height: 2.75rem; border: var(--border); background: none; color: var(--ink-sumi); font-size: 1.2rem; line-height: 1; transition: background 0.25s, color 0.25s, opacity 0.25s; }
+/* As fontes do Marco não têm setas; as setas usam a fonte do sistema */
+.shop-arrow { font-family: system-ui, sans-serif; width: 2.75rem; height: 2.75rem; border: var(--border); background: none; color: var(--ink-sumi); font-size: 1.2rem; line-height: 1; transition: background 0.25s, color 0.25s, opacity 0.25s; }
 .shop-arrow:hover:not(:disabled) { background: var(--ink-sumi); color: #162A24; }
 .shop-arrow:disabled { opacity: 0.3; cursor: default; }
 /* Vitrine: 3 colunas × 2 linhas = 6 produtos por vez. Com mais de 6, as colunas seguintes ficam
