@@ -144,7 +144,8 @@ window.GL = (() => {
   // I mais fino
   def('I', (g) => g.P('I', { sx: 0.8 }));
   // K mais fino, com o braço de cima solto da haste (para não parecer um R)
-  def('K', (g) => g.P('K', { sx: 0.88, cut: [[62, -10], [128, -10], [96, 52], [70, 78], [64, 78]] }));
+  // K mais fino, com um entalhe em V separando o braço de cima da haste (para não parecer um R)
+  def('K', (g) => g.P('K', { sx: 0.88, cut: [[78, -10], [106, -10], [88, 62], [83, 62]] }));
 
   // ---------- maiúsculas montadas com partes das letras dele ----------
   // P: o R sem a perna; a parte de baixo do bojo segue a borda do miolo do R
@@ -168,9 +169,11 @@ window.GL = (() => {
   // U: as duas hastes do H (sem a barra) e o fundo redondo com o mesmo peso do traço
   // U: a metade de baixo do O (com a ponta em espiral) e as hastes do I, que afinam até a parede do O
   def('U', (g) => {
-    g.G('O', { y: 0, clip: [[-50, -165], [400, -165], [400, 40], [-50, 40]], cut: [[58, -175], [176, -175], [176, -116], [58, -116]] });
-    const w = GL.U.O.w, iw = GL.U.I.w * 0.8;
-    for (const cx of [33, w - 33]) g.G('I', { x: cx - iw / 2, sx: 0.8, clip: [[-50, -400], [400, -400], [400, -150], [-50, -150]] });
+    // as duas hastes do H (sem a barra e a espiral do meio) e o fundo do O, com o gancho espiral subindo por dentro
+    const w = GL.U.H.w;
+    g.G('H', { clip: [[-50, -400], [96, -400], [96, -104], [-50, -104]] });
+    g.G('H', { clip: [[158, -400], [600, -400], [600, -104], [158, -104]] });
+    g.G('O', { sx: w / GL.U.O.w, clip: [[-50, -118], [600, -118], [600, 40], [-50, 40]] });
   });
   function CAPH() { return GL.CAP; }
   // V: o A de cabeça para baixo, com o miolo triangular preenchido (a espiral fica no alto)
@@ -210,22 +213,22 @@ window.GL = (() => {
   def('b', (g) => { stem(g, 0, -AS, 0); g.G('O', { x: 40, sx: 0.8, sy, fx: false }); }, { open: 5 });
   def('p', (g) => { stem(g, 0, -X, DS); g.G('O', { x: 40, sx: 0.8, sy }); }, { open: 6 });
   def('q', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 128, -X, DS); }, { open: 5 });
-  def('g', (g) => { g.G('O', { sx: 0.8, sy }); g.stroke([[166, -196], [168, -120], [166, -40]], [50, 46, 50]); g.G('J', { x: 14, y: DS, sx: 0.9, sy: 0.75, clip: [[-50, -70], [400, -70], [400, 200], [-50, 200]] }); });
+  def('g', (g) => { g.G('O', { sx: 0.8, sy }); stem(g, 134, -X, 40); g.G('J', { x: 47, y: DS, sx: 0.85, sy: 0.8, clip: [[-50, -20], [600, -20], [600, 300], [-50, 300]] }); }, { open: 5 });
   def('n', (g) => g.G('U', { rot: 180, x: GL.U.U.w * 0.86, y: -X, sx: 0.86, sy }));
-  def('h', (g) => { g.G('n'); stem(g, 0, -AS, 0, 0.56); });
+  def('h', (g) => { g.G('n', { clip: [[50, -400], [600, -400], [600, 40], [50, 40]] }); stem(g, 0, -AS, 0); });
   def('m', (g) => { g.G('U', { rot: 180, x: GL.U.U.w * 0.7, y: -X, sx: 0.7, sy }); g.G('U', { rot: 180, x: GL.U.U.w * 0.7 + 128, y: -X, sx: 0.7, sy }); });
-  def('r', (g) => { g.G('n', { cut: [[100, -118], [400, -118], [400, 40], [100, 40]] }); g.G('n', { clip: [[-50, -400], [100, -400], [100, 40], [-50, 40]] }); g.dot(150, -136, 22); });
+  def('r', (g) => { stem(g, 0, -X, 0); g.G('F', { y: 80, sx: 0.8, clip: [[-50, -400], [600, -400], [600, -85], [-50, -85]] }); });
   def('u', (g) => g.G('U', { sx: 0.86, sy }));
   def('i', (g) => { stem(g, 0, -X, 0); g.dot(GL.U.I.w * 0.29, -X - 52, 27); });
   def('j', (g) => { g.G('J', { y: DS, sx: 0.9, sy: syd }); g.dot(GL.U.J.w * 0.9 * 0.68, -X - 52, 27); });
   def('l', (g) => stem(g, 0, -AS, 0));
   def('f', (g) => g.G('F', { sx: 0.84, sy: sya }));
   def('k', (g) => { stem(g, 0, -AS, 0); g.G('K', { x: -6, sx: 0.84, sy, clip: [[64, -400], [400, -400], [400, 40], [64, 40]] }); });
-  def('t', (g) => { stem(g, 31, -290, 0); g.G('T', { y: -41, sx: 0.62, sy: 0.62, clip: [[-50, -400], [400, -400], [400, -158], [-50, -158]] }); });
-  def('v', (g) => g.G('V', { sx: 0.84, sy }));
+  def('t', (g) => { g.G('L', { x: 40, sx: 0.85, sy: 0.95 }); g.G('E', { x: 40 + 64 - 85, y: -55, clip: [[104, -235], [400, -235], [400, -165], [104, -165]] }); g.stroke([[8, -200], [30, -202], [60, -200]], [30, 34, 40]); });
+  def('v', (g) => g.G('V', { s: 0.74 }));
   def('w', (g) => g.G('W', { sx: 0.82, sy }));
   def('x', (g) => g.G('X', { sx: 0.84, sy }));
-  def('y', (g) => g.G('Y', { y: DS, sx: 0.84, sy: syd }));
+  def('y', (g) => { g.G('u'); const w = GL.U.u.w; g.G('J', { x: w - 157, y: DS, sx: 0.85, sy: 0.8, clip: [[-50, -60], [600, -60], [600, 300], [-50, 300]] }); });
   def('z', (g) => g.G('Z', { sx: 0.84, sy }));
 })();
 
@@ -238,13 +241,13 @@ window.GL = (() => {
   def(' ', null, { space: 112 });
   def('0', (g) => g.G('O', { sx: 0.72 }));
   def('1', (g) => { stem(g, 40, -C, 0, 0.62); g.stroke([[60, -270], [30, -250], [4, -232]], [44, 30, 16]); g.dot(8, -236, 13); });
-  def('2', (g) => { g.G('S', { fx: true, x: GL.U.S.w * 0.9, sx: 0.9, clip: [[-50, -400], [400, -400], [400, -96], [-50, -96]] });
-    g.stroke([[66, -104], [40, -60], [20, -24]], [52, 54, 58]); g.stroke([[8, -26], [60, -30], [120, -24], [196, -30]], [50, 44, 46, 58]); g.poly([[0, 0], [400, 0], [400, 40], [0, 40]], true); });
+  def('2', (g) => { g.G('J', { fy: true, y: -292, sx: 0.95, clip: [[-50, -400], [600, -400], [600, -118], [-50, -118]] }); g.G('Z', { clip: [[-50, -132], [600, -132], [600, 40], [-50, 40]] }); });
   def('3', (g) => g.G('B', { clip: [[88, -400], [400, -400], [400, 40], [88, 40]] }));
   def('4', (g) => { g.stroke([[150, -290], [80, -190], [14, -100]], [52, 46, 44]); g.stroke([[4, -98], [80, -94], [150, -100], [212, -96]], [44, 40, 40, 46]); stem(g, 110, -C, 0, 0.58); });
   def('5', (g) => { g.stroke([[56, -282], [120, -286], [186, -278]], [44, 40, 50]); g.stroke([[56, -290], [52, -220], [46, -150]], [50, 46, 52]);
     g.G('S', { clip: [[-50, -168], [400, -168], [400, 40], [-50, 40]] }); });
-  def('6', (g) => { g.G('o', { sx: 1.0, sy: 0.9 }); g.stroke([[24, -96], [30, -186], [66, -258], [124, -288], [176, -276]], [58, 54, 48, 40, 32]); g.dot(178, -264, 24); g.dot(172, -258, 9, true); });
+  // 6: o alto do S (com a pontinha enrolada) descendo pela esquerda até um bojo do o, com a espiral por dentro
+  def('6', (g) => { g.G('S', { clip: [[-50, -400], [600, -400], [600, -215], [80, -215], [80, -110], [-50, -110]] }); g.G('o', { sx: 0.95, sy: 0.8 }); });
   def('7', (g) => { g.G('Z', { sx: 0.8, clip: [[-50, -400], [400, -400], [400, -214], [-50, -214]] }); const w = GL.U.Z.w * 0.8; g.stroke([[w - 30, -236], [w - 80, -150], [w - 120, -70], [w - 140, 0]], [70, 58, 54, 66]); g.poly([[0, 0], [400, 0], [400, 40], [0, 40]], true); });
   def('8', (g) => { g.G('O', { x: 14, y: -146, sx: 0.6, sy: 0.5 }); g.G('O', { sx: 0.7, sy: 0.54 }); });
   def('9', (g) => g.G('6', { rot: 180, x: GL.U['6'].w, y: -C - 10 }));

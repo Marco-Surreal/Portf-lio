@@ -574,9 +574,11 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
    O texto corrido continua na fonte padrão (--font-body) e as etiquetas pequenas em --font-mono.
    ========================================================================== */
 @font-face { font-family: 'SURREALES'; src: url('../fonts/SURREALES.woff') format('woff'), url('../fonts/SURREALES.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'PRINTED BOY SURREAL'; src: url('../fonts/PRINTED%20BOY%20SURREAL.woff') format('woff'), url('../fonts/PRINTED%20BOY%20SURREAL.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'PRINTED BOY SURREAL'; src: url('../fonts/printed-boy-surreal.woff') format('woff'), url('../fonts/PRINTED%20BOY%20SURREAL.ttf') format('truetype'); font-display: swap; }
 
 :root { --f-titulo: 'SURREALES'; --f-ui: 'PRINTED BOY SURREAL'; }
+/* etiquetas pequenas (categorias, status, preços, legendas) também na PRINTED BOY SURREAL; o que faltar na fonte cai na Space Mono */
+:root { --font-mono: 'PRINTED BOY SURREAL', 'Space Mono', monospace; }
 
 /* títulos e subtítulos */
 .section-title, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
