@@ -147,7 +147,7 @@ window.FL = (function () {
   }
   function ink(o = {}) {
     const amp = o.amp ?? 0.5, feat = o.feat ?? 10, blurU = o.blur ?? 4, bias = o.bias ?? 0.03, rough = o.rough ?? 0.3;
-    const specks = o.specks ?? 4, sMin = o.sMin ?? 2, sMax = o.sMax ?? 5, blobs = o.blobs ?? 0, inward = o.inward ?? 0, chips = o.chips ?? 0;
+    const specks = o.specks ?? 4, sMin = o.sMin ?? 2, sMax = o.sMax ?? 5, blobs = o.blobs ?? 0, inward = o.inward ?? 0, chips = o.chips ?? 0, chipMax = o.chipMax ?? 19, pores = o.pores ?? 0;
     return function (mask, info, g) {
       const { W, H, sc } = info, seed = g.ch.codePointAt(0) * 31 + (o.seed || 0);
       const v = boxBlur(mask, W, H, Math.max(1, Math.round(blurU * sc)));
@@ -172,7 +172,11 @@ window.FL = (function () {
       // lascas: mordidas brancas na borda das partes grossas
       placed = 0; tries = 0;
       const thick = chips ? boxBlur(mask, W, H, Math.max(1, Math.round(28 * sc))) : null;
-      while (placed < chips && tries++ < 20000) { const x = Math.floor(r() * W), y = Math.floor(r() * H), i = y * W + x; if (v[i] > 0.42 && v[i] < 0.58 && thick[i] > 0.55) { const rad = (9 + r() * 10) * sc; for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) { if (xx * xx + yy * yy * 1.6 > rad * rad) continue; const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = 0; } placed++; } }
+      while (placed < chips && tries++ < 20000) { const x = Math.floor(r() * W), y = Math.floor(r() * H), i = y * W + x; if (v[i] > 0.42 && v[i] < 0.58 && thick[i] > 0.55) { const rad = (9 + r() * (chipMax - 9)) * sc; for (let yy = -Math.ceil(rad); yy <= rad; yy++) for (let xx = -Math.ceil(rad); xx <= rad; xx++) { if (xx * xx + yy * yy * 1.6 > rad * rad) continue; const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = 0; } placed++; } }
+      // poros: falhas brancas pequenas no miolo das partes grossas (tinta que não pegou)
+      placed = 0; tries = 0;
+      const deep = pores ? boxBlur(mask, W, H, Math.max(1, Math.round(16 * sc))) : null;
+      while (placed < pores && tries++ < 20000) { const x = Math.floor(r() * W), y = Math.floor(r() * H), i = y * W + x; if (deep[i] > 0.93) { const rad = (4 + r() * 6) * sc, ex = 0.6 + r() * 1.2; for (let yy = -Math.ceil(rad * 2); yy <= rad * 2; yy++) for (let xx = -Math.ceil(rad * 2); xx <= rad * 2; xx++) { if (xx * xx / ex + yy * yy * ex > rad * rad) continue; const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < W && Y < H) out[Y * W + X] = 0; } placed++; } }
       // alisa os degraus de pixel (mantém a textura, tira pontos inúteis do contorno)
       const sm = boxBlur(out, W, H, Math.max(1, Math.round(1.2 * sc)));
       for (let i = 0; i < W * H; i++) out[i] = (inward ? false : mask[i]) || sm[i] > 0.5 ? 1 : 0;

@@ -43,8 +43,8 @@ Abra `index.html` no navegador ou rode um servidor estático na pasta (ex.: `npx
 - **Logo:** `assets/img/logo-marco-surreal.svg` (vetor) e `logo-marco-surreal-face.svg` (só a face das letras, usada no eco da animação). Vetorizadas a partir de `LOGO MARCO SURREAL/LOGOARRUMADA.png` (branch `main`), com o túnel ajustado pelo Marco. Scripts em `tools/logo/`.
 - **Fontes próprias** em `assets/fonts`:
   - `SURREALES.ttf`: títulos e subtítulos. Feita a partir das letras desenhadas à mão pelo Marco (`FONTES SITE SURREAL/SURREALES EXAMPLE.png`, na branch `main`). As letras A B C D E F G H I J K L M N O R S T são o desenho dele vetorizado, sem simplificar. As que faltavam (P Q U V W X Y Z, minúsculas, números, acentos e pontuação) foram montadas com partes das letras dele: as mesmas hastes, espirais, pontas e serifas. O código fica em `tools/fontes/surreales-marco/`.
-  - A SURREALES é limpa, sem distress.
-  - `PRINTED BOY SURREAL.ttf`: menus, filtros e botões. Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios), distress forte de tinta preta (borda gasta para dentro, lascas nas partes grossas e respingos) e desalinhamento leve. Tem maiúsculas e minúsculas. É a única fonte do site com distress.
+  - A SURREALES é limpa, sem distress. O Z usa a barra de cima do T (com a espiral), uma diagonal no peso da do N e o braço de baixo do E. Nos títulos grandes o site aproxima as letras (`letter-spacing: -0.035em`), e algumas chegam a encostar.
+  - `PRINTED BOY SURREAL.ttf`: menus, filtros e botões. Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios), distress forte de tinta preta (borda gasta para dentro, lascas nas partes grossas, pequenas falhas de tinta no miolo e respingos) e desalinhamento leve. Tem maiúsculas e minúsculas. É a única fonte do site com distress.
   - Os arquivos `.woff` são as mesmas fontes comprimidas, usadas pelo site.
   - Ambas têm A–Z, a–z, números, pontuação, acentos do português (á à â ã é ê í ó ô õ ú ç) e a estrela ✦.
 - As duas são desenhos originais feitos em código (`tools/fontes/`), sem copiar contornos de outras fontes.

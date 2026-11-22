@@ -155,8 +155,16 @@ window.GL = (() => {
     const n = GL.norm('O');
     g.P('R', { clip: [[178, 158], [240, 168], [320, 210], [320, 300], [190, 300], [160, 240]], at: [190, 200, 150 * n, -60], s: 0.95 });
   });
-  // Z: o N deitado (as hastes viram as barras de cima e de baixo, a diagonal fica no meio)
-  def('Z', (g) => { const N = SL.G.N, n = GL.norm('N'); g.P('N', { rot: 90, at: [0, N.height, 0, -N.width * n * 1.0], sx: 1.0, sy: 1.0 }); });
+  // Z: a barra de cima do T (com a espiral pendurada à esquerda), uma diagonal com o peso
+  // da diagonal do N e o braço de baixo do E (com a espiral subindo à direita)
+  def('Z', (g) => {
+    g.G('T', { sx: 0.8, clip: [[-10, -400], [400, -400], [400, -222], [76, -222], [76, -130], [-10, -130]] });
+    g.G('E', { x: 4, sx: 1.12, clip: [[-10, -38], [95, -38], [95, -100], [400, -100], [400, 60], [-10, 60]] });
+    const w = GL.U.T.w * 0.8;
+    g.stroke([[w - 26, -238], [w - 72, -178], [w / 2, -122], [78, -68], [40, -34]], [64, 72, 80, 90, 98]);
+    // fecha o canto de baixo à esquerda (sobra da haste do E)
+    g.stroke([[14, -26], [60, -22], [110, -20], [150, -22]], [46, 44, 42, 40]);
+  });
   // U: as duas hastes do H (sem a barra) e o fundo redondo com o mesmo peso do traço
   // U: a metade de baixo do O (com a ponta em espiral) e as hastes do I, que afinam até a parede do O
   def('U', (g) => {

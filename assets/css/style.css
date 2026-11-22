@@ -582,7 +582,11 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 .section-title, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
   font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none;
 }
-.section-title { letter-spacing: 0; line-height: 1; }
+/* letras dos títulos bem juntas: as espirais e pontas de algumas letras chegam a encostar na vizinha */
+.section-title, .footer-big, .modal-body h3 { letter-spacing: -0.035em; }
+/* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
+.card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }
+.section-title { line-height: 1; }
 .portfolio .section-title { font-size: clamp(2rem, 3.8vw, 3.6rem); } /* cabe numa linha ao lado dos filtros */
 /* menus, filtros e botões */
 .nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
