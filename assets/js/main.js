@@ -312,6 +312,11 @@
 
   /* ---------- [02] Loja: produtos em destaque ---------- */
   // Vitrine: grade de 6 produtos (3 × 2). Se houver mais, ela desliza para o lado (setas, arrastar ou rolar).
+  // Flutuação leve das imagens (a mesma da primeira página). Fica num invólucro próprio (.floaty),
+  // por isso não briga com a inclinação, o brilho de vidro e o giro dos cards. Cada imagem começa num ponto diferente.
+  var floatN = 0;
+  function floatDelay() { floatN++; return (-((floatN * 2.7) % 10)).toFixed(1) + 's'; }
+
   var shopGrid = $('#shop-grid');
   var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; });
   shopGrid.innerHTML = vitrine.map(function (p) {
@@ -320,14 +325,14 @@
       '<article class="product" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         (selo ? '<span class="hanko">' + selo + '</span>' : '') +
         (p.demo ? '<span class="demo-tag">DEMO</span>' : '') +
-        '<div class="product-media tilt" data-tilt>' + media((p.imagens || [])[0], p.nome) + '</div>' +
+        // clicar na imagem abre os detalhes do produto
+        '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) + '</div></div>' +
         '<p class="mono-small product-cat">' + esc(PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + esc(p.edicao) : '') + '</p>' +
         '<h3>' + esc(p.nome) + '</h3>' +
         '<p class="mono-small product-avail is-' + esc(p.disponibilidade) + '">' + esc(DISP[p.disponibilidade] || '') + '</p>' +
         '<div class="product-foot">' +
           '<span class="price">' + priceText(p) + '</span>' +
           '<span class="product-btns">' +
-            '<button class="btn btn--small btn--line" data-view="' + esc(p.id) + '" aria-label="Detalhes: ' + esc(p.nome) + '">Detalhes</button>' +
             (canBuy(p) ? '<button class="btn btn--small" data-add="' + esc(p.id) + '" aria-label="Adicionar à sacola: ' + esc(p.nome) + '">+ Sacola</button>' : '') +
           '</span>' +
         '</div>' +
@@ -412,9 +417,9 @@
     return '' +
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         '<div class="card-item">' +
-          '<div class="card-media glass">' + m +
+          '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="card-media glass">' + m +
             '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
-          '</div>' +
+          '</div></div>' +
           '<div class="card-info">' +
             '<div class="card-title-wrap"><h3 class="card-title">' + esc(p.titulo) + '</h3></div>' +
             '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + (p.ano ? ' · ' + esc(p.ano) : '') + '</span>' +
@@ -467,7 +472,7 @@
       '<article class="flash is-' + esc(f.estado) + '" data-reveal>' +
         '<span class="flash-state">' + esc(ESTADO[f.estado] || f.estado) + '</span>' +
         (f.demo ? '<span class="demo-tag">DEMO</span>' : '') +
-        '<div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div>' +
+        '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div></div>' +
         '<p class="mono-small">' + esc(f.id) + '</p>' +
         '<h3>' + esc(f.nome) + '</h3>' +
         (info ? '<p class="mono-small">' + esc(info) + '</p>' : '') +
@@ -630,6 +635,11 @@
     var view = e.target.closest('[data-view]');
     if (add) addToCart(add.getAttribute('data-add'));
     else if (view) openProduct(view.getAttribute('data-view'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var view = e.target.closest && e.target.closest('.product-media[data-view]');
+    if (view) { e.preventDefault(); openProduct(view.getAttribute('data-view')); }
   });
 
   $('#cart-list').addEventListener('click', function (e) {

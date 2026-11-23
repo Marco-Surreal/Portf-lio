@@ -237,6 +237,10 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-float { animation: float 8s ease-in-out infinite; }
 .hero-layer--b .hero-float { animation-duration: 10s; animation-delay: -3s; }
 .hero-layer--c .hero-float { animation-duration: 12s; animation-delay: -6s; }
+/* a mesma flutuação nas imagens da loja, dos trabalhos e dos flashes */
+.floaty { animation: float 9s ease-in-out infinite; animation-delay: var(--fd, 0s); }
+.product-media[data-view] { cursor: pointer; }
+.product-media[data-view]:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 4px; }
 @keyframes float {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
   33% { transform: translate3d(0, -12px, 0) rotate(-1.2deg); }
@@ -468,12 +472,13 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 
 /* ---------- [10] Footer ---------- */
 .footer { background: var(--bg-forest); color: var(--bg-cotton); padding: 0.75rem var(--pad) 2rem; } /* em cima: mesmo espaço das outras faixas */
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-bottom: 3rem; align-items: start; }
+/* nome à esquerda; Redes e Contato logo ao lado, lado a lado; o espaço que sobra fica à direita */
+.footer-grid { display: grid; grid-template-columns: max-content max-content max-content 1fr; column-gap: clamp(2.5rem, 6vw, 6rem); row-gap: 2rem; padding-bottom: 3rem; align-items: start; }
 .footer-roles { margin-top: 1rem; opacity: 0.7; }
 .footer-big { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 5vw, 4rem); margin: 0.5rem 0 0; line-height: 1; }
 /* Redes e Contato: mesmo estilo (mono, maiúsculas). Contato encosta na margem direita. */
 .footer-col { display: flex; flex-direction: column; gap: 0.9rem; padding-top: 0.6rem; }
-.footer-col--end { align-items: flex-end; text-align: right; }
+.footer-col--end { align-items: flex-start; text-align: left; }
 .footer-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.55; margin: 0; }
 .footer-links { display: flex; flex-direction: column; gap: 0.5rem; align-items: inherit; }
 .footer-col a { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; }
@@ -635,7 +640,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0s !important; }
-  .marquee-track, .ornament-track, .hero-float { animation: none !important; }
+  .marquee-track, .ornament-track, .hero-float, .floaty { animation: none !important; }
   .tilt::before, .glass::before { display: none; }
   .hero-meta, .hero-enter, .hero + .ornament-band { transform: none !important; opacity: 1 !important; }
   [data-reveal] { opacity: 1; transform: none; }

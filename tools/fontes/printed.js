@@ -148,5 +148,5 @@ window.PRINTED = (function () {
       ctx.restore();
     } };
   });
-  return { name: 'PRINTED BOY SURREAL', glyphs, metrics: { asc: 900, desc: -230, cap: 718, x: 480 }, opts: { soft: 13, post: FL.ink({ amp: 1.9, feat: 12, blur: 13, bias: -0.03, rough: 0.5, inward: 1.6, chips: 6, chipMax: 24, pores: 8, specks: 22, sMin: 4, sMax: 13, blobs: 9 }) } };
+  return { name: 'PRINTED BOY SURREAL', glyphs, metrics: { asc: 900, desc: -230, cap: 718, x: 480 }, opts: { soft: 13, post: FL.ink({ amp: 0.5, feat: 26, blur: 10, bias: 0, rough: 0.12, inward: 0.4, chips: 2, chipMax: 14, pores: 0, specks: 3, sMin: 3, sMax: 6, blobs: 1 }) } };
 })();
