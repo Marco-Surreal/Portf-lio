@@ -583,6 +583,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 /* títulos e subtítulos */
 .section-title, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
   font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none;
+  text-transform: uppercase; /* a SURREALES aparece sempre em maiúsculas no site, para ficar legível em qualquer tela */
 }
 /* letras dos títulos bem juntas: as espirais e pontas de algumas letras chegam a encostar na vizinha */
 .section-title, .footer-big, .modal-body h3 { letter-spacing: -0.035em; }
