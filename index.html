@@ -35,15 +35,21 @@
   <main id="conteudo">
     <!-- [01] APRESENTAÇÃO (Hero + About) -->
     <section class="hero seigaiha" id="topo" aria-labelledby="hero-title">
-      <h1 class="hero-title" id="hero-title">
-        <!-- Logo: a imagem inteira sobe do ponto de fuga do "túnel"; cópias da face das letras sobem atrás como eco -->
-        <span class="hero-logo is-echo" id="hero-logo" role="img" aria-label="Marco Surreal">
-          <img class="hero-logo__full" src="assets/img/logo-marco-surreal.svg" alt="" width="2896" height="1581" />
-          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
-          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
-          <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
-        </span>
-      </h1>
+      <!-- Linha de cima: foto ILUSTRAÇÃO à esquerda da logo; juntas têm a mesma largura do texto -->
+      <div class="hero-top">
+        <div class="hero-layer hero-layer--d" data-depth="1.6">
+          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="ILUSTRAÇÃO"></div></div></div></div>
+        </div>
+        <h1 class="hero-title" id="hero-title">
+          <!-- Logo: a imagem inteira sobe do ponto de fuga do "túnel"; cópias da face das letras sobem atrás como eco -->
+          <span class="hero-logo is-echo" id="hero-logo" role="img" aria-label="Marco Surreal">
+            <img class="hero-logo__full" src="assets/img/logo-marco-surreal.svg" alt="" width="2896" height="1581" />
+            <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
+            <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
+            <img class="hero-logo__echo" src="assets/img/logo-marco-surreal-face.svg" alt="" width="2896" height="1581" />
+          </span>
+        </h1>
+      </div>
 
       <div class="hero-meta">
         <div class="block-line" aria-hidden="true"><span class="block-line__fill"></span></div>
@@ -65,10 +71,6 @@
         </div>
         <div class="hero-layer hero-layer--b" data-depth="2.2">
           <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="CERÂMICA"></div></div></div></div>
-        </div>
-        <!-- 4ª foto: no vão entre a logo e a foto principal, acima da Cerâmica (posição calculada no JS) -->
-        <div class="hero-layer hero-layer--d" data-depth="1.6">
-          <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="ILUSTRAÇÃO"></div></div></div></div>
         </div>
         <div class="hero-layer hero-layer--c" data-depth="-1.5">
           <div class="hero-enter"><div class="hero-float"><div class="tilt" data-tilt><div class="ph" data-label="ATELIÊ / RETRATO"></div></div></div></div>
@@ -101,7 +103,7 @@
     <!-- [03] SELECTED WORKS -->
     <section class="portfolio seigaiha" id="trabalhos" aria-labelledby="trabalhos-title">
       <div class="section-intro">
-        <h2 class="section-title" id="trabalhos-title">Trabalhos selecionados</h2>
+        <h2 class="section-title" id="trabalhos-title">Trabalhos seleciona<span class="kern-d">d</span>os</h2>
         <div class="section-tools filters" role="group" aria-label="Filtrar trabalhos">
           <button class="filter is-active" data-filter="todos" aria-pressed="true">Todos</button>
           <button class="filter" data-filter="tatuagem" aria-pressed="false">Tatuagem</button>
@@ -123,7 +125,6 @@
         <p class="section-lead">Flash book é o catálogo de desenhos prontos do tatuador, feitos para virar tatuagem do jeito que estão.</p>
       </div>
       <div class="fbook" id="flash-grid"></div>
-      <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os flashes <em>em breve</em></span></div>
     </section>
 
     <div class="ornament-band ornament-band--terung" aria-hidden="true"><div class="ornament-track"></div></div>
