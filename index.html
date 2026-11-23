@@ -48,7 +48,9 @@
       <div class="hero-meta">
         <div class="block-line" aria-hidden="true"><span class="block-line__fill"></span></div>
         <div class="hero-bio">
+          <p class="hero-label" aria-hidden="true"><span>Sobre</span><span>✦</span></p>
           <p class="hero-intro" data-text="apresentacao"></p>
+          <div class="hero-more" data-paras="bio"></div>
           <div class="hero-ctas">
             <a href="#loja" class="btn btn--primary">Ver loja</a>
             <a href="#trabalhos" class="btn">Explorar trabalhos</a>
@@ -80,8 +82,8 @@
         <div class="section-tools">
           <div class="filters shop-filters" id="shop-filters" role="group" aria-label="Filtrar produtos"></div>
           <div class="shop-nav" id="shop-nav" hidden>
-            <button class="shop-arrow" id="shop-prev" aria-label="Produtos anteriores">&larr;</button>
-            <button class="shop-arrow" id="shop-next" aria-label="Mais produtos">&rarr;</button>
+            <button class="shop-arrow" id="shop-prev" aria-label="Produtos anteriores"><svg class="arw" viewBox="0 0 20 12" aria-hidden="true"><path d="M19 6H2M7 1 2 6l5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+            <button class="shop-arrow" id="shop-next" aria-label="Mais produtos"><svg class="arw" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h17M13 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
           </div>
         </div>
       </div>
@@ -111,20 +113,23 @@
     <div class="ornament-band ornament-band--dark" aria-hidden="true"><div class="ornament-track"></div></div>
 
     <!-- [04] FLASH BOOK -->
-    <section class="flashbook theme-dark seigaiha" id="flashes" aria-labelledby="flashes-title">
-      <div class="section-intro section-intro--stack">
-        <h2 class="section-title" id="flashes-title">Flash Book</h2>
+    <section class="flashbook theme-dark seigaiha" id="flashes" aria-label="Flash book">
+      <!-- Sem título: o nome FLASH BOOK já está na capa do livro. Só a explicação, centrada no eixo do livro. -->
+      <div class="fb-intro">
+        <span class="fb-orn" aria-hidden="true">✦</span>
         <p class="section-lead">Flash book é o catálogo de desenhos prontos do tatuador, feitos para virar tatuagem do jeito que estão.</p>
       </div>
       <div class="fbook" id="flash-grid"></div>
       <div class="section-more"><span class="btn btn--ghost is-soon" aria-disabled="true">Ver todos os flashes <em>em breve</em></span></div>
     </section>
 
+    <div class="ornament-band ornament-band--terung" aria-hidden="true"><div class="ornament-track"></div></div>
+
     <!-- [05] CONTATO -->
     <section class="contact seigaiha" id="contato" aria-labelledby="contato-title">
       <div class="contact-grid">
         <div>
-          <h2 class="section-title" id="contato-title">Contato</h2>
+          <h2 class="section-title" id="contato-title"><span class="kern-c">C</span>ontato</h2>
           <p class="section-lead">Entre em contato para sessões de tatuagem, cerâmicas sob encomenda ou outros projetos.</p>
         </div>
         <form class="contact-form" id="contact-form" novalidate>

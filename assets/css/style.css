@@ -180,6 +180,7 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
   /* Esquerda: título e biografia. Direita: imagens sobrepostas. */
   display: grid; grid-template-columns: 1fr minmax(200px, 37vw); grid-template-rows: auto 1fr; gap: 2rem 2rem;
   overflow: hidden;
+  --logo-w: min(32vw, calc((100vh - 400px) * 1.19)); /* largura da logo; a bio usa a mesma */
 }
 .hero-title {
   grid-column: 1; grid-row: 1; align-self: start; z-index: 1; margin: 0; /* título no alto, a bio ganha espaço embaixo */
@@ -191,7 +192,7 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
    Em seguida, três ecos da face das letras saem de trás dela, como ondas subindo pelo túnel. */
 .hero-logo {
   position: relative; display: block; line-height: 0;
-  width: min(100%, 32vw, calc((100vh - 400px) * 1.19)); min-width: 220px; /* um pouco menor que antes */
+  width: min(100%, var(--logo-w)); min-width: 220px; /* um pouco menor que antes */
   margin: 2.5% 0 0 -1.5%; /* e um pouco mais para baixo */ /* a margem de brilho da imagem fica fora da linha da grade */
 }
 .hero-logo img { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
@@ -252,13 +253,37 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
   33% { transform: translate3d(0, -6px, 0) rotate(-0.6deg); }   /* metade do deslocamento de antes, mesma velocidade */
   66% { transform: translate3d(0, 4px, 0) rotate(0.4deg); }
 }
-.hero-meta { grid-column: 1; grid-row: 2; align-self: start; display: flex; gap: 1.5rem; align-items: stretch; max-width: 46rem; }
+/* Bloco da bio: mesma largura da logo (um eixo só na coluna esquerda) e vai até embaixo,
+   com os botões apoiados na mesma linha de baixo das imagens da direita. */
+.hero-meta {
+  grid-column: 1; grid-row: 2; align-self: stretch; display: flex; gap: 1.5rem; align-items: stretch;
+  width: clamp(20rem, var(--logo-w), 38rem); max-width: 100%;
+}
 .block-line { display: none; }
 .block-line__fill { display: block; width: 1.5px; height: 0%; }
 .block-line__fill::before { top: 0; left: -2.25px; }
 .block-line__fill::after { bottom: 0; left: -2.25px; }
-.hero-intro { font-size: clamp(1.1rem, 1.55vw, 1.45rem); line-height: 1.55; max-width: 46ch; margin: 0 0 1.75rem; }
-.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.hero-bio { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+/* filete fino em cima do texto, com a etiqueta SOBRE e a estrela: fecha o enquadramento da coluna */
+.hero-label {
+  display: flex; justify-content: space-between; align-items: center; margin: 0 0 1.1rem; padding-top: 0.6rem;
+  border-top: 1.5px solid var(--ink-sumi);
+  font-family: var(--f-ui), var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+}
+.hero-label span:last-child { color: var(--accent-vermilion); letter-spacing: 0; font-size: 1.35rem; line-height: 0.5; }
+.hero-intro { font-size: clamp(1rem, min(1.2vw, 2.1vh), 1.35rem); line-height: 1.5; margin: 0 0 1em; }
+.hero-more p { font-size: clamp(0.88rem, min(0.95vw, 1.65vh), 1.1rem); line-height: 1.6; margin: 0 0 0.85em; opacity: 0.85; }
+.hero-more p:last-child { margin-bottom: 0; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 1.5rem; }
+/* telas baixas (notebook): letras um pouco menores e só o primeiro parágrafo extra, para a bio caber até embaixo */
+@media (max-height: 820px) and (min-width: 641px) {
+  .hero-meta { width: clamp(24rem, var(--logo-w), 38rem); }
+  .hero-label { margin-bottom: 0.6rem; }
+  .hero-intro { font-size: 0.94rem; line-height: 1.42; }
+  .hero-more p { font-size: 0.84rem; line-height: 1.48; }
+  .hero-more p:nth-child(n+2) { display: none; }
+  .hero-ctas { padding-top: 1rem; }
+}
 
 /* Cantos levemente arredondados em botões, filtros e setas */
 :root { --radius-btn: 6px; }
@@ -369,6 +394,8 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .shop-nav[hidden] { display: none; }
 /* As fontes do Marco não têm setas; as setas usam a fonte do sistema */
 .shop-arrow { font-family: system-ui, sans-serif; width: 2.75rem; height: 2.75rem; border: var(--border); background: none; color: var(--ink-sumi); font-size: 1.2rem; line-height: 1; transition: background 0.25s, color 0.25s, opacity 0.25s; }
+.shop-arrow { display: inline-flex; align-items: center; justify-content: center; }
+.shop-arrow .arw { width: 1.15rem; height: auto; display: block; }
 .shop-arrow:hover:not(:disabled) { background: var(--ink-sumi); color: #162A24; }
 .shop-arrow:disabled { opacity: 0.3; cursor: default; }
 /* Vitrine: 3 colunas × 2 linhas = 6 produtos por vez. Com mais de 6, as colunas seguintes ficam
@@ -496,6 +523,19 @@ a.btn { display: inline-block; text-decoration: none; }
 .fb-cap .mono-small { font-size: 0.62rem; }
 .fb-cap .btn { flex: none; font-size: 0.68rem; padding: 0.45rem 0.7rem; }
 .fb-blank { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--f-ui), var(--font-mono); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.5; }
+/* Seção do flash book: tudo no eixo central do livro (simetria), com moldura dupla ocre
+   que repete a moldura da capa, e um ornamento ✦ com filetes em cima da explicação. */
+.flashbook { position: relative; text-align: center; }
+.flashbook::before, .flashbook::after { content: ""; position: absolute; pointer-events: none; border-radius: 6px; }
+.flashbook::before { inset: 2.25rem calc(var(--pad) * 0.5) 2.25rem; border: 1.5px solid rgba(226, 160, 37, 0.7); }
+.flashbook::after { inset: calc(2.25rem + 7px) calc(var(--pad) * 0.5 + 7px) calc(2.25rem + 7px); border: 1px solid rgba(226, 160, 37, 0.3); }
+.flashbook > * { position: relative; z-index: 1; }
+.fb-intro { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding-top: 4.5rem; }
+.fb-intro .section-lead { max-width: 34ch; margin: 0 auto; text-wrap: balance; }
+.fb-orn { display: flex; align-items: center; gap: 0.9rem; color: var(--accent-ochre); font-family: var(--f-ui), var(--font-mono); font-size: 1.6rem; line-height: 0.6; }
+.fb-orn::before, .fb-orn::after { content: ""; width: 3.5rem; height: 1px; background: currentColor; opacity: 0.7; }
+.flashbook .fbook { margin-top: 2.5rem; }
+.flashbook .section-more { margin-top: 2.5rem; padding-bottom: 4.5rem; }
 .fb-nav { display: flex; align-items: center; gap: 1.25rem; }
 .fb-nav .mono-small { min-width: 9rem; text-align: center; margin: 0; }
 @media (max-width: 700px) {
@@ -654,6 +694,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 /* letras dos títulos bem juntas: as espirais e pontas de algumas letras chegam a encostar na vizinha */
 .section-title, .footer-big, .modal-body h3 { letter-spacing: -0.035em; }
 #contato-title { letter-spacing: -0.07em; }   /* CONTATO com as letras mais juntas */
+#contato-title .kern-c { margin-right: 0.06em; } /* só o C se afasta um pouco do O, que encostava */
 .footer-big { letter-spacing: 0.03em; }       /* MARCO SURREAL do rodapé um pouco mais aberto */
 /* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
 .card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }

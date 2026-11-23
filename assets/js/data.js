@@ -14,6 +14,11 @@ window.SITE_DATA = {
     nome: 'Marco Surreal',
     // Apresentação da abertura (texto provisório, resumido da bio do Marco; ele vai reescrever)
     apresentacao: 'Tatuador, designer e artista multidisciplinar. Com base na tatuagem tradicional e forte influência da psicodelia dos anos 60, do surrealismo e da op art, trabalha com cores vibrantes, distorções visuais e a mistura entre referências clássicas e contemporâneas.',
+    // Parágrafos seguintes da bio na abertura (TEXTO DE PROTÓTIPO, só para testar a diagramação; trocar pela bio final)
+    bio: [
+      'No estúdio, cada projeto começa no desenho. Pode ser um flash pronto, uma peça criada a partir da ideia de quem chega, um estudo que vira cerâmica ou uma identidade visual. O mesmo traço passa da pele para o papel e para a peça.',
+      'Neste site estão a loja, uma seleção de trabalhos, o flash book com os desenhos disponíveis e o contato para agendar uma sessão ou encomendar um projeto.'
+    ],
     email: 'omarcosurreal@gmail.com',
     // WhatsApp só com números, com DDI e DDD. Ex.: '5511999998888'.
     // Se ficar vazio, o formulário envia por e-mail e o link de WhatsApp fica oculto.

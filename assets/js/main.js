@@ -230,6 +230,10 @@
   /* ---------- Textos e links vindos de data.js ---------- */
   var CFG = DATA.config || {};
   $$('[data-text]').forEach(function (el) { el.textContent = CFG[el.getAttribute('data-text')] || ''; });
+  // lista de parágrafos (ex.: bio da abertura)
+  $$('[data-paras]').forEach(function (el) {
+    (CFG[el.getAttribute('data-paras')] || []).forEach(function (t) { var p = document.createElement('p'); p.textContent = t; el.appendChild(p); });
+  });
 
   function waLink(text) {
     return 'https://wa.me/' + CFG.whatsapp + (text ? '?text=' + encodeURIComponent(text) : '');
@@ -520,7 +524,7 @@
         '<div class="fb-page fb-page--back" data-page="' + (2 * sIdx + 1) + '">' + pages[2 * sIdx + 1] + (sIdx && sIdx < n - 1 ? '<span class="fb-num">' + (2 * sIdx) + '</span>' : '') + '</div></div>';
     }
     fbook.innerHTML = '<div class="fb-stage" tabindex="0" aria-label="Flash book: use as setas para folhear"><div class="fb-book is-closed" id="fb-book">' + html + '</div></div>' +
-      '<div class="fb-nav"><button class="shop-arrow" id="fb-prev" aria-label="Página anterior">&larr;</button><span class="mono-small" id="fb-label"></span><button class="shop-arrow" id="fb-next" aria-label="Próxima página">&rarr;</button></div>';
+      '<div class="fb-nav"><button class="shop-arrow" id="fb-prev" aria-label="Página anterior"><svg class="arw" viewBox="0 0 20 12" aria-hidden="true"><path d="M19 6H2M7 1 2 6l5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><span class="mono-small" id="fb-label"></span><button class="shop-arrow" id="fb-next" aria-label="Próxima página"><svg class="arw" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h17M13 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>';
     fbSheets = $$('.fb-leaf', fbook);
     fbAt = Math.min(fbAt, fbSheets.length);
     fbShow(true);
