@@ -240,13 +240,10 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .hero-float { animation: float 8s ease-in-out infinite; }
 .hero-layer--b .hero-float { animation-duration: 10s; animation-delay: -3s; }
 .hero-layer--c .hero-float { animation-duration: 12s; animation-delay: -6s; }
-/* a mesma flutuação nas imagens da loja, dos trabalhos e dos flashes */
-.floaty { animation: float-soft 9s ease-in-out infinite; animation-delay: var(--fd, 0s); }
-@keyframes float-soft {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-  33% { transform: translate3d(0, -5px, 0) rotate(-0.4deg); }
-  66% { transform: translate3d(0, 3px, 0) rotate(0.3deg); }
-}
+/* as fotos das seções usam a mesma flutuação das 3 fotos da primeira página (duração e atraso vêm do JS) */
+.floaty { animation: float 8s ease-in-out infinite; }
+.drift { will-change: transform; }
+
 .product-media[data-view] { cursor: pointer; }
 .product-media[data-view]:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 4px; }
 @keyframes float {

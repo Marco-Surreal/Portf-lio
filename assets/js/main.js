@@ -113,6 +113,7 @@
   var mouse = { tx: 0, ty: 0, x: 0, y: 0 };
   var heroP = progressOf(hero);
   var cards = [];   // estados dos cards em movimento
+  var drifts = [];  // fotos das seções que acompanham o mouse (preenchido depois de montar as grades)
   var running = false;
 
   function clamp01(v) { return Math.min(1, Math.max(0, v)); }
@@ -150,6 +151,10 @@
       var p0 = window.innerHeight / (window.innerHeight + hero.offsetHeight);
       heroHolder.style.transform = big ? 'translate3d(' + (-110 * (heroP - p0)).toFixed(2) + 'px,' + (150 * (heroP - p0)).toFixed(2) + 'px,0)' : '';
       heroLayers.forEach(function (el) {
+        var d = parseFloat(el.getAttribute('data-depth')) || 1;
+        el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
+      });
+      drifts.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
         el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
       });
@@ -312,10 +317,15 @@
 
   /* ---------- [02] Loja: produtos em destaque ---------- */
   // Vitrine: grade de 6 produtos (3 × 2). Se houver mais, ela desliza para o lado (setas, arrastar ou rolar).
-  // Flutuação leve das imagens (a mesma da primeira página). Fica num invólucro próprio (.floaty),
-  // por isso não briga com a inclinação, o brilho de vidro e o giro dos cards. Cada imagem começa num ponto diferente.
+  // A mesma animação das 3 fotos da primeira página, em todas as fotos do site:
+  // 1) flutuação (keyframes "float", 8s/10s/12s com atrasos diferentes, como .hero-float);
+  // 2) cada foto acompanha o mouse com profundidade própria (data-depth), como as camadas do hero.
+  // Ficam em invólucros próprios (.drift > .floaty), por isso não cancelam a inclinação,
+  // o brilho de vidro e o giro dos cards, que estão na imagem e no card.
+  var FLOAT = [['8s', '0s', 1], ['10s', '-3s', 0.6], ['12s', '-6s', -0.8]];
   var floatN = 0;
-  function floatDelay() { floatN++; return (-((floatN * 2.7) % 10)).toFixed(1) + 's'; }
+  function floatOpen() { var f = FLOAT[floatN++ % 3];
+    return '<div class="drift" data-depth="' + f[2] + '"><div class="floaty" style="animation-duration:' + f[0] + ';animation-delay:' + f[1] + '">'; }
 
   // Escamas do fundo alinhadas à página inteira: cada seção/faixa desloca a textura pela sua posição,
   // então o padrão passa contínuo de uma seção para a outra (só a cor muda).
@@ -340,7 +350,7 @@
         (selo ? '<span class="hanko">' + selo + '</span>' : '') +
         (p.demo ? '<span class="demo-tag">DEMO</span>' : '') +
         // clicar na imagem abre os detalhes do produto
-        '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) + '</div></div>' +
+        floatOpen() + '<div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) + '</div></div></div>' +
         '<p class="mono-small product-cat">' + esc(PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + esc(p.edicao) : '') + '</p>' +
         '<h3>' + esc(p.nome) + '</h3>' +
         '<p class="mono-small product-avail is-' + esc(p.disponibilidade) + '">' + esc(DISP[p.disponibilidade] || '') + '</p>' +
@@ -431,9 +441,9 @@
     return '' +
       '<article class="card" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         '<div class="card-item">' +
-          '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="card-media glass">' + m +
+          floatOpen() + '<div class="card-media glass">' + m +
             '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
-          '</div></div>' +
+          '</div></div></div>' +
           '<div class="card-info">' +
             '<div class="card-title-wrap"><h3 class="card-title">' + esc(p.titulo) + '</h3></div>' +
             '<span class="card-meta">' + esc(CATEGORIAS[p.categoria] || p.categoria) + (p.ano ? ' · ' + esc(p.ano) : '') + '</span>' +
@@ -486,7 +496,7 @@
       '<article class="flash is-' + esc(f.estado) + '" data-reveal>' +
         '<span class="flash-state">' + esc(ESTADO[f.estado] || f.estado) + '</span>' +
         (f.demo ? '<span class="demo-tag">DEMO</span>' : '') +
-        '<div class="floaty" style="--fd:' + floatDelay() + '"><div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div></div>' +
+        floatOpen() + '<div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div></div></div>' +
         '<p class="mono-small">' + esc(f.id) + '</p>' +
         '<h3>' + esc(f.nome) + '</h3>' +
         (info ? '<p class="mono-small">' + esc(info) + '</p>' : '') +
@@ -696,6 +706,7 @@
 
   /* ---------- Entrada dos elementos + linhas ---------- */
   $$('[data-tilt]').forEach(bindTilt);
+  drifts = $$('.drift');
   $$('.card', grid).forEach(bindCard);
   var targets = $$('[data-reveal], .lines');
   if ('IntersectionObserver' in window && !reduceMotion) {
