@@ -317,6 +317,20 @@
   var floatN = 0;
   function floatDelay() { floatN++; return (-((floatN * 2.7) % 10)).toFixed(1) + 's'; }
 
+  // Escamas do fundo alinhadas à página inteira: cada seção/faixa desloca a textura pela sua posição,
+  // então o padrão passa contínuo de uma seção para a outra (só a cor muda).
+  function alignTexture() {
+    $$('.seigaiha, .ornament-band').forEach(function (el) {
+      var top = el.getBoundingClientRect().top + window.scrollY;
+      el.style.setProperty('--sy', (-(top % 24)).toFixed(2) + 'px');
+    });
+  }
+  alignTexture();
+  window.addEventListener('load', alignTexture);
+  window.addEventListener('resize', alignTexture);
+  if (window.ResizeObserver) new ResizeObserver(alignTexture).observe(document.body);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignTexture);
+
   var shopGrid = $('#shop-grid');
   var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; });
   shopGrid.innerHTML = vitrine.map(function (p) {
