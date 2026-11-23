@@ -486,23 +486,80 @@
   /* ---------- [04] Flash Book ---------- */
   var ESTADO = { disponivel: 'Disponível', reservado: 'Reservado', tatuado: 'Tatuado' };
   var flashes = {};
-  $('#flash-grid').innerHTML = (DATA.flashes || []).filter(function (f) { return f.destaque; }).slice(0, 5).map(function (f) {
+  /* Flash book em formato de livro (protótipo): capa, folhas que viram pela lombada e contracapa.
+     Cada folha tem frente (página da direita) e verso (página da esquerda da dupla seguinte).
+     Clique na página da direita para avançar e na da esquerda para voltar; setas, teclado e arrastar também. */
+  var fbook = $('#flash-grid');
+  var mobileBook = window.matchMedia('(max-width: 700px)');
+  var fbSheets = [], fbAt = 0;
+  function flashItem(f) {
     flashes[f.id] = f;
     var info = [f.tamanho && 'Tamanho sugerido: ' + f.tamanho, f.preco != null && brl.format(f.preco), f.exclusivo && 'Exclusivo'].filter(Boolean).join(' · ');
     var action = f.estado === 'tatuado'
       ? '<span class="btn btn--small btn--line is-off" aria-disabled="true">Já tatuado</span>'
       : '<button class="btn btn--small" data-flash="' + esc(f.id) + '" aria-label="Tenho interesse no flash ' + esc(f.id) + '">Tenho interesse</button>';
-    return '' +
-      '<article class="flash is-' + esc(f.estado) + '" data-reveal>' +
+    return '<article class="flash fb-item is-' + esc(f.estado) + '">' +
         '<span class="flash-state">' + esc(ESTADO[f.estado] || f.estado) + '</span>' +
         (f.demo ? '<span class="demo-tag">DEMO</span>' : '') +
-        floatOpen() + '<div class="flash-media tilt" data-tilt>' + media(f.imagem, f.id + ' · ' + f.nome) + '</div></div></div>' +
-        '<p class="mono-small">' + esc(f.id) + '</p>' +
-        '<h3>' + esc(f.nome) + '</h3>' +
-        (info ? '<p class="mono-small">' + esc(info) + '</p>' : '') +
-        '<div class="flash-foot">' + action + '</div>' +
+        '<div class="flash-media">' + media(f.imagem, f.id + ' · ' + f.nome) + '</div>' +
+        '<div class="fb-cap"><div><p class="mono-small">' + esc(f.id) + (info ? ' · ' + esc(info) : '') + '</p><h3>' + esc(f.nome) + '</h3></div>' + action + '</div>' +
       '</article>';
-  }).join('');
+  }
+  function buildBook() {
+    var list = DATA.flashes || [], per = mobileBook.matches ? 1 : 2, pages = [];
+    pages.push('<div class="fb-cover"><span class="fb-cover__frame"></span><p class="fb-cover__name">Marco Surreal</p><p class="fb-cover__title">Flash<br>Book</p><span class="fb-cover__hint">Abrir ✦</span></div>');
+    pages.push('<div class="fb-inside"><p class="fb-inside__title">Flashes</p><p>Desenhos prontos para tatuar. Escolha um e clique em <strong>Tenho interesse</strong>.</p>' +
+      '<ul class="fb-legend"><li><span class="flash-state">Disponível</span></li><li class="is-reservado"><span class="flash-state">Reservado</span></li><li class="is-tatuado"><span class="flash-state">Tatuado</span></li></ul></div>');
+    for (var k = 0; k < list.length; k += per) pages.push('<div class="fb-sheet fb-sheet--' + per + '">' + list.slice(k, k + per).map(flashItem).join('') + '</div>');
+    if (pages.length % 2 === 0) pages.push('<div class="fb-blank"><p>Mais flashes em breve</p></div>');
+    pages.push('<div class="fb-cover fb-cover--back"><span class="fb-cover__frame"></span><p class="fb-cover__name">Marco Surreal</p></div>');
+    var html = '', n = pages.length / 2;
+    for (var sIdx = 0; sIdx < n; sIdx++) {
+      html += '<div class="fb-leaf" style="z-index:' + (n - sIdx) + '">' +
+        '<div class="fb-page fb-page--front" data-page="' + (2 * sIdx) + '">' + pages[2 * sIdx] + (sIdx ? '<span class="fb-num">' + (2 * sIdx - 1) + '</span>' : '') + '</div>' +
+        '<div class="fb-page fb-page--back" data-page="' + (2 * sIdx + 1) + '">' + pages[2 * sIdx + 1] + (sIdx && sIdx < n - 1 ? '<span class="fb-num">' + (2 * sIdx) + '</span>' : '') + '</div></div>';
+    }
+    fbook.innerHTML = '<div class="fb-stage" tabindex="0" aria-label="Flash book: use as setas para folhear"><div class="fb-book is-closed" id="fb-book">' + html + '</div></div>' +
+      '<div class="fb-nav"><button class="shop-arrow" id="fb-prev" aria-label="Página anterior">&larr;</button><span class="mono-small" id="fb-label"></span><button class="shop-arrow" id="fb-next" aria-label="Próxima página">&rarr;</button></div>';
+    fbSheets = $$('.fb-leaf', fbook);
+    fbAt = Math.min(fbAt, fbSheets.length);
+    fbShow(true);
+    $('#fb-prev').addEventListener('click', function () { fbGo(-1); });
+    $('#fb-next').addEventListener('click', function () { fbGo(1); });
+  }
+  function fbShow(instant) {
+    var n = fbSheets.length, book = $('#fb-book');
+    fbSheets.forEach(function (sh, i) {
+      var flip = i < fbAt;
+      if (flip !== sh.classList.contains('is-flipped')) {
+        // a folha que está virando fica por cima das outras durante o giro
+        sh.style.zIndex = 100;
+        clearTimeout(sh._t); sh._t = setTimeout(function () { sh.style.zIndex = sh.classList.contains('is-flipped') ? i + 1 : n - i; }, instant || reduceMotion ? 0 : 900);
+      } else sh.style.zIndex = flip ? i + 1 : n - i;
+      sh.classList.toggle('is-flipped', flip);
+    });
+    book.classList.toggle('is-closed', fbAt === 0);
+    book.classList.toggle('is-end', fbAt === n);
+    $('#fb-prev').disabled = fbAt === 0; $('#fb-next').disabled = fbAt === n;
+    var total = 2 * n - 3;
+    $('#fb-label').textContent = fbAt === 0 ? 'Capa' : fbAt === n ? 'Contracapa' : fbAt === 1 ? 'Página 1 de ' + total : (2 * fbAt - 2) + '–' + (2 * fbAt - 1) + ' de ' + total;
+  }
+  function fbGo(d) { var t = Math.max(0, Math.min(fbSheets.length, fbAt + d)); if (t !== fbAt) { fbAt = t; fbShow(); } }
+  buildBook();
+  if (mobileBook.addEventListener) mobileBook.addEventListener('change', buildBook);
+  fbook.addEventListener('click', function (e) {
+    if (fbook._swiped) { fbook._swiped = false; return; }
+    if (e.target.closest('[data-flash], .fb-nav, .btn')) return;
+    var pg = e.target.closest('.fb-page'); if (!pg) return;
+    fbGo(pg.classList.contains('fb-page--front') ? 1 : -1);
+  });
+  fbook.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') { fbGo(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { fbGo(-1); e.preventDefault(); }
+  });
+  var fbX = null;
+  fbook.addEventListener('pointerdown', function (e) { fbX = e.clientX; });
+  fbook.addEventListener('pointerup', function (e) { if (fbX != null && Math.abs(e.clientX - fbX) > 50) { fbook._swiped = true; fbGo(e.clientX < fbX ? 1 : -1); } fbX = null; });
 
   /* ---------- [05] Contato ---------- */
   var form = $('#contact-form');

@@ -26,7 +26,7 @@ Tudo fica em `assets/js/data.js`:
 - **`config`:** texto de apresentação, e-mail, WhatsApp e redes. Link vazio não aparece no site.
 - **`produtos`:** loja. `destaque: true` coloca o produto na vitrine da página inicial: uma grade de 6 (3 × 2; 2 colunas no celular). Com mais de 6, a grade desliza para o lado com setas, arrastando com o mouse ou rolando no celular. Os botões de categoria são criados a partir das categorias presentes. `preco: null` mostra "Preço a definir" e esconde o botão de compra. `demo: true` mostra o selo DEMO.
 - **`trabalhos`:** portfólio (até 6 em destaque). `produtoId` liga um trabalho a um produto da loja, como uma cerâmica à venda.
-- **`flashes`:** `estado` pode ser `disponivel`, `reservado` ou `tatuado`. "Tenho interesse" preenche o contato.
+- **`flashes`:** `estado` pode ser `disponivel`, `reservado` ou `tatuado`. "Tenho interesse" preenche o contato. Na página inicial os flashes aparecem num **flash book** (protótipo): um livro com capa, páginas que viram em 3D (2 flashes por página no computador, 1 no celular) e contracapa. Para passar: clicar na página da direita (avança) ou da esquerda (volta), setas abaixo do livro, setas do teclado ou arrastar no celular.
 - **Fotos:** coloque em `assets/img/` e preencha `imagem` (ou `imagens`).
 - **Faixas ornamentais:** `assets/img/ornamento-*.svg`, geradas por `node tools/gerar-ornamentos.js`.
 
@@ -43,6 +43,8 @@ Abra `index.html` no navegador ou rode um servidor estático na pasta (ex.: `npx
 - **Logo:** `assets/img/logo-marco-surreal.svg` (vetor) e `logo-marco-surreal-face.svg` (só a face amarela das letras, usada no eco da animação). Vetorizadas a partir do desenho final do Marco, `LOGO MARCO SURREAL/LOGO FINAL CONCERTO TUNEL.png` (branch `main`): silhueta, linhas do túnel e face amarela. As cores são as da versão anterior da logo (o PNG foi clareado só para facilitar a vetorização). Fundo transparente, sem brilho em volta. Scripts em `tools/logo/` (`vetorizar-logo-final.js` e `montar-svg.js`).
 - **Fontes próprias** em `assets/fonts`:
   - `SURREALES.ttf`: títulos e subtítulos. Base: a SURREALES escolhida pelo Marco (`FONTES SITE SURREAL/SURREALES.ttf`, branch `main`). O U Y, os números 2 5 6 8 9 0 e as minúsculas a b d e p q n v t r y o u foram trocados pelos desenhos novos dele (`MAIUSCULAS.png` e `números e minúsculas.png`). Depois a espessura do traço foi uniformizada em todas as letras: as finas engordaram e as grossas afinaram um pouco, sem mudar o desenho. Script: `tools/fontes/surreales-final.js`.
+  - C, Ç, G e S foram ampliados para a mesma altura do O (letras redondas passam um pouco da linha, como o O). Antes o C era 2,5% mais baixo e G e S 3,6%. Script: `tools/fontes/ajustar-redondas.js`.
+  - O nome MARCO SURREAL da barra superior usa a SURREALES.
   - A SURREALES é limpa, sem distress. No site ela aparece sempre em maiúsculas (`text-transform: uppercase`), para ficar legível em qualquer tela.
   - `PRINTED BOY SURREAL.ttf`: menus, filtros, botões e etiquetas pequenas (categorias, status, preços). Proporções no estilo da Squid Boy (traço grosso e uniforme, pontas retas com cantos macios), desgaste leve de tinta preta (borda levemente ondulada e gasta, poucas lascas e respingos) e desalinhamento leve. Tem maiúsculas e minúsculas. É a única fonte do site com distress.
   - Os arquivos `.woff` (`SURREALES.woff` e `printed-boy-surreal.woff`) são as mesmas fontes comprimidas, usadas pelo site.
