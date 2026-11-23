@@ -130,7 +130,7 @@ function build(sequence, { ink, accent }) {
     teethBorder(W, ink) + body + '</svg>\n';
 }
 
-const INK = '#121110', COTTON = '#F0F1D8', VERMILION = '#D93829', OCHRE = '#E2A025';
+const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025';
 
 const espiral = [
   { type: 'terung' },

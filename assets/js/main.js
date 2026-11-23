@@ -152,11 +152,11 @@
       heroHolder.style.transform = big ? 'translate3d(' + (-110 * (heroP - p0)).toFixed(2) + 'px,' + (150 * (heroP - p0)).toFixed(2) + 'px,0)' : '';
       heroLayers.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
-        el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
+        el.style.transform = 'translate3d(' + (mouse.x * 11 * d).toFixed(2) + 'px,' + (mouse.y * 8 * d).toFixed(2) + 'px,0)';
       });
       drifts.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 1;
-        el.style.transform = 'translate3d(' + (mouse.x * 22 * d).toFixed(2) + 'px,' + (mouse.y * 16 * d).toFixed(2) + 'px,0)';
+        el.style.transform = 'translate3d(' + (mouse.x * 11 * d).toFixed(2) + 'px,' + (mouse.y * 8 * d).toFixed(2) + 'px,0)';
       });
       cards.forEach(function (c) {
         c.rx += (c.tgx - c.rx) * 0.07;
@@ -330,7 +330,7 @@
   // Escamas do fundo alinhadas à página inteira: cada seção/faixa desloca a textura pela sua posição,
   // então o padrão passa contínuo de uma seção para a outra (só a cor muda).
   function alignTexture() {
-    $$('.seigaiha, .ornament-band').forEach(function (el) {
+    $$('.seigaiha').forEach(function (el) {
       var top = el.getBoundingClientRect().top + window.scrollY;
       el.style.setProperty('--sy', (-(top % 24)).toFixed(2) + 'px');
     });

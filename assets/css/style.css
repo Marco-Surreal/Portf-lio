@@ -4,7 +4,7 @@
    ========================================================= */
 
 :root {
-  --bg-cotton: #F0F1D8;  /* creme levemente puxado para o verde-limão */
+  --bg-cotton: #ECE8D4;  /* creme (levemente mais escuro e terroso) */
   --bg-cream: #E3E7C3;
   --ink-sumi: #121110;
   --bg-forest: #162A24;
@@ -55,16 +55,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .seigaiha { position: relative; isolation: isolate; }
 .seigaiha::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.12;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23F0F1D8'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%231F4E78' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 48px 24px;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%231F4E78'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23ECE8D4'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E");
+  background-size: 48px 24px; background-repeat: repeat;
 }
-/* Uma textura só no site inteiro: o JS mede a altura de cada seção e faixa na página (--sy),
-   e todas as escamas começam na mesma grade. Muda só a cor de uma seção para outra, o padrão continua. */
-.seigaiha::before, .ornament-band::before { background-position: 0 var(--sy, 0px); }
+/* Uma textura só no site inteiro, como uma única imagem atrás da página: o JS mede a posição de cada
+   seção (--sy) e todas as escamas seguem a mesma grade. Muda só a cor; nas faixas tribais não há escamas.
+   Desenho: escamas seigaiha geométricas (4 anéis concêntricos), cada fileira sobrepõe a de cima. */
+.seigaiha::before { background-position: 0 var(--sy, 0px); }
 /* Textura de escamas (seigaiha) no site inteiro. Cada fundo tem sua versão, porque o
    miolo de cada escama é pintado com a cor do fundo para as ondas se sobreporem. */
-.theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
-.shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
+.theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%23ECE8D4'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23162A24'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E"); opacity: 0.08; }
+.shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%23ECE8D4'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23162A24'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E"); opacity: 0.08; }
 
 /* ---------- Ritmo claro / escuro ----------
    Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
@@ -73,11 +74,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
    Ordem: Hero claro → Loja verde → Trabalhos claro → Flashes verde → Contato claro → Rodapé verde. */
 .theme-dark {
   --bg-cotton: #162A24;                        /* mesmo verde escuro da Loja */
-  --ink-sumi: #F0F1D8;
+  --ink-sumi: #ECE8D4;
   --bg-cream: #1E352E;
   --ph-stripe: #24403A;
   --shadow-ink: rgba(226, 160, 37, 0.9);       /* no escuro a sombra vira ouro ocre */
-  --border: 1.5px solid #F0F1D8;               /* precisa ser redeclarada: var() já foi resolvida no :root */
+  --border: 1.5px solid #ECE8D4;               /* precisa ser redeclarada: var() já foi resolvida no :root */
   background: var(--bg-cotton); color: var(--ink-sumi);
 }
 .theme-dark .link-hash:hover { color: var(--accent-ochre); border-color: var(--accent-ochre); }
@@ -155,8 +156,8 @@ body.nav-dark .nav-links a.is-shop { color: var(--accent-ochre); }
 @keyframes bump { 50% { transform: scale(1.12); } }
 
 /* A barra do topo acompanha a seção que está passando por baixo dela */
-body.nav-dark .navbar { background: var(--bg-forest); color: #F0F1D8; }
-body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
+body.nav-dark .navbar { background: var(--bg-forest); color: #ECE8D4; }
+body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
 
 /* Celular e tablet estreito: logo e sacola em cima, links numa segunda linha que desliza para o lado */
 @media (max-width: 860px) {
@@ -190,8 +191,8 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
    Em seguida, três ecos da face das letras saem de trás dela, como ondas subindo pelo túnel. */
 .hero-logo {
   position: relative; display: block; line-height: 0;
-  width: min(100%, 35vw, calc((100vh - 400px) * 1.3)); min-width: 240px; /* ~75% do tamanho anterior */
-  margin: -1% 0 0 -1.5%; /* a margem de brilho da imagem fica fora da linha da grade */
+  width: min(100%, 32vw, calc((100vh - 400px) * 1.19)); min-width: 220px; /* um pouco menor que antes */
+  margin: 2.5% 0 0 -1.5%; /* e um pouco mais para baixo */ /* a margem de brilho da imagem fica fora da linha da grade */
 }
 .hero-logo img { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
 .hero-logo__full { position: relative; z-index: 2; opacity: 0; }
@@ -248,8 +249,8 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .product-media[data-view]:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 4px; }
 @keyframes float {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-  33% { transform: translate3d(0, -12px, 0) rotate(-1.2deg); }
-  66% { transform: translate3d(0, 8px, 0) rotate(0.8deg); }
+  33% { transform: translate3d(0, -6px, 0) rotate(-0.6deg); }   /* metade do deslocamento de antes, mesma velocidade */
+  66% { transform: translate3d(0, 4px, 0) rotate(0.4deg); }
 }
 .hero-meta { grid-column: 1; grid-row: 2; align-self: start; display: flex; gap: 1.5rem; align-items: stretch; max-width: 46rem; }
 .block-line { display: none; }
@@ -283,13 +284,6 @@ body.nav-dark .nav-btn--bag { border-color: #F0F1D8; }
 .ornament-band--terung .ornament-track { animation-duration: 10s; }
 .ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
 .ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
-/* A faixa inteira leva as escamas do fundo, atrás do ornamento. */
-.ornament-band { position: relative; isolation: isolate; }
-.ornament-band::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23F0F1D8'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%231F4E78' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); background-size: 48px 24px; opacity: 0.12;
-}
-.ornament-band--forest::before, .ornament-band--dark::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cdefs%3E%3Cg id='s'%3E%3Ccircle r='20' fill='%23162A24'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23F0F1D8' stroke-width='1'%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='40' y='0'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='0' y='20'/%3E%3Cuse href='%23s' x='40' y='20'/%3E%3C/g%3E%3C/svg%3E"); opacity: 0.08; }
 @keyframes ornament {
   to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
 }
@@ -363,13 +357,13 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .shop { background: var(--bg-forest); padding: 6rem var(--pad); }
 /* Textos da seção ficam claros sobre o verde; os cartões continuam em papel claro com tinta escura */
 .shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-grid, .shop > .empty-note {
-  --ink-sumi: #F0F1D8; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #F0F1D8;
+  --ink-sumi: #ECE8D4; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #ECE8D4;
   color: var(--ink-sumi);
 }
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
 .product[hidden], .filters[hidden] { display: none; }
 .shop .filter { color: var(--ink-sumi); }
-.shop .filter:hover { background: rgba(240, 241, 216, 0.12); }
+.shop .filter:hover { background: rgba(236, 232, 212, 0.12); }
 .shop .filter.is-active { background: var(--ink-sumi); color: #162A24; }
 .shop-nav { display: flex; gap: 0.5rem; margin-left: 0.75rem; }
 .shop-nav[hidden] { display: none; }
@@ -413,7 +407,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .demo-tag {
   position: absolute; top: 1.6rem; left: 1.6rem; z-index: 6;
   font-family: var(--font-mono); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.16em;
-  padding: 0.2rem 0.45rem; background: #121110; color: #F0F1D8;
+  padding: 0.2rem 0.45rem; background: #121110; color: #ECE8D4;
 }
 .price { font-family: var(--font-mono); font-weight: 700; }
 
@@ -442,10 +436,10 @@ a.btn { display: inline-block; text-decoration: none; }
 .flash-state {
   position: absolute; top: -10px; left: -10px; z-index: 6; transform: rotate(-5deg);
   font-family: var(--font-mono); font-weight: 700; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
-  padding: 0.3rem 0.55rem; background: var(--accent-jade); color: #F0F1D8;
+  padding: 0.3rem 0.55rem; background: var(--accent-jade); color: #ECE8D4;
 }
 .flash.is-reservado .flash-state { background: var(--accent-ochre); color: #121110; }
-.flash.is-tatuado .flash-state { background: #F0F1D8; color: #121110; }
+.flash.is-tatuado .flash-state { background: #ECE8D4; color: #121110; }
 .flash.is-tatuado .flash-media { filter: grayscale(1); opacity: 0.55; }
 
 /* ---------- [05] Contato (compacto) ---------- */
@@ -593,6 +587,8 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 }
 /* letras dos títulos bem juntas: as espirais e pontas de algumas letras chegam a encostar na vizinha */
 .section-title, .footer-big, .modal-body h3 { letter-spacing: -0.035em; }
+#contato-title { letter-spacing: -0.07em; }   /* CONTATO com as letras mais juntas */
+.footer-big { letter-spacing: 0.03em; }       /* MARCO SURREAL do rodapé um pouco mais aberto */
 /* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
 .card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }
 .section-title { line-height: 1; }
@@ -626,7 +622,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
   .portfolio-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
-  .hero-logo { width: 70%; }
+  .hero-logo { width: 64%; }
   .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
   .footer-col a { overflow-wrap: anywhere; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }
