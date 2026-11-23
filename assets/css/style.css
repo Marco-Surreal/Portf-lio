@@ -236,7 +236,10 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
 .hero-layer--main { position: relative; z-index: 1; }
 .hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -8%; }
 .hero-layer--c { position: absolute; z-index: 3; width: 40%; right: -6vw; top: -6%; } /* na frente; fica na margem do título, as outras vão 6vw para a esquerda */
-.hero-layer--b .ph, .hero-layer--c .ph { aspect-ratio: 4 / 5; min-height: 0; }
+.hero-layer--d { position: absolute; z-index: 2; width: 40%; left: -50%; top: 0; } /* o JS encaixa no vão ao lado da logo */
+.hero-layer--d .hero-enter { --d: 0.92s; }
+.hero-layer--d .hero-float { animation-duration: 9s; animation-delay: -1.5s; }
+.hero-layer--b .ph, .hero-layer--c .ph, .hero-layer--d .ph { aspect-ratio: 4 / 5; min-height: 0; }
 .hero-layer--c .ph { background-color: var(--bg-cream); }
 .hero-layer:hover { z-index: 4; }
 .hero-float { animation: float 8s ease-in-out infinite; }
@@ -257,7 +260,7 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
    com os botões apoiados na mesma linha de baixo das imagens da direita. */
 .hero-meta {
   grid-column: 1; grid-row: 2; align-self: stretch; display: flex; gap: 1.5rem; align-items: stretch;
-  width: clamp(20rem, var(--logo-w), 38rem); max-width: 100%;
+  width: clamp(20rem, calc(var(--logo-w) + 4.5vw), 40rem); max-width: 100%; /* um pouco mais larga que a logo */
 }
 .block-line { display: none; }
 .block-line__fill { display: block; width: 1.5px; height: 0%; }
@@ -266,23 +269,22 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
 .hero-bio { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 /* filete fino em cima do texto, com a etiqueta SOBRE e a estrela: fecha o enquadramento da coluna */
 .hero-label {
-  display: flex; justify-content: space-between; align-items: center; margin: 0 0 1.1rem; padding-top: 0.6rem;
+  display: flex; align-items: center; margin: 0 0 1.1rem; padding-top: 0.6rem;
   border-top: 1.5px solid var(--ink-sumi);
   font-family: var(--f-ui), var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
 }
-.hero-label span:last-child { color: var(--accent-vermilion); letter-spacing: 0; font-size: 1.35rem; line-height: 0.5; }
 .hero-intro { font-size: clamp(1rem, min(1.2vw, 2.1vh), 1.35rem); line-height: 1.5; margin: 0 0 1em; }
 .hero-more p { font-size: clamp(0.88rem, min(0.95vw, 1.65vh), 1.1rem); line-height: 1.6; margin: 0 0 0.85em; opacity: 0.85; }
 .hero-more p:last-child { margin-bottom: 0; }
-.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 1.5rem; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 1.5rem; margin-bottom: clamp(1.5rem, 5vh, 3.5rem); } /* um pouco acima do fim */
 /* telas baixas (notebook): letras um pouco menores e só o primeiro parágrafo extra, para a bio caber até embaixo */
 @media (max-height: 820px) and (min-width: 641px) {
-  .hero-meta { width: clamp(24rem, var(--logo-w), 38rem); }
+  .hero-meta { width: clamp(24rem, calc(var(--logo-w) + 4.5vw), 40rem); }
   .hero-label { margin-bottom: 0.6rem; }
   .hero-intro { font-size: 0.94rem; line-height: 1.42; }
   .hero-more p { font-size: 0.84rem; line-height: 1.48; }
   .hero-more p:nth-child(n+2) { display: none; }
-  .hero-ctas { padding-top: 1rem; }
+  .hero-ctas { padding-top: 1rem; margin-bottom: 1.25rem; }
 }
 
 /* Cantos levemente arredondados em botões, filtros e setas */
@@ -523,17 +525,10 @@ a.btn { display: inline-block; text-decoration: none; }
 .fb-cap .mono-small { font-size: 0.62rem; }
 .fb-cap .btn { flex: none; font-size: 0.68rem; padding: 0.45rem 0.7rem; }
 .fb-blank { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--f-ui), var(--font-mono); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.5; }
-/* Seção do flash book: tudo no eixo central do livro (simetria), com moldura dupla ocre
-   que repete a moldura da capa, e um ornamento ✦ com filetes em cima da explicação. */
-.flashbook { position: relative; text-align: center; }
-.flashbook::before, .flashbook::after { content: ""; position: absolute; pointer-events: none; border-radius: 6px; }
-.flashbook::before { inset: 2.25rem calc(var(--pad) * 0.5) 2.25rem; border: 1.5px solid rgba(226, 160, 37, 0.7); }
-.flashbook::after { inset: calc(2.25rem + 7px) calc(var(--pad) * 0.5 + 7px) calc(2.25rem + 7px); border: 1px solid rgba(226, 160, 37, 0.3); }
-.flashbook > * { position: relative; z-index: 1; }
-.fb-intro { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding-top: 4.5rem; }
+/* Seção do flash book: tudo no eixo central do livro, sobre a mesma textura de escamas do site */
+.flashbook { text-align: center; }
+.fb-intro { display: flex; flex-direction: column; align-items: center; padding-top: 4.5rem; }
 .fb-intro .section-lead { max-width: 34ch; margin: 0 auto; text-wrap: balance; }
-.fb-orn { display: flex; align-items: center; gap: 0.9rem; color: var(--accent-ochre); font-family: var(--f-ui), var(--font-mono); font-size: 1.6rem; line-height: 0.6; }
-.fb-orn::before, .fb-orn::after { content: ""; width: 3.5rem; height: 1px; background: currentColor; opacity: 0.7; }
 .flashbook .fbook { margin-top: 2.5rem; }
 .flashbook .section-more { margin-top: 2.5rem; padding-bottom: 4.5rem; }
 .fb-nav { display: flex; align-items: center; gap: 1.25rem; }
@@ -732,6 +727,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
   .portfolio-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .hero-logo { width: 64%; }
+  .hero-layer--d { display: none; } /* no celular não há vão ao lado da logo */
   .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
   .footer-col a { overflow-wrap: anywhere; }
   .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }

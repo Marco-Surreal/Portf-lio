@@ -69,6 +69,29 @@
     var bMax = $('.hero').offsetHeight - 24 - b.offsetHeight - holdTop;
     bTop = Math.round(Math.min(bTop, bMax));
     b.style.top = bTop + 'px'; b.style.bottom = 'auto';
+    placeFourth(W, holdLeft, bTop);
+  }
+  // 4ª foto: ocupa o vão entre a logo e a foto principal, com o topo alinhado ao da principal
+  // e sem descer até a Cerâmica. Mantém 4:5 e fica centrada no vão.
+  function placeFourth(W, holdLeft, bTop) {
+    var d = $('.hero-layer--d', heroHold), logo = $('.hero-logo');
+    if (!d || !logo) return;
+    d.style.left = ''; d.style.width = ''; d.style.display = '';
+    if (!sideBySide.matches) return;
+    var G = 28, to = -G, meta = $('.hero-meta');
+    var logoR = absLeft(logo) + logo.offsetWidth - holdLeft;          // relativo ao bloco de imagens (negativo)
+    var metaR = meta ? absLeft(meta) + meta.offsetWidth - holdLeft : logoR;
+    var metaT = meta ? absTop(meta) - absTop(heroHold) : bTop;
+    // A: ao lado da logo e também à direita do texto (pode descer até a Cerâmica)
+    var fromA = Math.max(logoR, metaR) + G;
+    var wA = Math.min(to - fromA, (bTop - G) / 1.25, W * 0.45);
+    // B: ao lado só da logo, sem descer até a linha do texto
+    var fromB = logoR + G;
+    var wB = Math.min(to - fromB, (Math.min(bTop, metaT) - G) / 1.25, W * 0.45);
+    var from = wA >= wB ? fromA : fromB, w = Math.max(wA, wB);
+    if (w < 120) { d.style.display = 'none'; return; } // vão pequeno demais: não força
+    d.style.width = Math.round(w) + 'px';
+    d.style.left = Math.round(from + (to - from - w) / 2) + 'px';
   }
   function layoutHero() { placeHeroImages(); }
   layoutHero();
