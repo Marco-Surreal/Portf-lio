@@ -297,14 +297,16 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
 :root { --radius-btn: 6px; }
 .btn, .filter, .shop-arrow, .nav-btn { border-radius: var(--radius-btn); }
 
-/* ---------- Faixas ornamentais (espirais Dayak / Bornéu) ----------
-   Cada faixa repete um SVG de assets/img/ na horizontal.
+/* ---------- Faixas ornamentais (estética Marco Surreal) ----------
+   Cada faixa repete um SVG de assets/img/faixa-*.svg na horizontal: olhos tribais, olhinhos, espinhas
+   de Bornéu, flores e nuvens, com a sombra colorida deslocada. Versão escura no creme, "-claro" no verde.
    --ratio = largura / altura do viewBox do SVG (precisa bater para a emenda ficar invisível).
-   Arquivos gerados por tools/gerar-ornamentos.js; podem ser trocados por desenho próprio. */
+   Arquivos gerados por tools/gerar-ornamentos.js. */
 .ornament-band {
   --h: clamp(64px, 9vw, 112px);
-  --ratio: calc(494 / 120);
-  --ornament: url("../img/ornamento-espiral.svg");
+  --ratio: calc(338 / 120);
+  --orn-escuro: url("../img/faixa-olhos.svg"); --orn-claro: url("../img/faixa-olhos-claro.svg");
+  --ornament: var(--orn-escuro);
   overflow: hidden; padding: 0.5rem 0; background: var(--bg-cotton);
 }
 .ornament-track {
@@ -313,10 +315,10 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
   animation: ornament 14s linear infinite; will-change: transform;
 }
 .ornament-band--reverse .ornament-track { animation-direction: reverse; }
-.ornament-band--terung { --ratio: calc(337 / 120); --ornament: url("../img/ornamento-terung.svg"); }
-.ornament-band--terung .ornament-track { animation-duration: 10s; }
-.ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
-.ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
+.ornament-band--flores { --ratio: calc(351 / 120); --orn-escuro: url("../img/faixa-flores.svg"); --orn-claro: url("../img/faixa-flores-claro.svg"); }
+.ornament-band--nuvens { --ratio: calc(406 / 120); --orn-escuro: url("../img/faixa-nuvens.svg"); --orn-claro: url("../img/faixa-nuvens-claro.svg"); }
+.ornament-band--nuvens .ornament-track { animation-duration: 17s; } /* ladrilho mais largo: mesma velocidade das outras */
+.ornament-band--forest, .ornament-band--dark { --ornament: var(--orn-claro); background: var(--bg-forest); border-bottom: none; }
 @keyframes ornament {
   to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
 }

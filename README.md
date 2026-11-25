@@ -29,7 +29,7 @@ Tudo fica em `assets/js/data.js`:
 - **`trabalhos`:** portfólio (até 6 em destaque). `produtoId` liga um trabalho a um produto da loja, como uma cerâmica à venda.
 - **`flashes`:** `estado` pode ser `disponivel`, `reservado` ou `tatuado`. "Tenho interesse" preenche o contato. A seção não tem título (o nome FLASH BOOK já está na capa): só a explicação, tudo centrado no eixo do livro, sem moldura, com a textura de escamas do site aparecendo atrás. Não há botão "Ver todos os flashes", o espaço acima e abaixo do livro é menor e o livro é um pouco maior (página de até 470px). Na página inicial os flashes aparecem num **flash book** (protótipo): um livro com capa, páginas que viram em 3D (2 flashes por página no computador, 1 no celular) e contracapa. Para passar: clicar na página da direita (avança) ou da esquerda (volta), setas abaixo do livro, setas do teclado ou arrastar no celular.
 - **Fotos:** coloque em `assets/img/` e preencha `imagem` (ou `imagens`).
-- **Faixas ornamentais:** `assets/img/ornamento-*.svg`, geradas por `node tools/gerar-ornamentos.js`.
+- **Faixas ornamentais:** `assets/img/faixa-*.svg` (olhos, flores e nuvens), geradas por `node tools/gerar-ornamentos.js`.
 
 ## Pendências conhecidas
 
