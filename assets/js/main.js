@@ -357,7 +357,6 @@
         floatOpen() + '<div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) + '</div></div></div>' +
         '<p class="mono-small product-cat">' + esc(PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + esc(p.edicao) : '') + '</p>' +
         '<h3>' + esc(p.nome) + '</h3>' +
-        '<p class="mono-small product-avail is-' + esc(p.disponibilidade) + '">' + esc(DISP[p.disponibilidade] || '') + '</p>' +
         '<div class="product-foot">' +
           '<span class="price">' + priceText(p) + '</span>' +
           '<span class="product-btns">' +

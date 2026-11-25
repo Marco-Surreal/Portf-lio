@@ -349,7 +349,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 /* ---------- [05] Portfólio ---------- */
 /* Loja e Trabalhos usam a mesma medida: conteúdo com no máximo --grid-max de largura, centrado,
    então sobra margem dos dois lados em telas grandes. Imagens das duas grades no mesmo formato (--grid-ratio). */
-:root { --grid-max: 920px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
+:root { --grid-max: 1160px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
 .portfolio { padding: 6rem var(--grid-pad); }
 .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-left: auto; }
 .filter { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.72rem; font-weight: 700; transition: background 0.25s, color 0.25s; }
@@ -463,7 +463,7 @@ a.btn { display: inline-block; text-decoration: none; }
 .btn.is-soon em { font-style: normal; font-weight: 400; margin-left: 0.6em; font-size: 0.85em; opacity: 0.8; }
 
 /* ---------- [04] Flash Book (fundo escuro) ---------- */
-.flashbook { padding: 6rem var(--pad); }
+.flashbook { --pw: min(46vw, 470px); padding: 6rem var(--pad); } /* --pw: largura de uma página do livro; o texto de cima usa a mesma medida */
 .flash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.5rem; }
 .flash { position: relative; display: flex; flex-direction: column; gap: 0.5rem; }
 .flash-media { aspect-ratio: 3 / 4; position: relative; margin-bottom: 0.5rem; }
@@ -483,7 +483,7 @@ a.btn { display: inline-block; text-decoration: none; }
 /* ---------- Flash book em formato de livro (protótipo) ----------
    O livro tem duas metades; cada folha (.fb-leaf) fica na metade direita e gira -180° pela lombada.
    Fechado, o livro anda 25% para a esquerda para a capa ficar no centro; no fim, 25% para a direita. */
-.fbook { --pw: min(46vw, 470px); --ph: calc(var(--pw) * 4 / 3); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; margin-top: 1rem; }
+.fbook { --ph: calc(var(--pw) * 4 / 3); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; margin-top: 1rem; }
 .fb-stage { width: calc(var(--pw) * 2); height: var(--ph); perspective: 2600px; outline: none; touch-action: pan-y; user-select: none; }
 .fb-stage:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 10px; }
 .fb-book { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.9s var(--ease-expo); }
@@ -537,7 +537,7 @@ a.btn { display: inline-block; text-decoration: none; }
 /* Seção do flash book: tudo no eixo central do livro, sobre a mesma textura de escamas do site */
 .flashbook { text-align: center; }
 .fb-intro { display: flex; flex-direction: column; align-items: center; padding-top: 1rem; } /* texto mais perto da faixa de cima */
-.fb-intro .section-lead { max-width: 34ch; margin: 0 auto; text-wrap: balance; }
+.fb-intro .section-lead { width: min(100%, calc(var(--pw) * 2)); max-width: none; margin: 0 auto; text-align: center; text-wrap: balance; } /* mesma largura do livro aberto: 2 linhas */
 .flashbook .fbook { margin-top: 2rem; padding-bottom: 2.5rem; }
 .fb-nav { display: flex; align-items: center; gap: 1.25rem; }
 .fb-nav .mono-small { min-width: 9rem; text-align: center; margin: 0; }
@@ -703,7 +703,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 /* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
 .card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }
 .section-title { line-height: 1; }
-.portfolio .section-title, .shop .section-title { font-size: clamp(1.9rem, 3.4vw, 2.35rem); } /* Loja e Trabalhos com o mesmo tamanho; cabe numa linha ao lado dos filtros */
+.portfolio .section-title, .shop .section-title { font-size: clamp(1.9rem, 3.4vw, 2.75rem); } /* Loja e Trabalhos com o mesmo tamanho; cabe numa linha ao lado dos filtros */
 /* menus, filtros e botões */
 .nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
   font-family: var(--f-ui), var(--font-mono); font-synthesis: none;
