@@ -347,7 +347,10 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .empty-note { font-family: var(--font-editorial); font-style: italic; font-size: 1.25rem; margin: 2rem 0 0; }
 
 /* ---------- [05] Portfólio ---------- */
-.portfolio { padding: 6rem var(--pad); }
+/* Loja e Trabalhos usam a mesma medida: conteúdo com no máximo --grid-max de largura, centrado,
+   então sobra margem dos dois lados em telas grandes. Imagens das duas grades no mesmo formato (--grid-ratio). */
+:root { --grid-max: 920px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
+.portfolio { padding: 6rem var(--grid-pad); }
 .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-left: auto; }
 .filter { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.72rem; font-weight: 700; transition: background 0.25s, color 0.25s; }
 .filter:hover { background: var(--bg-cream); }
@@ -360,7 +363,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .card:hover { z-index: 2; }
 .card[hidden] { display: none; }
 .card-item { transform-style: preserve-3d; will-change: transform; }
-.card-media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; }
+.card-media { position: relative; aspect-ratio: var(--grid-ratio); overflow: hidden; }
 .card-media .ph, .card-media img { border: 0; position: absolute; inset: 0; }
 
 /* No hover os cards usam o mesmo brilho de vidro das outras imagens (.glass), sem a cortina branca */
@@ -387,7 +390,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .card-open { position: absolute; inset: 0; z-index: 3; background: none; border: 0; }
 
 /* ---------- [07] Loja ---------- */
-.shop { background: var(--bg-forest); padding: 6rem var(--pad); }
+.shop { background: var(--bg-forest); padding: 6rem var(--grid-pad); }
 /* Textos da seção ficam claros sobre o verde; os cartões continuam em papel claro com tinta escura */
 .shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-grid, .shop > .empty-note {
   --ink-sumi: #ECE8D4; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #ECE8D4;
@@ -428,7 +431,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .shop .ph { color: #121110; }
 .shop .product-avail.is-disponivel { color: #6CC4A1; }
 .product-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
-.product-media { aspect-ratio: 1; position: relative; }
+.product-media { aspect-ratio: var(--grid-ratio); position: relative; }
 .product-media .ph, .product-media img { position: absolute; inset: 0; }
 .hanko {
   position: absolute; top: -10px; right: -10px; z-index: 2; transform: rotate(6deg);
@@ -700,7 +703,7 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0
 /* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
 .card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }
 .section-title { line-height: 1; }
-.portfolio .section-title { font-size: clamp(2rem, 3.8vw, 3.6rem); } /* cabe numa linha ao lado dos filtros */
+.portfolio .section-title, .shop .section-title { font-size: clamp(1.9rem, 3.4vw, 2.35rem); } /* Loja e Trabalhos com o mesmo tamanho; cabe numa linha ao lado dos filtros */
 /* menus, filtros e botões */
 .nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
   font-family: var(--f-ui), var(--font-mono); font-synthesis: none;
