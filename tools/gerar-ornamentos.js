@@ -104,16 +104,9 @@ function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, scale = 1 })
   return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(${scale})" fill="${ink}">${out}</g>`, w };
 }
 
-/** Borda superior e inferior com fileira de "dentes" triangulares. */
+/** Borda superior e inferior: só uma linha fina (a fileira de triângulos foi tirada a pedido do Marco). */
 function teethBorder(W, ink) {
-  const n = Math.round(W / 12), tw = W / n;
-  let top = '', bot = '';
-  for (let i = 0; i < n; i++) {
-    const x = i * tw;
-    top += `M${f(x)} 6L${f(x + tw)} 6L${f(x + tw / 2)} 14Z`;
-    bot += `M${f(x)} ${H - 6}L${f(x + tw)} ${H - 6}L${f(x + tw / 2)} ${H - 14}Z`;
-  }
-  return `<g fill="${ink}"><rect y="1.5" width="${W}" height="2.5"/><rect y="${H - 4}" width="${W}" height="2.5"/><path d="${top}${bot}"/></g>`;
+  return `<g fill="${ink}"><rect y="1.5" width="${W}" height="2.5"/><rect y="${H - 4}" width="${W}" height="2.5"/></g>`;
 }
 
 function build(sequence, { ink, accent }) {
