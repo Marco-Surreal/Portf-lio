@@ -349,7 +349,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 /* ---------- [05] Portfólio ---------- */
 /* Loja e Trabalhos usam a mesma medida: conteúdo com no máximo --grid-max de largura, centrado,
    então sobra margem dos dois lados em telas grandes. Imagens das duas grades no mesmo formato (--grid-ratio). */
-:root { --grid-max: 1160px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
+:root { --grid-max: 1320px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
 .portfolio { padding: 6rem var(--grid-pad); }
 .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-left: auto; }
 .filter { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.72rem; font-weight: 700; transition: background 0.25s, color 0.25s; }
@@ -375,7 +375,8 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 }
 .view-project .marquee-track { animation-duration: 10s; }
 .view-project span { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; white-space: nowrap; padding-right: 1rem; }
-.card:hover .view-project, .card:focus-within .view-project { opacity: 1; transition: opacity 1.4s var(--ease-expo); }
+.card:hover .view-project, .card:focus-within .view-project,
+.product:hover .view-project, .product:focus-within .view-project { opacity: 1; transition: opacity 1.4s var(--ease-expo); }
 
 /* Título que "rola": uma cópia (text-shadow) espera logo abaixo e sobe no lugar do original */
 .card-info { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 0.9rem; }
@@ -420,15 +421,16 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 .vitrine::-webkit-scrollbar { display: none; }
 .vitrine .product { scroll-snap-align: start; }
 .vitrine.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
-.product { position: relative; color: var(--ink-sumi); padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.product-media { margin-bottom: 0.4rem; }
-.product .product-cat { margin: 0; }
+.product { position: relative; color: var(--ink-sumi); padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.product-media { margin-bottom: 0.5rem; overflow: hidden; }
 .product-avail { margin: 0; }
 .product-avail.is-disponivel { color: var(--accent-jade); opacity: 1 !important; }
 .product-avail.is-esgotado { color: var(--accent-vermilion); opacity: 1 !important; }
 /* Produtos direto sobre o verde da loja, sem cartão claro atrás */
 .shop > .shop-grid { --shadow-ink: rgba(0, 0, 0, 0.45); }
 .shop .ph { color: #121110; }
+/* faixa da loja com as mesmas cores da dos Trabalhos (tinta escura sobre ocre), apesar do texto claro da seção */
+.shop .view-project { color: #121110; border-top: 1.5px solid #121110; text-transform: uppercase; }
 .shop .product-avail.is-disponivel { color: #6CC4A1; }
 .product-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
 .product-media { aspect-ratio: var(--grid-ratio); position: relative; }
@@ -440,7 +442,7 @@ section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
 }
 .product h3 { font-family: var(--font-display-alt); font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin: 0; }
 .product .mono-small { opacity: 0.75; }
-.product-foot { margin-top: auto; padding-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.product-foot { margin-top: auto; padding-top: 0.15rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 /* Selo de dado de demonstração */
 .demo-tag {
   position: absolute; top: 1.6rem; left: 1.6rem; z-index: 6;

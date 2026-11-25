@@ -349,13 +349,17 @@
   var vitrine = (DATA.produtos || []).filter(function (p) { return p.destaque; });
   shopGrid.innerHTML = vitrine.map(function (p) {
     var selo = p.edicao && /única/i.test(p.edicao) ? 'ÚNICA' : '';
+    // categoria (e edição) passam numa faixa sobre a imagem, igual ao "ver detalhes" dos Trabalhos
+    var tag = '<span>' + esc((PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + p.edicao : '')) + ' ✦</span>', strip = '';
+    for (var i = 0; i < 6; i++) strip += tag;
     return '' +
       '<article class="product" data-cat="' + esc(p.categoria) + '" data-reveal>' +
         (selo ? '<span class="hanko">' + selo + '</span>' : '') +
         (p.demo ? '<span class="demo-tag">DEMO</span>' : '') +
         // clicar na imagem abre os detalhes do produto
-        floatOpen() + '<div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) + '</div></div></div>' +
-        '<p class="mono-small product-cat">' + esc(PROD_CAT[p.categoria] || p.categoria) + (p.edicao ? ' · ' + esc(p.edicao) : '') + '</p>' +
+        floatOpen() + '<div class="product-media tilt" data-tilt data-view="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Ver detalhes: ' + esc(p.nome) + '">' + media((p.imagens || [])[0], p.nome) +
+          '<div class="view-project" aria-hidden="true"><div class="marquee-track"><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div><div class="marquee-group">' + strip + '</div></div></div>' +
+        '</div></div></div>' +
         '<h3>' + esc(p.nome) + '</h3>' +
         '<div class="product-foot">' +
           '<span class="price">' + priceText(p) + '</span>' +
