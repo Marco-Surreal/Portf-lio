@@ -250,25 +250,20 @@ function build(sequence, { ink, accent, paper, rev = false }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor e S em espiral marcando o ritmo; entre eles, três fogos finos em estilo japonês
-// (vetorizados das referências do Marco, na cor de destaque) e a pedra, que lembra cerâmica.
-// Os fogos são diagonais (base embaixo à esquerda, pontas para cima à direita); giramos um pouco para as
-// pontas ficarem para trás e a base ir na frente, no sentido em que a faixa anda (segue).
-// flor · S · fogo A · S · pedra · S · flor · S · fogo B · S · fogo C · S
+// Composição: flor e S em espiral marcando o ritmo; entre eles, o fogo do Marco (duas versões, na cor de
+// destaque, com a cabeça para o lado em que a faixa anda) e a pedra, que lembra cerâmica.
+// flor · S · fogo · S · pedra · S · flor · S · fogo · S
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
-const FOGO = { type: 'arte', cor: 'acc', segue: true };
-const FA = { ...FOGO, nome: 'fogoA', h: 56, rot: 18 };
-const FB = { ...FOGO, nome: 'fogoB', h: 62, rot: 28 };
-const FC = { ...FOGO, nome: 'fogoD', h: 60, rot: 26 };
-const PEDRA = { type: 'arte', nome: 'pedra1c', h: 52 };
+const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
+const PEDRA = { type: 'arte', nome: 'pedra1', h: 50 };
 const sequencia = [
-  { type: 'terung' }, S, FA, SR, PEDRA, S,
-  { type: 'terung', petals: 7 }, SR, FB, S, FC, SR
+  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR, PEDRA, S,
+  { type: 'terung', petals: 7 }, SR, { ...FOGO, nome: 'fogo2' }, S
 ];
 // faixa creme: a mesma ideia começando em outro ponto
 const sequenciaCreme = [
-  FB, S, { type: 'terung' }, SR, FC, S,
-  PEDRA, SR, { type: 'terung', petals: 7 }, S, FA, SR
+  { ...FOGO, nome: 'fogo2' }, S, { type: 'terung' }, SR, PEDRA, S,
+  { ...FOGO, nome: 'fogo1' }, SR, { type: 'terung', petals: 7 }, S
 ];
 
 // As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
