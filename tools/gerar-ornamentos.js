@@ -162,13 +162,22 @@ Object.assign(ARTES, JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-elem
  * flip espelha na horizontal, flipY na vertical; cor 'acc' usa a cor de destaque.
  * engrossa: soma um contorno da mesma cor (em unidades da faixa), para os olhinhos pequenos não sumirem.
  */
-function arte(ox, { nome, h = 50, flip = false, flipY = false, cor, dy = 0, engrossa = 0, segue = false, rev = false, ink, accent }) {
+function arte(ox, { nome, h = 50, rot = 0, flip = false, flipY = false, cor, dy = 0, engrossa = 0, segue = false, rev = false, ink, accent }) {
   if (segue && rev) flip = !flip; // peças com direção (o fogo) viram nas faixas que andam para a direita
-  const a = ARTES[nome], k = h / a.h, w = a.w * k;
-  const fill = cor === 'acc' ? accent : ink;
+  const a = ARTES[nome], fill = cor === 'acc' ? accent : ink;
+  // rot = giro em graus; a caixa é recalculada com o desenho já girado, e h vale para essa caixa
+  let bx = 0, by = 0, bw = a.w, bh = a.h;
+  if (rot) {
+    const n = a.d.match(/-?\d+(\.\d+)?/g).map(Number), c = Math.cos(rot * Math.PI / 180), sn = Math.sin(rot * Math.PI / 180);
+    const xs = [], ys = [];
+    for (let i = 0; i + 1 < n.length; i += 2) { xs.push(n[i] * c - n[i + 1] * sn); ys.push(n[i] * sn + n[i + 1] * c); }
+    bx = Math.min(...xs); by = Math.min(...ys); bw = Math.max(...xs) - bx; bh = Math.max(...ys) - by;
+  }
+  const k = h / bh, w = bw * k;
   const tx = flip ? ox + w : ox, ty = MID - h / 2 + dy + (flipY ? h : 0);
   const st = engrossa ? ` stroke="${fill}" stroke-width="${f(engrossa / k)}" stroke-linejoin="round"` : '';
-  return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})" d="${a.d}"/>`, w };
+  const giro = rot ? ` translate(${f(-bx)} ${f(-by)}) rotate(${rot})` : '';
+  return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})${giro}" d="${a.d}"/>`, w };
 }
 
 /** Sorteio com semente: o mesmo cacho sai igual toda vez que o gerador roda. */
@@ -241,24 +250,25 @@ function build(sequence, { ink, accent, paper, rev = false }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor e S em espiral marcando o ritmo; entre eles, os elementos em estilo oriental:
-// fogo (o desenho do Marco, na cor de destaque), água (onda), vento (traços em espiral) e pedra.
-// Fogo, água e vento têm direção: vão com a "cabeça" para o lado em que a faixa anda (segue).
-// O fogo do Marco já nasce virado para a esquerda; a onda e o vento nascem virados para a direita (flip).
-// flor · S · fogo · S · água · S · flor · S · vento · S · pedra · S
+// Composição: flor e S em espiral marcando o ritmo; entre eles, três fogos finos em estilo japonês
+// (vetorizados das referências do Marco, na cor de destaque) e a pedra, que lembra cerâmica.
+// Os fogos são diagonais (base embaixo à esquerda, pontas para cima à direita); giramos um pouco para as
+// pontas ficarem para trás e a base ir na frente, no sentido em que a faixa anda (segue).
+// flor · S · fogo A · S · pedra · S · flor · S · fogo B · S · fogo C · S
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
-const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
-const AGUA = { type: 'arte', nome: 'agua1', h: 58, flip: true, segue: true };
-const VENTO = { type: 'arte', nome: 'vento2', h: 48, flip: true, segue: true, engrossa: 2.2 }; // o traço do vento é fino: engrossa para ter o peso do S
-const PEDRA = { type: 'arte', nome: 'pedra1', h: 50 };
+const FOGO = { type: 'arte', cor: 'acc', segue: true };
+const FA = { ...FOGO, nome: 'fogoA', h: 56, rot: 18 };
+const FB = { ...FOGO, nome: 'fogoB', h: 62, rot: 28 };
+const FC = { ...FOGO, nome: 'fogoD', h: 60, rot: 26 };
+const PEDRA = { type: 'arte', nome: 'pedra1c', h: 52 };
 const sequencia = [
-  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR, AGUA, S,
-  { type: 'terung', petals: 7 }, SR, VENTO, S, PEDRA, SR
+  { type: 'terung' }, S, FA, SR, PEDRA, S,
+  { type: 'terung', petals: 7 }, SR, FB, S, FC, SR
 ];
 // faixa creme: a mesma ideia começando em outro ponto
 const sequenciaCreme = [
-  AGUA, S, { type: 'terung' }, SR, { ...FOGO, nome: 'fogo2' }, S,
-  PEDRA, SR, { type: 'terung', petals: 7 }, S, VENTO, SR
+  FB, S, { type: 'terung' }, SR, FC, S,
+  PEDRA, SR, { type: 'terung', petals: 7 }, S, FA, SR
 ];
 
 // As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
