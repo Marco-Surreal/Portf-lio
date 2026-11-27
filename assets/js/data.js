@@ -107,6 +107,14 @@ window.SITE_DATA = {
     { id: 'F01', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
     { id: 'F02', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
     { id: 'F03', nome: '[Nome do flash]', estado: 'reservado', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
-    { id: 'F04', nome: '[Nome do flash]', estado: 'tatuado', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true }
+    { id: 'F04', nome: '[Nome do flash]', estado: 'tatuado', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F05', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F06', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F07', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F08', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F09', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F10', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F11', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true },
+    { id: 'F12', nome: '[Nome do flash]', estado: 'disponivel', tamanho: '', preco: null, exclusivo: false, imagem: '', destaque: true, demo: true }
   ]
 };
