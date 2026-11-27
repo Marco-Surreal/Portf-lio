@@ -275,18 +275,17 @@ body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
 .block-line__fill::before { top: 0; left: -2.25px; }
 .block-line__fill::after { bottom: 0; left: -2.25px; }
 .hero-bio { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-/* etiqueta SOBRE em cima do texto, sem linha */
-.hero-label {
-  display: flex; align-items: center; margin: 0 0 1.1rem;
-  font-family: var(--f-ui), var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-}
 .hero-intro { font-size: clamp(1rem, min(1.2vw, 2.1vh), 1.35rem); line-height: 1.5; margin: 0 0 1em; }
 .hero-more p { font-size: clamp(0.88rem, min(0.95vw, 1.65vh), 1.1rem); line-height: 1.6; margin: 0 0 0.85em; opacity: 0.85; }
 .hero-more p:last-child { margin-bottom: 0; }
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 1.5rem; margin-bottom: clamp(1.5rem, 5vh, 3.5rem); } /* um pouco acima do fim */
+/* celular: texto da apresentação um pouco menor (15px e 13.5px) */
+@media (max-width: 640px) {
+  .hero-intro { font-size: 0.94rem; line-height: 1.45; }
+  .hero-more p { font-size: 0.84rem; line-height: 1.55; }
+}
 /* telas baixas (notebook): letras um pouco menores e só o primeiro parágrafo extra, para a bio caber até embaixo */
 @media (max-height: 820px) and (min-width: 641px) {
-  .hero-label { margin-bottom: 0.6rem; }
   .hero-intro { font-size: 0.94rem; line-height: 1.42; }
   .hero-more p { font-size: 0.84rem; line-height: 1.48; }
   .hero-more p:nth-child(n+2) { display: none; }
