@@ -158,11 +158,33 @@ const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'ar
 Object.assign(ARTES, JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-elementos', 'elementos.json'), 'utf8')));
 
 /**
+ * Separa um desenho em peças: cada contorno de fora com os seus furos.
+ * Devolve as peças da maior para a menor (pela área), cada uma com o seu "d".
+ */
+function pecas(d) {
+  const subs = d.split(/(?=M)/).map((t) => t.trim()).filter(Boolean).map((t) => {
+    const n = t.match(/-?\d+(\.\d+)?/g).map(Number); let A = 0;
+    for (let i = 0; i + 3 < n.length; i += 2) A += n[i] * n[i + 3] - n[i + 2] * n[i + 1];
+    const xs = n.filter((_, i) => i % 2 === 0), ys = n.filter((_, i) => i % 2 === 1);
+    return { t, A: A / 2, box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] };
+  });
+  const sinal = Math.sign(subs.reduce((m, q) => (Math.abs(q.A) > Math.abs(m.A) ? q : m)).A);
+  const fora = subs.filter((q) => Math.sign(q.A) === sinal).map((q) => ({ ...q, furos: [] }));
+  const dentro = (b, c) => c[0] <= b[0] && c[1] <= b[1] && c[2] >= b[2] && c[3] >= b[3];
+  const area = (b) => (b[2] - b[0]) * (b[3] - b[1]);
+  subs.filter((q) => Math.sign(q.A) !== sinal).forEach((q) => {
+    const dono = fora.filter((o) => dentro(q.box, o.box)).sort((x, y) => area(x.box) - area(y.box))[0];
+    if (dono) dono.furos.push(q.t);
+  });
+  return fora.sort((x, y) => Math.abs(y.A) - Math.abs(x.A)).map((o) => [o.t, ...o.furos].join(' '));
+}
+
+/**
  * Coloca uma arte com altura h, centrada na faixa.
  * flip espelha na horizontal, flipY na vertical; cor 'acc' usa a cor de destaque.
  * engrossa: soma um contorno da mesma cor (em unidades da faixa), para os olhinhos pequenos não sumirem.
  */
-function arte(ox, { nome, h = 50, rot = 0, flip = false, flipY = false, cor, dy = 0, engrossa = 0, segue = false, rev = false, ink, accent }) {
+function arte(ox, { nome, h = 50, rot = 0, flip = false, flipY = false, cor, dy = 0, engrossa = 0, segue = false, rev = false, menorAcc = false, ink, accent }) {
   if (segue && rev) flip = !flip; // peças com direção (o fogo) viram nas faixas que andam para a direita
   const a = ARTES[nome], fill = cor === 'acc' ? accent : ink;
   // rot = giro em graus; a caixa é recalculada com o desenho já girado, e h vale para essa caixa
@@ -177,7 +199,13 @@ function arte(ox, { nome, h = 50, rot = 0, flip = false, flipY = false, cor, dy 
   const tx = flip ? ox + w : ox, ty = MID - h / 2 + dy + (flipY ? h : 0);
   const st = engrossa ? ` stroke="${fill}" stroke-width="${f(engrossa / k)}" stroke-linejoin="round"` : '';
   const giro = rot ? ` translate(${f(-bx)} ${f(-by)}) rotate(${rot})` : '';
-  return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})${giro}" d="${a.d}"/>`, w };
+  const tr = `transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})${giro}"`;
+  // menorAcc: a peça menor do desenho (ex. a pedrinha da frente) vai na cor de destaque
+  if (menorAcc) {
+    const [maior, ...resto] = pecas(a.d);
+    return { svg: `<g fill-rule="evenodd" ${tr}><path fill="${fill}"${st} d="${maior}"/><path fill="${accent}"${st} d="${resto.join(' ')}"/></g>`, w };
+  }
+  return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" ${tr} d="${a.d}"/>`, w };
 }
 
 /** Sorteio com semente: o mesmo cacho sai igual toda vez que o gerador roda. */
@@ -255,7 +283,7 @@ const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A0
 // flor · S · fogo · S · pedra · S · flor · S · fogo · S
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
 const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
-const PEDRA = { type: 'arte', nome: 'pedra1', h: 50 };
+const PEDRA = { type: 'arte', nome: 'pedra1', h: 50, menorAcc: true }; // a pedrinha menor vai na cor de destaque
 const sequencia = [
   { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR, PEDRA, S,
   { type: 'terung', petals: 7 }, SR, { ...FOGO, nome: 'fogo2' }, S
