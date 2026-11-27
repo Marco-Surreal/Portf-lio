@@ -153,6 +153,9 @@ function fogo(ox, { h = 50, flipY = false, rev = false, accent }) {
 /* ---------- artes do Marco (MARCO SURREAL AESTHETICS/ARTES FAIXA SITE.png) ----------
    Vetorizadas com tools/faixa-artes/vetorizar.js (Potrace) e guardadas em tools/faixa-artes/artes.json. */
 const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'artes.json'), 'utf8'));
+/* Elementos orientais (água, vento, pedra): vetorizados das imagens de referência do Marco em
+   "MARCO SURREAL AESTHETICS/elementos oriental/IMAGENS CHAT" com tools/faixa-elementos/vetorizar.js. */
+Object.assign(ARTES, JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-elementos', 'elementos.json'), 'utf8')));
 
 /**
  * Coloca uma arte com altura h, centrada na faixa.
@@ -238,19 +241,24 @@ function build(sequence, { ink, accent, paper, rev = false }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição simples: flor e S em espiral marcando o ritmo, com o fogo do Marco (duas versões, na cor
-// de destaque) no lugar de uma flor a cada volta. O fogo vai com a cabeça para o lado em que a faixa anda.
-// flor · S · fogo · S refletido · flor · S · fogo · S refletido
+// Composição: flor e S em espiral marcando o ritmo; entre eles, os elementos em estilo oriental:
+// fogo (o desenho do Marco, na cor de destaque), água (onda), vento (traços em espiral) e pedra.
+// Fogo, água e vento têm direção: vão com a "cabeça" para o lado em que a faixa anda (segue).
+// O fogo do Marco já nasce virado para a esquerda; a onda e o vento nascem virados para a direita (flip).
+// flor · S · fogo · S · água · S · flor · S · vento · S · pedra · S
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
 const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
+const AGUA = { type: 'arte', nome: 'agua1', h: 58, flip: true, segue: true };
+const VENTO = { type: 'arte', nome: 'vento2', h: 48, flip: true, segue: true, engrossa: 2.2 }; // o traço do vento é fino: engrossa para ter o peso do S
+const PEDRA = { type: 'arte', nome: 'pedra1', h: 50 };
 const sequencia = [
-  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR,
-  { type: 'terung', petals: 7 }, S, { ...FOGO, nome: 'fogo2' }, SR
+  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR, AGUA, S,
+  { type: 'terung', petals: 7 }, SR, VENTO, S, PEDRA, SR
 ];
 // faixa creme: a mesma ideia começando em outro ponto
 const sequenciaCreme = [
-  { ...FOGO, nome: 'fogo2' }, S, { type: 'terung' }, SR,
-  { ...FOGO, nome: 'fogo1' }, S, { type: 'terung', petals: 7 }, SR
+  AGUA, S, { type: 'terung' }, SR, { ...FOGO, nome: 'fogo2' }, S,
+  PEDRA, SR, { type: 'terung', petals: 7 }, S, VENTO, SR
 ];
 
 // As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
