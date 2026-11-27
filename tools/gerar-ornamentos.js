@@ -120,25 +120,54 @@ function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, paper, look 
    Vetorizadas com tools/faixa-artes/vetorizar.js (Potrace) e guardadas em tools/faixa-artes/artes.json. */
 const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'artes.json'), 'utf8'));
 
-/** Coloca uma arte com altura h, centrada na faixa. flip espelha; cor 'acc' usa a cor de destaque. */
-function arte(ox, { nome, h = 60, flip = false, cor, dy = 0, ink, accent }) {
+/**
+ * Coloca uma arte com altura h, centrada na faixa.
+ * flip espelha na horizontal, flipY na vertical; cor 'acc' usa a cor de destaque.
+ * engrossa: soma um contorno da mesma cor (em unidades da faixa), para os olhinhos pequenos não sumirem.
+ */
+function arte(ox, { nome, h = 50, flip = false, flipY = false, cor, dy = 0, engrossa = 0, ink, accent }) {
   const a = ARTES[nome], k = h / a.h, w = a.w * k;
-  const tx = flip ? ox + w : ox;
   const fill = cor === 'acc' ? accent : ink;
-  return { svg: `<path fill="${fill}" fill-rule="evenodd" transform="translate(${f(tx)} ${f(MID - h / 2 + dy)}) scale(${f(flip ? -k : k)} ${f(k)})" d="${a.d}"/>`, w };
+  const tx = flip ? ox + w : ox, ty = MID - h / 2 + dy + (flipY ? h : 0);
+  const st = engrossa ? ` stroke="${fill}" stroke-width="${f(engrossa / k)}" stroke-linejoin="round"` : '';
+  return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})" d="${a.d}"/>`, w };
 }
 
-/** Dois olhos empilhados, um levemente deslocado do outro. */
-function olhos(ox, { de = ['olho2', 'olho6'], h = 26, ink, accent }) {
-  const A = ARTES[de[0]], B = ARTES[de[1]];
-  const wa = A.w * h / A.h, wb = B.w * h / B.h, w = Math.max(wa, wb) + 8;
-  const top = arte(ox + (w - wa) / 2 - 4, { nome: de[0], h, dy: -17, ink, accent });
-  const bot = arte(ox + (w - wb) / 2 + 4, { nome: de[1], h, dy: 17, ink, accent });
-  return { svg: top.svg + bot.svg, w };
+/**
+ * Cacho de olhinhos em fileiras desencontradas (tipo favo). linhas = olhos por fileira, ex. [2, 3, 2].
+ * Todos ficam do mesmo tamanho (cabem numa caixa cw x ch). Os da metade direita são espelhados,
+ * então o cacho fica simétrico. acc = posições (0, 1, 2…) que vão na cor de destaque.
+ */
+function olhar(ox, { de, linhas, acc = [], cw = 31, ch = 17, passoX = 35, passoY = 22, ink, accent }) {
+  const maxN = Math.max(...linhas), w = (maxN - 1) * passoX + cw;
+  let svg = '', i = 0;
+  linhas.forEach((n, r) => {
+    const y = (r - (linhas.length - 1) / 2) * passoY;
+    const x0 = ox + (w - ((n - 1) * passoX + cw)) / 2;
+    for (let c = 0; c < n; c++, i++) {
+      const nome = de[i % de.length], A = ARTES[nome];
+      const k = Math.min(cw / A.w, ch / A.h), ew = A.w * k, eh = A.h * k;
+      const cx = x0 + c * passoX + cw / 2;
+      svg += arte(cx - ew / 2, { nome, h: eh, dy: y, flip: c >= n / 2, cor: acc.includes(i) ? 'acc' : '', engrossa: 0.7, ink, accent }).svg;
+    }
+  });
+  return { svg, w };
 }
 
-/** Bordas: só a fieira de olhinhos (bolinha com pupila), como as contas da base do GRAAL. Sem a linha. */
-function teethBorder(W, ink, paper) {
+/** Borda "dentes": linha fina + fileira de triângulos apontando para dentro (a primeira versão). */
+function bordaTriangulos(W, ink) {
+  const n = Math.round(W / 12), tw = W / n;
+  let top = '', bot = '';
+  for (let i = 0; i < n; i++) {
+    const x = i * tw;
+    top += `M${f(x)} 6L${f(x + tw)} 6L${f(x + tw / 2)} 14Z`;
+    bot += `M${f(x)} ${H - 6}L${f(x + tw)} ${H - 6}L${f(x + tw / 2)} ${H - 14}Z`;
+  }
+  return `<g fill="${ink}"><rect y="1.5" width="${W}" height="2.5"/><rect y="${H - 4}" width="${W}" height="2.5"/><path d="${top}${bot}"/></g>`;
+}
+
+/** Borda "contas": só a fieira de olhinhos (bolinha com pupila), sem a linha. */
+function bordaContas(W, ink, paper) {
   const n = Math.round(W / 15), tw = W / n;
   let beads = '';
   for (let i = 0; i < n; i++) {
@@ -148,52 +177,54 @@ function teethBorder(W, ink, paper) {
   return `<g fill="${ink}">${beads}</g>`;
 }
 
-const MOTIVOS = { terung, arte, olhos };
+// Qual borda usar: 'triangulos' (teste pedido pelo Marco) ou 'contas'.
+const BORDA = 'triangulos';
+
+const MOTIVOS = { terung, arte, olhar };
 
 function build(sequence, { ink, accent, paper }) {
   let x = 0, body = '';
   sequence.forEach((item) => {
     const g = MOTIVOS[item.type](x, { ink, accent, paper, ...item });
     body += g.svg;
-    x += g.w + (item.gap ?? 18);
+    x += g.w + (item.gap ?? 16);
   });
   const W = Math.round(x);
+  const borda = BORDA === 'contas' ? bordaContas(W, ink, paper) : bordaTriangulos(W, ink);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMinYMid meet">` +
-    teethBorder(W, ink, paper) + body + '</svg>\n';
+    borda + body + '</svg>\n';
 }
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: a flor e as espirais marcam o ritmo; entre elas, olhos, nuvens e fogo.
-// O olho tribal fica no centro, com um fogo de cada lado espelhado (simetria de ornamento).
+// Os quatro ornamentos (S, espiral dupla, olho tribal, olho de fogo) têm a mesma altura e o mesmo traço.
+const ORN = 50;
+// Composição em espelho: cada metade do ladrilho é o reflexo da outra, com um trio de fogo no centro.
+// flor · S · olhos · olho tribal · [fogo · espiral dupla · fogo] · olho tribal (refletido) · olhos · S (refletido)
 const sequencia = [
-  { type: 'terung' },
-  { type: 'arte', nome: 'espiralS', h: 50 },
-  { type: 'olhos', de: ['olho2', 'olho6'] },
-  { type: 'arte', nome: 'espiralDupla', h: 48 },
-  { type: 'arte', nome: 'nuvem1', h: 60 },
-  { type: 'arte', nome: 'fogo1', h: 52, cor: 'acc', gap: 4 },
-  { type: 'arte', nome: 'olhoTribal', h: 62, gap: 4 },
-  { type: 'arte', nome: 'fogo1', h: 52, cor: 'acc', flip: true },
-  { type: 'arte', nome: 'nuvem2', h: 60, flip: true },
-  { type: 'arte', nome: 'espiralDupla', h: 48 },
-  { type: 'olhos', de: ['olho11', 'olho5'] },
-  { type: 'arte', nome: 'espiralS', h: 50, flip: true }
+  { type: 'terung', scale: 0.9 },
+  { type: 'arte', nome: 'espiralS', h: ORN },
+  { type: 'olhar', de: ['olho6', 'olho11', 'olho2', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], acc: [3] },
+  { type: 'arte', nome: 'olhoTribal', h: ORN },
+  { type: 'arte', nome: 'fogo1', h: 44, cor: 'acc', gap: 8 },
+  { type: 'arte', nome: 'espiralDupla', h: ORN, gap: 8 },
+  { type: 'arte', nome: 'fogo1', h: 44, cor: 'acc', flip: true },
+  { type: 'arte', nome: 'olhoTribal', h: ORN, flip: true },
+  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4'], linhas: [3, 2], acc: [1] },
+  { type: 'arte', nome: 'espiralS', h: ORN, flip: true }
 ];
-// faixa creme: mesma ideia com as outras peças (olho de fogo, fogo 2, nuvem 3, olhos de pálpebra)
+// faixa creme: mesma ideia com as outras peças (olho de fogo, fogo 2, espiral dupla de ponta-cabeça)
 const sequenciaCreme = [
-  { type: 'terung' },
-  { type: 'arte', nome: 'espiralDupla', h: 48 },
-  { type: 'olhos', de: ['olho4', 'olho10'] },
-  { type: 'arte', nome: 'espiralS', h: 50 },
-  { type: 'arte', nome: 'nuvem3', h: 56 },
-  { type: 'arte', nome: 'fogo2', h: 52, cor: 'acc', gap: 6 },
-  { type: 'arte', nome: 'olhoFogo', h: 54, gap: 6 },
-  { type: 'arte', nome: 'fogo2', h: 52, cor: 'acc', flip: true },
-  { type: 'arte', nome: 'nuvem3', h: 56, flip: true },
-  { type: 'arte', nome: 'espiralS', h: 50, flip: true },
-  { type: 'olhos', de: ['olho7', 'olho1'] },
-  { type: 'arte', nome: 'espiralDupla', h: 48 }
+  { type: 'terung', scale: 0.9 },
+  { type: 'arte', nome: 'espiralDupla', h: ORN },
+  { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9'], linhas: [3, 3], acc: [1, 4] },
+  { type: 'arte', nome: 'olhoFogo', h: ORN },
+  { type: 'arte', nome: 'fogo2', h: 44, cor: 'acc', gap: 8 },
+  { type: 'arte', nome: 'espiralS', h: ORN, gap: 8 },
+  { type: 'arte', nome: 'fogo2', h: 44, cor: 'acc', flip: true },
+  { type: 'arte', nome: 'olhoFogo', h: ORN, flip: true },
+  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], acc: [3, 4] },
+  { type: 'arte', nome: 'espiralDupla', h: ORN, flipY: true }
 ];
 
 const files = {
