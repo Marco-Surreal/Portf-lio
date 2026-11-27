@@ -159,7 +159,8 @@ const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'ar
  * flip espelha na horizontal, flipY na vertical; cor 'acc' usa a cor de destaque.
  * engrossa: soma um contorno da mesma cor (em unidades da faixa), para os olhinhos pequenos não sumirem.
  */
-function arte(ox, { nome, h = 50, flip = false, flipY = false, cor, dy = 0, engrossa = 0, ink, accent }) {
+function arte(ox, { nome, h = 50, flip = false, flipY = false, cor, dy = 0, engrossa = 0, segue = false, rev = false, ink, accent }) {
+  if (segue && rev) flip = !flip; // peças com direção (o fogo) viram nas faixas que andam para a direita
   const a = ARTES[nome], k = h / a.h, w = a.w * k;
   const fill = cor === 'acc' ? accent : ink;
   const tx = flip ? ox + w : ox, ty = MID - h / 2 + dy + (flipY ? h : 0);
@@ -237,23 +238,19 @@ function build(sequence, { ink, accent, paper, rev = false }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor, fogo e grupos de 3 a 5 olhos, separados pelos dois ornamentos em espiral do Marco
-// (o S e a espiral dupla), que se revezam. A espiral dupla aparece em pé e de ponta-cabeça.
-// flor · S · olhos · dupla · fogo · S refletido · flor · dupla invertida · olhos · S · fogo · dupla
+// Composição simples: flor e S em espiral marcando o ritmo, com o fogo do Marco (duas versões, na cor
+// de destaque) no lugar de uma flor a cada volta. O fogo vai com a cabeça para o lado em que a faixa anda.
+// flor · S · fogo · S refletido · flor · S · fogo · S refletido
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
-const D = { type: 'arte', nome: 'espiralDupla', h: 50 }, DI = { ...D, flipY: true };
-const FOGO = { type: 'fogo', h: 60 }, FOGOI = { ...FOGO, flipY: true };
-const OLHOS = ['olho2', 'olho3', 'olho7', 'olho8', 'olho9', 'olho11'];
+const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
 const sequencia = [
-  { type: 'terung' }, S, { type: 'olhar', de: OLHOS, linhas: [2, 1, 2], seed: 7, acc: [2] }, D,
-  FOGO, SR, { type: 'terung', petals: 7 }, DI,
-  { type: 'olhar', de: ['olho9', 'olho3', 'olho11', 'olho7'], linhas: [2, 2], passoY: 30, seed: 21, acc: [1, 2] }, S, FOGOI, D
+  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR,
+  { type: 'terung', petals: 7 }, S, { ...FOGO, nome: 'fogo2' }, SR
 ];
 // faixa creme: a mesma ideia começando em outro ponto
 const sequenciaCreme = [
-  FOGO, D, { type: 'olhar', de: ['olho8', 'olho2', 'olho9'], linhas: [3], seed: 3, acc: [1] }, S,
-  { type: 'terung' }, DI, FOGOI, SR,
-  { type: 'olhar', de: ['olho11', 'olho7', 'olho3', 'olho2', 'olho9'], linhas: [2, 1, 2], seed: 12, acc: [2] }, D, { type: 'terung', petals: 7 }, S
+  { ...FOGO, nome: 'fogo2' }, S, { type: 'terung' }, SR,
+  { ...FOGO, nome: 'fogo1' }, S, { type: 'terung', petals: 7 }, SR
 ];
 
 // As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
