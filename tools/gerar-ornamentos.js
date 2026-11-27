@@ -180,14 +180,14 @@ function bordaContas(W, ink, paper) {
 // Qual borda usar: 'triangulos' (teste pedido pelo Marco) ou 'contas'.
 const BORDA = 'triangulos';
 
-const MOTIVOS = { terung, arte, olhar };
+const MOTIVOS = { terung, s: sScroll, arte, olhar };
 
 function build(sequence, { ink, accent, paper }) {
   let x = 0, body = '';
   sequence.forEach((item) => {
     const g = MOTIVOS[item.type](x, { ink, accent, paper, ...item });
     body += g.svg;
-    x += g.w + (item.gap ?? 16);
+    x += g.w + (item.gap ?? 10);
   });
   const W = Math.round(x);
   const borda = BORDA === 'contas' ? bordaContas(W, ink, paper) : bordaTriangulos(W, ink);
@@ -197,34 +197,17 @@ function build(sequence, { ink, accent, paper }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Os quatro ornamentos (S, espiral dupla, olho tribal, olho de fogo) têm a mesma altura e o mesmo traço.
-const ORN = 50;
-// Composição em espelho: cada metade do ladrilho é o reflexo da outra, com um trio de fogo no centro.
-// flor · S · olhos · olho tribal · [fogo · espiral dupla · fogo] · olho tribal (refletido) · olhos · S (refletido)
+// Composição simples, como o Marco preferiu: flor e S em espiral marcando o ritmo, com o fogo dele
+// (duas versões, na cor de destaque) entrando no lugar de uma flor a cada volta.
+const FOGO = { type: 'arte', h: 50, cor: 'acc', gap: 12 };
 const sequencia = [
-  { type: 'terung', scale: 0.9 },
-  { type: 'arte', nome: 'espiralS', h: ORN },
-  { type: 'olhar', de: ['olho6', 'olho11', 'olho2', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], acc: [3] },
-  { type: 'arte', nome: 'olhoTribal', h: ORN },
-  { type: 'arte', nome: 'fogo1', h: 44, cor: 'acc', gap: 8 },
-  { type: 'arte', nome: 'espiralDupla', h: ORN, gap: 8 },
-  { type: 'arte', nome: 'fogo1', h: 44, cor: 'acc', flip: true },
-  { type: 'arte', nome: 'olhoTribal', h: ORN, flip: true },
-  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4'], linhas: [3, 2], acc: [1] },
-  { type: 'arte', nome: 'espiralS', h: ORN, flip: true }
+  { type: 'terung' }, { type: 's' }, { ...FOGO, nome: 'fogo1' }, { type: 's', flip: true },
+  { type: 'terung', petals: 7 }, { type: 's' }, { ...FOGO, nome: 'fogo2' }, { type: 's', flip: true }
 ];
-// faixa creme: mesma ideia com as outras peças (olho de fogo, fogo 2, espiral dupla de ponta-cabeça)
+// faixa creme: a mesma ideia começando em outro ponto, para as faixas não ficarem iguais
 const sequenciaCreme = [
-  { type: 'terung', scale: 0.9 },
-  { type: 'arte', nome: 'espiralDupla', h: ORN },
-  { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9'], linhas: [3, 3], acc: [1, 4] },
-  { type: 'arte', nome: 'olhoFogo', h: ORN },
-  { type: 'arte', nome: 'fogo2', h: 44, cor: 'acc', gap: 8 },
-  { type: 'arte', nome: 'espiralS', h: ORN, gap: 8 },
-  { type: 'arte', nome: 'fogo2', h: 44, cor: 'acc', flip: true },
-  { type: 'arte', nome: 'olhoFogo', h: ORN, flip: true },
-  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], acc: [3, 4] },
-  { type: 'arte', nome: 'espiralDupla', h: ORN, flipY: true }
+  { ...FOGO, nome: 'fogo2' }, { type: 's' }, { type: 'terung' }, { type: 's', flip: true },
+  { ...FOGO, nome: 'fogo1' }, { type: 's' }, { type: 'terung', petals: 7 }, { type: 's', flip: true }
 ];
 
 const files = {
