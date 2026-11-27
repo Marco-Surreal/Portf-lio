@@ -93,7 +93,7 @@ function sScroll(ox, { R = 22, d = 24, turns = 1.55, wMax = 10, wMin = 1.6, flip
 
 /** Bunga terung: anel central com pétalas em gancho girando no mesmo sentido. */
 function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, paper, look = 0, scale = 1 }) {
-  const ext = ringR + 2 * rs + 2;
+  const ext = ringR + 2 * rs - 1;
   const w = 2 * ext * scale + 8;
   const cx = ox + w / 2;
   let out = '';
@@ -113,94 +113,28 @@ function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, paper, look 
   }
   out += `<circle r="${ringR}" fill="none" stroke="${ink}" stroke-width="4.5"/>`;
   out += `<circle r="${f(ringR * 0.42)}" fill="${accent}"/>`;
-  for (let i = 0; i < petals; i++) {             // pontos de respiro entre as pétalas
-    const phi = ((i + 0.5) / petals) * TAU;
-    out += `<circle cx="${f((ext - 1) * Math.cos(phi))}" cy="${f((ext - 1) * Math.sin(phi))}" r="2.2"/>`;
-  }
   return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(${scale})" fill="${ink}">${out}</g>`, w };
 }
 
-/* ---------- motivos novos, tirados das artes da pasta MARCO SURREAL AESTHETICS ----------
-   Todos são desenhados em volta de (0, 0) e retornam { svg, w }. */
+/* ---------- artes do Marco (MARCO SURREAL AESTHETICS/ARTES FAIXA SITE.png) ----------
+   Vetorizadas com tools/faixa-artes/vetorizar.js (Potrace) e guardadas em tools/faixa-artes/artes.json. */
+const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'artes.json'), 'utf8'));
 
-const ptsStr = (pts) => 'M' + pts.map((p) => f(p[0]) + ' ' + f(p[1])).join('L');
-
-/** Um olho da Mulher Multiolhos: pálpebra de cima grossa passando do canto, sombra colorida em arco
-    por cima, pálpebra de baixo fina, íris preta com brilho e 3 cílios no canto de fora. */
-function umOlho(x, y, { ink, accent, paper, mirror = false, closed = false }) {
-  const m = mirror ? -1 : 1, P = (px, py) => [x + m * px, y + py];
-  let o = '';
-  // sombra colorida acima da pálpebra
-  o += `<path fill="${accent}" d="${tapered(bez(P(-12, -3.5), P(-6, -13.5), P(6, -13.5), P(12.5, -4)), (u) => 0.4 + 4.2 * Math.sin(Math.PI * u))}"/>`;
-  if (closed) {
-    // olho piscando: só a pálpebra fechada, curvada para baixo
-    o += `<path d="${tapered(bez(P(-13, -1), P(-6, 6), P(6, 6), P(13.5, -1.5)), (u) => 0.6 + 3 * Math.sin(Math.PI * u))}"/>`;
-  } else {
-    o += `<path fill="${paper}" d="M${f(P(-12, 0)[0])} ${f(y)}Q${f(x)} ${f(y - 9)} ${f(P(12, 0)[0])} ${f(y)}Q${f(x)} ${f(y + 8)} ${f(P(-12, 0)[0])} ${f(y)}Z"/>`;
-    o += `<circle cx="${f(P(0.5, 0)[0])}" cy="${f(y + 0.3)}" r="4.6"/>`;
-    o += `<circle cx="${f(P(2, 0)[0])}" cy="${f(y - 1.2)}" r="1.5" fill="${paper}"/>`;
-    o += `<path d="${tapered(bez(P(-13, 0.6), P(-6, -9.5), P(6, -9.5), P(13.8, -0.6)), (u) => 0.6 + 3.2 * Math.sin(Math.PI * u))}"/>`;
-    o += `<path d="${tapered(bez(P(-9.5, 2.5), P(-4, 7.8), P(4, 7.8), P(9.5, 2.5)), (u) => 0.4 + 1.5 * Math.sin(Math.PI * u))}"/>`;
-  }
-  // cílios curvados para fora no canto de fora
-  [[7, -5.2, 5], [10.2, -3.4, 6.5], [12.8, -1.2, 5.5]].forEach(([lx, ly, len]) => {
-    const yy = closed ? ly + 5.5 : ly;
-    o += `<path d="${tapered(bez(P(lx, yy), P(lx + 1, yy - len * 0.6), P(lx + 2.6, yy - len * 0.9), P(lx + 4.2, yy - len)), (u) => 0.3 + 1.6 * (1 - u))}"/>`;
-  });
-  return o;
+/** Coloca uma arte com altura h, centrada na faixa. flip espelha; cor 'acc' usa a cor de destaque. */
+function arte(ox, { nome, h = 60, flip = false, cor, dy = 0, ink, accent }) {
+  const a = ARTES[nome], k = h / a.h, w = a.w * k;
+  const tx = flip ? ox + w : ox;
+  const fill = cor === 'acc' ? accent : ink;
+  return { svg: `<path fill="${fill}" fill-rule="evenodd" transform="translate(${f(tx)} ${f(MID - h / 2 + dy)}) scale(${f(flip ? -k : k)} ${f(k)})" d="${a.d}"/>`, w };
 }
 
-/** Vários olhinhos simples: três olhos espalhados, um deles piscando. */
-function olhinhos(ox, { ink, accent, paper }) {
-  const w = 92, cx = ox + w / 2;
-  const s = umOlho(-14, -13, { ink, accent, paper, mirror: true }) +
-    umOlho(16, -6, { ink, accent, paper, closed: true }) +
-    umOlho(-3, 17, { ink, accent, paper });
-  return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(1.32)" fill="${ink}">${s}</g>`, w };
-}
-
-/** Nuvem oriental: contorno de bolinhas, caracóis por dentro e rabichos em chama nas pontas. */
-let nuvemId = 0;
-function nuvem(ox, { ink, flip = false }) {
-  const w = 108, cx = ox + w / 2, id = 'nv' + (nuvemId++), sw = 4;
-  const lobes = [[-24, 9, 11], [-11, -4, 14], [7, -10, 13], [23, 0, 11], [10, 11, 11], [-6, 12, 10]];
-  let s = `<mask id="${id}" maskUnits="userSpaceOnUse" x="-70" y="-50" width="140" height="100"><rect x="-70" y="-50" width="140" height="100" fill="#fff"/>` +
-    lobes.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#000"/>`).join('') + '</mask>';
-  s += `<g mask="url(#${id})">` + lobes.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + sw}"/>`).join('') + '</g>';
-  // caracóis por dentro (uma volta e pouco, engrossando para fora)
-  [[-11, -4, 7.5, 0.3], [7, -10, 7, 2.3], [-24, 9, 5.5, 3.8], [23, 0, 5.5, 5.4], [10, 11, 5, 1]].forEach(([x, y, r, a0]) => {
-    const pts = [];
-    for (let k = 0; k <= 50; k++) { const t = k / 50, th = a0 + 1.15 * TAU * t, rr = r * (0.12 + 0.88 * t); pts.push([x + rr * Math.cos(th), y + rr * Math.sin(th)]); }
-    s += `<path d="${tapered(pts, (u) => 0.8 + 2.2 * u)}"/>`;
-  });
-  // rabichos em chama saindo das pontas
-  s += `<path d="${tapered(bez([-33, 14], [-42, 18], [-44, 4], [-53, 3]), (u) => 0.3 + 5.5 * Math.pow(1 - u, 0.8))}"/>`;
-  s += `<path d="${tapered(bez([31, -5], [39, -11], [41, -19], [50, -23]), (u) => 0.3 + 5.5 * Math.pow(1 - u, 0.8))}"/>`;
-  return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(${flip ? -1 : 1} 1)" fill="${ink}">${s}</g>`, w };
-}
-
-/** Fogo: línguas de chama onduladas subindo de uma base, com uma cópia colorida deslocada atrás
-    (como o fogo laranja do flash de blackwork). */
-function fogo(ox, { ink, accent }) {
-  const w = 84, cx = ox + w / 2;
-  const tongues = [[-22, 24, -6, 1.1], [-11, 28, -26, 1.5], [0, 30, -36, 1.3], [11, 28, -24, 1.55], [22, 24, -8, 1.05]];
-  let shapes = '';
-  tongues.forEach(([x0, y0, y1, ph], i) => {
-    const pts = [], lean = x0 * 0.35;
-    for (let k = 0; k <= 60; k++) {
-      const t = k / 60, y = y0 + (y1 - y0) * t;
-      const x = x0 + lean * t * t + 5.5 * Math.sin(t * TAU * ph + i * 1.7) * Math.sin(Math.PI * Math.min(1, t * 1.3));
-      pts.push([x, y]);
-    }
-    shapes += `<path d="${tapered(pts, (u) => 0.3 + 9 * Math.pow(1 - u, 0.7))}"/>`;
-  });
-  // base arredondada juntando as línguas
-  shapes += `<path d="M-27 23Q-28 34 0 35Q28 34 27 23Q13 28 0 28Q-13 28 -27 23Z"/>`;
-  // faíscas soltas
-  shapes += `<path d="${tapered(bez([-27, 2], [-29, -4], [-26, -9], [-29, -14]), (u) => 0.3 + 3.4 * (1 - u))}"/>`;
-  shapes += `<path d="${tapered(bez([27, -2], [29, -8], [26, -13], [29, -18]), (u) => 0.3 + 3.4 * (1 - u))}"/>`;
-  const svg = `<g transform="translate(2.6 1.6)" fill="${accent}">${shapes}</g><g fill="${ink}">${shapes}</g>`;
-  return { svg: `<g transform="translate(${f(cx)} ${MID})">${svg}</g>`, w };
+/** Dois olhos empilhados, um levemente deslocado do outro. */
+function olhos(ox, { de = ['olho2', 'olho6'], h = 26, ink, accent }) {
+  const A = ARTES[de[0]], B = ARTES[de[1]];
+  const wa = A.w * h / A.h, wb = B.w * h / B.h, w = Math.max(wa, wb) + 8;
+  const top = arte(ox + (w - wa) / 2 - 4, { nome: de[0], h, dy: -17, ink, accent });
+  const bot = arte(ox + (w - wb) / 2 + 4, { nome: de[1], h, dy: 17, ink, accent });
+  return { svg: top.svg + bot.svg, w };
 }
 
 /** Bordas: só a fieira de olhinhos (bolinha com pupila), como as contas da base do GRAAL. Sem a linha. */
@@ -214,14 +148,14 @@ function teethBorder(W, ink, paper) {
   return `<g fill="${ink}">${beads}</g>`;
 }
 
-const MOTIVOS = { terung, s: sScroll, olhinhos, nuvem, fogo };
+const MOTIVOS = { terung, arte, olhos };
 
 function build(sequence, { ink, accent, paper }) {
   let x = 0, body = '';
   sequence.forEach((item) => {
     const g = MOTIVOS[item.type](x, { ink, accent, paper, ...item });
     body += g.svg;
-    x += g.w + (item.gap ?? 10);
+    x += g.w + (item.gap ?? 18);
   });
   const W = Math.round(x);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMinYMid meet">` +
@@ -230,15 +164,36 @@ function build(sequence, { ink, accent, paper }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// flor > S > olhinhos > S > nuvem > S > flor > S > fogo > S (e repete)
+// Composição: a flor e as espirais marcam o ritmo; entre elas, olhos, nuvens e fogo.
+// O olho tribal fica no centro, com um fogo de cada lado espelhado (simetria de ornamento).
 const sequencia = [
-  { type: 'terung' }, { type: 's' }, { type: 'olhinhos' }, { type: 's', flip: true }, { type: 'nuvem' },
-  { type: 's' }, { type: 'terung', petals: 7 }, { type: 's', flip: true }, { type: 'fogo' }, { type: 's' }
+  { type: 'terung' },
+  { type: 'arte', nome: 'espiralS', h: 50 },
+  { type: 'olhos', de: ['olho2', 'olho6'] },
+  { type: 'arte', nome: 'espiralDupla', h: 48 },
+  { type: 'arte', nome: 'nuvem1', h: 60 },
+  { type: 'arte', nome: 'fogo1', h: 52, cor: 'acc', gap: 4 },
+  { type: 'arte', nome: 'olhoTribal', h: 62, gap: 4 },
+  { type: 'arte', nome: 'fogo1', h: 52, cor: 'acc', flip: true },
+  { type: 'arte', nome: 'nuvem2', h: 60, flip: true },
+  { type: 'arte', nome: 'espiralDupla', h: 48 },
+  { type: 'olhos', de: ['olho11', 'olho5'] },
+  { type: 'arte', nome: 'espiralS', h: 50, flip: true }
 ];
-// faixa creme: a mesma ideia começando em outro ponto, para as faixas não ficarem iguais
+// faixa creme: mesma ideia com as outras peças (olho de fogo, fogo 2, nuvem 3, olhos de pálpebra)
 const sequenciaCreme = [
-  { type: 'nuvem', flip: true }, { type: 's' }, { type: 'terung' }, { type: 's', flip: true }, { type: 'fogo' },
-  { type: 's' }, { type: 'olhinhos' }, { type: 's', flip: true }, { type: 'terung', petals: 7 }, { type: 's' }
+  { type: 'terung' },
+  { type: 'arte', nome: 'espiralDupla', h: 48 },
+  { type: 'olhos', de: ['olho4', 'olho10'] },
+  { type: 'arte', nome: 'espiralS', h: 50 },
+  { type: 'arte', nome: 'nuvem3', h: 56 },
+  { type: 'arte', nome: 'fogo2', h: 52, cor: 'acc', gap: 6 },
+  { type: 'arte', nome: 'olhoFogo', h: 54, gap: 6 },
+  { type: 'arte', nome: 'fogo2', h: 52, cor: 'acc', flip: true },
+  { type: 'arte', nome: 'nuvem3', h: 56, flip: true },
+  { type: 'arte', nome: 'espiralS', h: 50, flip: true },
+  { type: 'olhos', de: ['olho7', 'olho1'] },
+  { type: 'arte', nome: 'espiralDupla', h: 48 }
 ];
 
 const files = {
