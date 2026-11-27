@@ -109,9 +109,9 @@ function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, paper, look 
       const r = rs * (0.12 + 0.88 * s);
       pts.push([c[0] + r * Math.cos(th), c[1] + r * Math.sin(th)]);
     }
-    out += `<path d="${tapered(pts, (u) => 1.4 + 7.5 * Math.pow(1 - u, 0.8))}"/>`;
+    out += `<path d="${tapered(pts, (u) => 1.3 + 6.8 * Math.pow(1 - u, 0.8))}"/>`;
   }
-  out += `<circle r="${ringR}" fill="none" stroke="${ink}" stroke-width="4.5"/>`;
+  out += `<circle r="${ringR}" fill="none" stroke="${ink}" stroke-width="4.1"/>`;
   out += `<circle r="${f(ringR * 0.42)}" fill="${accent}"/>`;
   return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(${scale})" fill="${ink}">${out}</g>`, w };
 }
@@ -133,25 +133,31 @@ function arte(ox, { nome, h = 50, flip = false, flipY = false, cor, dy = 0, engr
   return { svg: `<path fill="${fill}"${st} fill-rule="evenodd" transform="translate(${f(tx)} ${f(ty)}) scale(${f(flip ? -k : k)} ${f(flipY ? -k : k)})" d="${a.d}"/>`, w };
 }
 
+/** Sorteio com semente: o mesmo cacho sai igual toda vez que o gerador roda. */
+function sorteio(seed) {
+  return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
 /**
- * Cacho de olhinhos em fileiras desencontradas (tipo favo). linhas = olhos por fileira, ex. [2, 3, 2].
- * Todos ficam do mesmo tamanho (cabem numa caixa cw x ch). Os da metade direita são espelhados,
- * então o cacho fica simétrico. acc = posições (0, 1, 2…) que vão na cor de destaque.
+ * Cacho de olhinhos. As fileiras são simétricas de cima para baixo (ex. 2-3-2 ou 3-2-3) e cada olho
+ * leva um empurrãozinho sorteado (posição e lado para onde olha), então o cacho parece solto,
+ * sem virar grade. Todos com a mesma altura (eh). acc = quais olhos (0, 1, 2…) vão na cor de destaque.
  */
-function olhar(ox, { de, linhas, acc = [], cw = 31, ch = 17, passoX = 35, passoY = 22, ink, accent }) {
-  const maxN = Math.max(...linhas), w = (maxN - 1) * passoX + cw;
-  let svg = '', i = 0;
+function olhar(ox, { de, linhas, seed = 1, eh = 15, passoX = 40, passoY = 24, mexe = [6, 3], acc = [], ink, accent }) {
+  const rnd = sorteio(seed), postos = [];
+  let i = 0;
   linhas.forEach((n, r) => {
-    const y = (r - (linhas.length - 1) / 2) * passoY;
-    const x0 = ox + (w - ((n - 1) * passoX + cw)) / 2;
+    const yRow = (r - (linhas.length - 1) / 2) * passoY;
     for (let c = 0; c < n; c++, i++) {
-      const nome = de[i % de.length], A = ARTES[nome];
-      const k = Math.min(cw / A.w, ch / A.h), ew = A.w * k, eh = A.h * k;
-      const cx = x0 + c * passoX + cw / 2;
-      svg += arte(cx - ew / 2, { nome, h: eh, dy: y, flip: c >= n / 2, cor: acc.includes(i) ? 'acc' : '', engrossa: 0.7, ink, accent }).svg;
+      const nome = de[i % de.length], A = ARTES[nome], ew = A.w * eh / A.h;
+      const cx = (c - (n - 1) / 2) * passoX + (rnd() * 2 - 1) * mexe[0];
+      const cy = yRow + (r === 0 || r === linhas.length - 1 ? 0 : (rnd() * 2 - 1) * mexe[1]);
+      postos.push({ nome, x: cx - ew / 2, y: cy, w: ew, flip: rnd() < 0.5, acc: acc.includes(i) });
     }
   });
-  return { svg, w };
+  const x0 = Math.min(...postos.map((p) => p.x)), x1 = Math.max(...postos.map((p) => p.x + p.w));
+  const svg = postos.map((p) => arte(ox + p.x - x0, { nome: p.nome, h: eh, dy: p.y, flip: p.flip, cor: p.acc ? 'acc' : '', engrossa: 0.7, ink, accent }).svg).join('');
+  return { svg, w: x1 - x0 };
 }
 
 /** Borda "dentes": linha fina + fileira de triângulos apontando para dentro (a primeira versão). */
@@ -187,7 +193,7 @@ function build(sequence, { ink, accent, paper }) {
   sequence.forEach((item) => {
     const g = MOTIVOS[item.type](x, { ink, accent, paper, ...item });
     body += g.svg;
-    x += g.w + (item.gap ?? 10);
+    x += g.w + (item.gap ?? 14);
   });
   const W = Math.round(x);
   const borda = BORDA === 'contas' ? bordaContas(W, ink, paper) : bordaTriangulos(W, ink);
@@ -197,17 +203,20 @@ function build(sequence, { ink, accent, paper }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição simples, como o Marco preferiu: flor e S em espiral marcando o ritmo, com o fogo dele
-// (duas versões, na cor de destaque) entrando no lugar de uma flor a cada volta.
-const FOGO = { type: 'arte', h: 50, cor: 'acc', gap: 12 };
+// Composição: flor e S em espiral (traço cheio) marcando o ritmo; entre eles, o fogo e cachos de olhinhos.
+// flor · S · olhos · S · fogo · S · flor · S · olhos · S · fogo · S
+const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
+const FOGO = { type: 'arte', h: 50, cor: 'acc' };
 const sequencia = [
-  { type: 'terung' }, { type: 's' }, { ...FOGO, nome: 'fogo1' }, { type: 's', flip: true },
-  { type: 'terung', petals: 7 }, { type: 's' }, { ...FOGO, nome: 'fogo2' }, { type: 's', flip: true }
+  { type: 'terung' }, S, { type: 'olhar', de: ['olho6', 'olho2', 'olho11', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], seed: 7, acc: [3] }, SR,
+  { ...FOGO, nome: 'fogo1' }, S, { type: 'terung', petals: 7 }, SR,
+  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4', 'olho9'], linhas: [3, 3], seed: 21, acc: [1, 4] }, S, { ...FOGO, nome: 'fogo2' }, SR
 ];
-// faixa creme: a mesma ideia começando em outro ponto, para as faixas não ficarem iguais
+// faixa creme: a mesma ideia começando em outro ponto, com outros olhos
 const sequenciaCreme = [
-  { ...FOGO, nome: 'fogo2' }, { type: 's' }, { type: 'terung' }, { type: 's', flip: true },
-  { ...FOGO, nome: 'fogo1' }, { type: 's' }, { type: 'terung', petals: 7 }, { type: 's', flip: true }
+  { ...FOGO, nome: 'fogo2' }, S, { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9', 'olho2'], linhas: [2, 3, 2], seed: 3, acc: [3] }, SR,
+  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR,
+  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], seed: 12, acc: [3, 4] }, S, { type: 'terung', petals: 7 }, SR
 ];
 
 const files = {
