@@ -116,6 +116,40 @@ function terung(ox, { ringR = 12, petals = 6, rs = 10, ink, accent, paper, look 
   return { svg: `<g transform="translate(${f(cx)} ${MID}) scale(${scale})" fill="${ink}">${out}</g>`, w };
 }
 
+/* ---------- fogo ----------
+   Três línguas de fogo no mesmo traço do S: cada uma nasce numa espiral áurea (cresce φ a cada quarto
+   de volta), sai por cima indo para a frente e afina até a ponta, com uma chicotada no fim.
+   Os tamanhos seguem Fibonacci: espirais 21 / 13 / 8 e comprimentos 84 / 52 / 32. */
+const PHI = (1 + Math.sqrt(5)) / 2;
+function lingua(c, R, L, wMax, { voltas = 1.5, sobe = 0.03, onda = 0.35, flick = 0.1, w0 = 0.3, k1 = 0.6, k2 = 0.85 } = {}) {
+  const T = voltas * TAU, pts = [], N = 80, end = -Math.PI / 2;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, th = end - T * (1 - t), r = R * Math.pow(PHI, -(T * (1 - t)) / (Math.PI / 2));
+    pts.push([c[0] + r * Math.cos(th), c[1] + r * Math.sin(th)]);
+  }
+  const p0 = pts[pts.length - 1];
+  const mid = [p0[0] + L * 0.55, p0[1] - L * sobe * 0.5 + L * onda * 0.25];
+  const tip = [p0[0] + L, p0[1] - L * sobe - L * flick];
+  const a1 = bezier(p0, [p0[0] + L * 0.25, p0[1]], [mid[0] - L * 0.2, mid[1]], mid, 30);
+  const a2 = bezier(mid, [mid[0] + L * 0.2, mid[1]], [tip[0] - L * 0.12, tip[1] + L * flick * 0.8], tip, 30);
+  const all = pts.concat(a1, [mid], a2, [tip]), ns = pts.length / all.length;
+  return tapered(all, (u) => u < ns ? wMax * (w0 + (1 - w0) * Math.pow(u / ns, k1)) : 0.3 + (wMax - 0.3) * Math.pow(1 - (u - ns) / (1 - ns), k2));
+}
+const FOGO_D = [[[0, 4], 21, 84, 17], [[28, -28], 13, 52, 12.5], [[30, 18], 8, 32, 9]].map(([c, R, L, w]) => lingua(c, R, L, w)).join(' ');
+const FOGO_BOX = (() => {
+  const n = FOGO_D.match(/-?\d+(\.\d+)?/g).map(Number), xs = n.filter((_, i) => i % 2 === 0), ys = n.filter((_, i) => i % 2 === 1);
+  return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+})();
+/**
+ * Fogo com altura h, na cor de destaque. A cabeça (espirais) vai na frente, as pontas ficam para trás.
+ * Desenhado indo para a esquerda; vira sozinho nas faixas que andam para a direita (rev).
+ */
+function fogo(ox, { h = 50, flipY = false, rev = false, accent }) {
+  const k = h / FOGO_BOX.h, w = FOGO_BOX.w * k, fx = rev ? -k : k, fy = flipY ? -k : k;
+  const tx = (rev ? ox + w : ox) - FOGO_BOX.x * fx, ty = MID + (flipY ? 1 : -1) * h / 2 - FOGO_BOX.y * fy;
+  return { svg: `<path fill="${accent}" transform="translate(${f(tx)} ${f(ty)}) scale(${f(fx)} ${f(fy)})" d="${FOGO_D}"/>`, w };
+}
+
 /* ---------- artes do Marco (MARCO SURREAL AESTHETICS/ARTES FAIXA SITE.png) ----------
    Vetorizadas com tools/faixa-artes/vetorizar.js (Potrace) e guardadas em tools/faixa-artes/artes.json. */
 const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'artes.json'), 'utf8'));
@@ -143,7 +177,7 @@ function sorteio(seed) {
  * leva um empurrãozinho sorteado (posição e lado para onde olha), então o cacho parece solto,
  * sem virar grade. Todos com a mesma altura (eh). acc = quais olhos (0, 1, 2…) vão na cor de destaque.
  */
-function olhar(ox, { de, linhas, seed = 1, eh = 15, passoX = 40, passoY = 24, mexe = [6, 3], acc = [], ink, accent }) {
+function olhar(ox, { de, linhas, seed = 1, eh = 22, passoX = 50, passoY = 25, mexe = [4, 2], acc = [], ink, accent }) {
   const rnd = sorteio(seed), postos = [];
   let i = 0;
   linhas.forEach((n, r) => {
@@ -156,7 +190,7 @@ function olhar(ox, { de, linhas, seed = 1, eh = 15, passoX = 40, passoY = 24, me
     }
   });
   const x0 = Math.min(...postos.map((p) => p.x)), x1 = Math.max(...postos.map((p) => p.x + p.w));
-  const svg = postos.map((p) => arte(ox + p.x - x0, { nome: p.nome, h: eh, dy: p.y, flip: p.flip, cor: p.acc ? 'acc' : '', engrossa: 0.7, ink, accent }).svg).join('');
+  const svg = postos.map((p) => arte(ox + p.x - x0, { nome: p.nome, h: eh, dy: p.y, flip: p.flip, cor: p.acc ? 'acc' : '', engrossa: 1.5, ink, accent }).svg).join('');
   return { svg, w: x1 - x0 };
 }
 
@@ -186,12 +220,12 @@ function bordaContas(W, ink, paper) {
 // Qual borda usar: 'triangulos' (teste pedido pelo Marco) ou 'contas'.
 const BORDA = 'triangulos';
 
-const MOTIVOS = { terung, s: sScroll, arte, olhar };
+const MOTIVOS = { terung, s: sScroll, arte, olhar, fogo };
 
-function build(sequence, { ink, accent, paper }) {
+function build(sequence, { ink, accent, paper, rev = false }) {
   let x = 0, body = '';
   sequence.forEach((item) => {
-    const g = MOTIVOS[item.type](x, { ink, accent, paper, ...item });
+    const g = MOTIVOS[item.type](x, { ink, accent, paper, rev, ...item });
     body += g.svg;
     x += g.w + (item.gap ?? 14);
   });
@@ -203,28 +237,32 @@ function build(sequence, { ink, accent, paper }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor, fogo e cachos de olhinhos, separados pelos dois ornamentos em espiral do Marco
+// Composição: flor, fogo e grupos de 3 a 5 olhos, separados pelos dois ornamentos em espiral do Marco
 // (o S e a espiral dupla), que se revezam. A espiral dupla aparece em pé e de ponta-cabeça.
 // flor · S · olhos · dupla · fogo · S refletido · flor · dupla invertida · olhos · S · fogo · dupla
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
 const D = { type: 'arte', nome: 'espiralDupla', h: 50 }, DI = { ...D, flipY: true };
-const FOGO = { type: 'arte', h: 50, cor: 'acc' };
+const FOGO = { type: 'fogo', h: 60 }, FOGOI = { ...FOGO, flipY: true };
+const OLHOS = ['olho2', 'olho3', 'olho7', 'olho8', 'olho9', 'olho11'];
 const sequencia = [
-  { type: 'terung' }, S, { type: 'olhar', de: ['olho6', 'olho2', 'olho11', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], seed: 7, acc: [3] }, D,
-  { ...FOGO, nome: 'fogo1' }, SR, { type: 'terung', petals: 7 }, DI,
-  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4', 'olho9'], linhas: [3, 3], seed: 21, acc: [1, 4] }, S, { ...FOGO, nome: 'fogo2' }, D
+  { type: 'terung' }, S, { type: 'olhar', de: OLHOS, linhas: [2, 1, 2], seed: 7, acc: [2] }, D,
+  FOGO, SR, { type: 'terung', petals: 7 }, DI,
+  { type: 'olhar', de: ['olho9', 'olho3', 'olho11', 'olho7'], linhas: [2, 2], passoY: 30, seed: 21, acc: [1, 2] }, S, FOGOI, D
 ];
-// faixa creme: a mesma ideia começando em outro ponto, com outros olhos
+// faixa creme: a mesma ideia começando em outro ponto
 const sequenciaCreme = [
-  { ...FOGO, nome: 'fogo2' }, D, { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9', 'olho2'], linhas: [2, 3, 2], seed: 3, acc: [3] }, S,
-  { type: 'terung' }, DI, { ...FOGO, nome: 'fogo1' }, SR,
-  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], seed: 12, acc: [3, 4] }, D, { type: 'terung', petals: 7 }, S
+  FOGO, D, { type: 'olhar', de: ['olho8', 'olho2', 'olho9'], linhas: [3], seed: 3, acc: [1] }, S,
+  { type: 'terung' }, DI, FOGOI, SR,
+  { type: 'olhar', de: ['olho11', 'olho7', 'olho3', 'olho2', 'olho9'], linhas: [2, 1, 2], seed: 12, acc: [2] }, D, { type: 'terung', petals: 7 }, S
 ];
 
+// As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
 const files = {
   'ornamento-espiral.svg': build(sequencia, { ink: INK, accent: VERMILION, paper: COTTON }),
   'ornamento-terung.svg': build(sequenciaCreme, { ink: INK, accent: VERMILION, paper: COTTON }),
-  'ornamento-espiral-claro.svg': build(sequencia, { ink: COTTON, accent: OCHRE, paper: FOREST })
+  'ornamento-terung-rev.svg': build(sequenciaCreme, { ink: INK, accent: VERMILION, paper: COTTON, rev: true }),
+  'ornamento-espiral-claro.svg': build(sequencia, { ink: COTTON, accent: OCHRE, paper: FOREST }),
+  'ornamento-espiral-claro-rev.svg': build(sequencia, { ink: COTTON, accent: OCHRE, paper: FOREST, rev: true })
 };
 
 const outDir = path.join(__dirname, '..', 'assets', 'img');
