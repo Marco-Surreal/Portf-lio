@@ -203,20 +203,22 @@ function build(sequence, { ink, accent, paper }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor e S em espiral (traço cheio) marcando o ritmo; entre eles, o fogo e cachos de olhinhos.
-// flor · S · olhos · S · fogo · S · flor · S · olhos · S · fogo · S
+// Composição: flor, fogo e cachos de olhinhos, separados pelos dois ornamentos em espiral do Marco
+// (o S e a espiral dupla), que se revezam. A espiral dupla aparece em pé e de ponta-cabeça.
+// flor · S · olhos · dupla · fogo · S refletido · flor · dupla invertida · olhos · S · fogo · dupla
 const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
+const D = { type: 'arte', nome: 'espiralDupla', h: 50 }, DI = { ...D, flipY: true };
 const FOGO = { type: 'arte', h: 50, cor: 'acc' };
 const sequencia = [
-  { type: 'terung' }, S, { type: 'olhar', de: ['olho6', 'olho2', 'olho11', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], seed: 7, acc: [3] }, SR,
-  { ...FOGO, nome: 'fogo1' }, S, { type: 'terung', petals: 7 }, SR,
-  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4', 'olho9'], linhas: [3, 3], seed: 21, acc: [1, 4] }, S, { ...FOGO, nome: 'fogo2' }, SR
+  { type: 'terung' }, S, { type: 'olhar', de: ['olho6', 'olho2', 'olho11', 'olho9', 'olho7', 'olho10', 'olho8'], linhas: [2, 3, 2], seed: 7, acc: [3] }, D,
+  { ...FOGO, nome: 'fogo1' }, SR, { type: 'terung', petals: 7 }, DI,
+  { type: 'olhar', de: ['olho5', 'olho12', 'olho3', 'olho1', 'olho4', 'olho9'], linhas: [3, 3], seed: 21, acc: [1, 4] }, S, { ...FOGO, nome: 'fogo2' }, D
 ];
 // faixa creme: a mesma ideia começando em outro ponto, com outros olhos
 const sequenciaCreme = [
-  { ...FOGO, nome: 'fogo2' }, S, { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9', 'olho2'], linhas: [2, 3, 2], seed: 3, acc: [3] }, SR,
-  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR,
-  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], seed: 12, acc: [3, 4] }, S, { type: 'terung', petals: 7 }, SR
+  { ...FOGO, nome: 'fogo2' }, D, { type: 'olhar', de: ['olho10', 'olho4', 'olho7', 'olho11', 'olho6', 'olho9', 'olho2'], linhas: [2, 3, 2], seed: 3, acc: [3] }, S,
+  { type: 'terung' }, DI, { ...FOGO, nome: 'fogo1' }, SR,
+  { type: 'olhar', de: ['olho2', 'olho12', 'olho8', 'olho5', 'olho1', 'olho3', 'olho6', 'olho9'], linhas: [3, 2, 3], seed: 12, acc: [3, 4] }, D, { type: 'terung', petals: 7 }, S
 ];
 
 const files = {
