@@ -153,9 +153,12 @@ function fogo(ox, { h = 50, flipY = false, rev = false, accent }) {
 /* ---------- artes do Marco (MARCO SURREAL AESTHETICS/ARTES FAIXA SITE.png) ----------
    Vetorizadas com tools/faixa-artes/vetorizar.js (Potrace) e guardadas em tools/faixa-artes/artes.json. */
 const ARTES = JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-artes', 'artes.json'), 'utf8'));
-/* Elementos orientais (água, vento, pedra): vetorizados das imagens de referência do Marco em
+/* Elementos orientais antigos (água, vento, pedra; não usados hoje): vetorizados das imagens de referência do Marco em
    "MARCO SURREAL AESTHETICS/elementos oriental/IMAGENS CHAT" com tools/faixa-elementos/vetorizar.js. */
 Object.assign(ARTES, JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-elementos', 'elementos.json'), 'utf8')));
+/* As 2 pedras e os 2 fogos desenhados pelo Marco ("elementos oriental/PEDRA E FOGO.png"),
+   vetorizados com tools/faixa-pedra-fogo/vetorizar.js: pedraM1, pedraM2, fogoM1, fogoM2. */
+Object.assign(ARTES, JSON.parse(fs.readFileSync(path.join(__dirname, 'faixa-pedra-fogo', 'pedra-fogo.json'), 'utf8')));
 
 /**
  * Separa um desenho em peças: cada contorno de fora com os seus furos.
@@ -278,21 +281,21 @@ function build(sequence, { ink, accent, paper, rev = false }) {
 
 const INK = '#121110', COTTON = '#ECE8D4', VERMILION = '#D93829', OCHRE = '#E2A025', FOREST = '#162A24';
 
-// Composição: flor e S em espiral marcando o ritmo; entre eles, o fogo do Marco (duas versões, na cor de
-// destaque, com a cabeça para o lado em que a faixa anda) e a pedra, que lembra cerâmica.
-// flor · S · fogo · S · pedra · S · flor · S · fogo · S
-const S = { type: 'arte', nome: 'espiralS', h: 50 }, SR = { ...S, flip: true };
-const FOGO = { type: 'arte', h: 56, cor: 'acc', segue: true };
-const PEDRA = { type: 'arte', nome: 'pedra1', h: 50, menorAcc: true }; // a pedrinha menor vai na cor de destaque
+// Composição (desenhos do Marco): cada pedra e cada fogo fica entre um S e o S espelhado, e a flor
+// separa os grupos. Todas as peças têm a mesma altura e o mesmo espaço entre si.
+// flor · S · fogo1 · S' · pedra1 · S · flor · S' · fogo2 · S · pedra2 · S'
+// O fogo vai na cor de destaque, com a cabeça para o lado em que a faixa anda;
+// na pedra, só a pedrinha da frente vai na cor de destaque.
+const ALT = 50;
+const S = { type: 'arte', nome: 'espiralS', h: ALT }, SR = { ...S, flip: true };
+const FOGO = { type: 'arte', h: ALT, cor: 'acc', segue: true, engrossa: 1.4 }; // engrossa: o traço fino do fogo não some no tamanho da faixa
+const PEDRA = { type: 'arte', h: ALT, menorAcc: true };
 const sequencia = [
-  { type: 'terung' }, S, { ...FOGO, nome: 'fogo1' }, SR, PEDRA, S,
-  { type: 'terung', petals: 7 }, SR, { ...FOGO, nome: 'fogo2' }, S
+  { type: 'terung' }, S, { ...FOGO, nome: 'fogoM1' }, SR, { ...PEDRA, nome: 'pedraM1' }, S,
+  { type: 'terung', petals: 7 }, SR, { ...FOGO, nome: 'fogoM2' }, S, { ...PEDRA, nome: 'pedraM2' }, SR
 ];
-// faixa creme: a mesma ideia começando em outro ponto
-const sequenciaCreme = [
-  { ...FOGO, nome: 'fogo2' }, S, { type: 'terung' }, SR, PEDRA, S,
-  { ...FOGO, nome: 'fogo1' }, SR, { type: 'terung', petals: 7 }, S
-];
+// faixa creme: a mesma sequência começando na outra metade
+const sequenciaCreme = [...sequencia.slice(6), ...sequencia.slice(0, 6)];
 
 // As faixas com --reverse andam para a direita: as versões "-rev" têm o fogo virado para esse lado.
 const files = {
