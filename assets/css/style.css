@@ -1,0 +1,749 @@
+/* =========================================================
+   MARCO SURREAL — Editorial Tattoo & Psychedelic 60s Luxe
+   Tokens e regras: ver blueprint (seção 2) e docs/pesquisa (seção 4)
+   ========================================================= */
+
+:root {
+  --bg-cotton: #ECE8D4;  /* creme (levemente mais escuro e terroso) */
+  --bg-cream: #E3E7C3;
+  --ink-sumi: #121110;
+  --bg-forest: #162A24;
+  --accent-vermilion: #B94A32; /* antes: #D93829 */
+  --accent-ochre: #E2A025;
+  --accent-indigo: #1F4E78;
+  --accent-plum: #7B2D5B;
+  --accent-jade: #2B7A62;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-display-alt: 'Syne', sans-serif;
+  --font-editorial: 'Cormorant Garamond', serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  --ph-stripe: #D9DEB5;                        /* segunda listra dos placeholders */
+  --shadow-ink: rgba(18, 17, 16, 0.85);        /* sombra sólida do hover das imagens */
+  --border: 1.5px solid var(--ink-sumi);
+  --ease-curtain: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);   /* "outExpo" do Webflow, usado em quase tudo no Alien */
+  --pad: clamp(1rem, 4vw, 3rem);
+  --nav-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); }
+body {
+  margin: 0;
+  background: var(--bg-cotton);
+  color: var(--ink-sumi);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body.is-locked { overflow: hidden; }
+main { overflow-x: clip; }   /* elementos que entram pela lateral não criam rolagem horizontal */
+img { display: block; max-width: 100%; height: 100%; width: 100%; object-fit: cover; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------- Texturas ---------- */
+.paper-grain {
+  position: fixed; inset: 0; z-index: 999; pointer-events: none; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.seigaiha { position: relative; isolation: isolate; }
+.seigaiha::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%231F4E78'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23ECE8D4'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E");
+  background-size: 48px 24px; background-repeat: repeat;
+}
+/* Uma textura só no site inteiro, como uma única imagem atrás da página: o JS mede a posição de cada
+   seção (--sy) e todas as escamas seguem a mesma grade. Muda só a cor; nas faixas tribais não há escamas.
+   Desenho: escamas seigaiha geométricas (4 anéis concêntricos), cada fileira sobrepõe a de cima. */
+.seigaiha::before { background-position: 0 var(--sy, 0px); }
+/* Textura de escamas (seigaiha) no site inteiro. Cada fundo tem sua versão, porque o
+   miolo de cada escama é pintado com a cor do fundo para as ondas se sobreporem. */
+.theme-dark.seigaiha::before, .footer.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%23ECE8D4'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23162A24'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E"); opacity: 0.08; }
+.shop.seigaiha::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='48'%20height='24'%20viewBox='0%200%2048%2024'%20shape-rendering='geometricPrecision'%3E%3Cdefs%3E%3Cg%20id='s'%20stroke='%23ECE8D4'%20stroke-width='1'%3E%3Ccircle%20r='23.5'%20fill='%23162A24'/%3E%3Ccircle%20r='17.5'%20fill='none'/%3E%3Ccircle%20r='11.5'%20fill='none'/%3E%3Ccircle%20r='5.5'%20fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse%20href='%23s'%20x='0'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='-24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='-12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='0'/%3E%3Cuse%20href='%23s'%20x='48'%20y='0'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='24'%20y='12'/%3E%3Cuse%20href='%23s'%20x='72'%20y='12'/%3E%3Cuse%20href='%23s'%20x='0'%20y='24'/%3E%3Cuse%20href='%23s'%20x='48'%20y='24'/%3E%3Cuse%20href='%23s'%20x='-24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='24'%20y='36'/%3E%3Cuse%20href='%23s'%20x='72'%20y='36'/%3E%3Cuse%20href='%23s'%20x='0'%20y='48'/%3E%3Cuse%20href='%23s'%20x='48'%20y='48'/%3E%3C/svg%3E"); opacity: 0.08; }
+
+/* ---------- Ritmo claro / escuro ----------
+   Uma seção com .theme-dark inverte a paleta: o que era tinta vira papel e vice-versa.
+   Como quase tudo no site usa as variáveis abaixo, bordas, textos, placeholders e botões
+   invertem sozinhos. Todo fundo escuro usa o mesmo verde da Loja (--bg-forest).
+   Ordem: Hero claro → Loja verde → Trabalhos claro → Flashes verde → Contato claro → Rodapé verde. */
+.theme-dark {
+  --bg-cotton: #162A24;                        /* mesmo verde escuro da Loja */
+  --ink-sumi: #ECE8D4;
+  --bg-cream: #1E352E;
+  --ph-stripe: #24403A;
+  --shadow-ink: rgba(226, 160, 37, 0.9);       /* no escuro a sombra vira ouro ocre */
+  --border: 1.5px solid #ECE8D4;               /* precisa ser redeclarada: var() já foi resolvida no :root */
+  background: var(--bg-cotton); color: var(--ink-sumi);
+}
+.theme-dark .link-hash:hover { color: var(--accent-ochre); border-color: var(--accent-ochre); }
+
+/* ---------- Placeholder de imagem ----------
+   Sem contornos: o site não usa molduras nem linhas finas decorativas. */
+.ph {
+  position: relative; width: 100%; height: 100%; min-height: 160px;
+  background: repeating-linear-gradient(45deg, var(--bg-cream) 0 10px, var(--ph-stripe) 10px 20px);
+  display: grid; place-items: center;
+}
+.ph::after {
+  content: attr(data-label);
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 0.35rem 0.6rem; text-align: center; max-width: 85%;
+}
+.ph--tall { aspect-ratio: 3 / 4; }
+
+/* ---------- Tipografia utilitária ---------- */
+.mono-tag, .mono-small, .link-hash, .nav-btn, .filter, label {
+  font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.18em;
+}
+.mono-tag { font-size: 0.8rem; font-weight: 700; }
+.mono-small { font-size: 0.72rem; margin: 0.25rem 0; }
+.editorial { font-family: var(--font-editorial); font-style: italic; font-weight: 600; font-size: clamp(1.25rem, 2.2vw, 1.75rem); line-height: 1.25; margin: 0 0 1rem; }
+.section-title { font-family: var(--font-display-alt); font-weight: 800; text-transform: uppercase; font-size: clamp(2.2rem, 6vw, 5rem); line-height: 0.95; margin: 0 0 1.5rem; }
+.link-hash { display: inline-block; margin-top: 1rem; font-size: 0.85rem; font-weight: 700; text-decoration: none; border-bottom: var(--border); padding-bottom: 2px; }
+.link-hash:hover { color: var(--accent-vermilion); border-color: var(--accent-vermilion); }
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 1rem; top: 1rem; z-index: 1000; background: var(--ink-sumi); color: var(--bg-cotton); padding: 0.5rem 1rem; }
+:focus-visible { outline: 2px solid var(--accent-vermilion); outline-offset: 3px; }
+
+/* ---------- Linhas estruturais com blocos terminais ---------- */
+.lines, .block-line__fill { position: relative; background: var(--ink-sumi); }
+.lines::before, .lines::after, .block-line__fill::before, .block-line__fill::after {
+  content: ""; position: absolute; width: 6px; height: 6px; background: var(--ink-sumi);
+}
+.lines { height: 1.5px; width: 0; transition: width 1.4s var(--ease-out); }
+.lines::before { left: 0; top: -2.25px; }
+.lines::after { right: 0; top: -2.25px; }
+.lines.is-visible { width: 100%; }
+
+.section-head { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+.section-head .lines { flex: 1; }
+.section-head--light { color: var(--bg-cotton); }
+.section-head--light .editorial { margin: 0; }
+
+/* ---------- [00] Barra do topo com todos os links ---------- */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--nav-h);
+  display: flex; align-items: center; gap: 1.5rem; padding: 0 var(--pad);
+  background: var(--bg-cotton);
+  transition: background 0.4s, color 0.4s;
+}
+.nav-logo { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.12em; text-decoration: none; white-space: nowrap; }
+.nav-links { display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.25rem); margin-left: auto; }
+.nav-links a {
+  position: relative; padding: 0.35rem 0; text-decoration: none; white-space: nowrap;
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+}
+/* traço que cresce embaixo do link (no hover e na seção atual) */
+.nav-links a::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 1.5px; width: 100%; background: currentColor;
+  transform: scaleX(0); transform-origin: left; transition: transform 0.6s var(--ease-expo);
+}
+.nav-links a:hover::after, .nav-links a[aria-current]::after { transform: scaleX(1); }
+.nav-links a.is-shop { color: var(--accent-vermilion); }
+.nav-links a.is-shop::before { content: "✦ "; } /* a estrela vem da PRINTED BOY SURREAL */
+body.nav-dark .nav-links a.is-shop { color: var(--accent-ochre); }
+.nav-btn { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.75rem; font-weight: 700; white-space: nowrap; transition: background 0.25s, color 0.25s; }
+.nav-btn--bag { background: var(--accent-ochre); color: #121110; }
+.nav-btn--bag:hover { background: var(--ink-sumi); color: var(--bg-cotton); }
+.nav-btn--bag.bump { animation: bump 0.4s var(--ease-out); }
+@keyframes bump { 50% { transform: scale(1.12); } }
+
+/* A barra do topo acompanha a seção que está passando por baixo dela */
+body.nav-dark .navbar { background: var(--bg-forest); color: #ECE8D4; }
+body.nav-dark .nav-btn--bag { border-color: #ECE8D4; }
+
+/* Celular e tablet estreito: logo e sacola em cima, links numa segunda linha que desliza para o lado */
+@media (max-width: 860px) {
+  :root { --nav-h: 100px; }
+  .navbar { flex-wrap: wrap; align-content: center; row-gap: 0.4rem; column-gap: 1rem; }
+  .nav-btn--bag { margin-left: auto; }
+  .nav-links {
+    order: 3; flex-basis: 100%; margin: 0 calc(-1 * var(--pad)); padding: 0 var(--pad);
+    overflow-x: auto; scrollbar-width: none; gap: 1.4rem;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+}
+
+.social a { font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.18em; text-decoration: none; }
+.social a:hover { color: var(--accent-ochre); }
+
+/* ---------- [01] Hero ---------- */
+.hero {
+  min-height: 100vh; padding: calc(var(--nav-h) + 1rem) var(--pad) 1.5rem;
+  /* Esquerda: título e biografia. Direita: imagens sobrepostas. */
+  display: grid; grid-template-columns: 1fr minmax(200px, 37vw); grid-template-rows: auto 1fr; gap: 2rem 2rem;
+  overflow: hidden;
+  --logo-w: min(32vw, calc((100vh - 400px) * 1.19)); /* espaço de referência da logo */
+  --logo-s: min(calc(var(--logo-w) * 0.836), 31.35rem); /* logo menor (mais 5%) */
+  --ill-w: calc(var(--logo-s) * 0.54);                  /* foto ILUSTRAÇÃO: maior, mais alta que a logo */
+  --top-gap: clamp(1rem, 1.8vw, 2rem);
+  --top-w: calc(var(--ill-w) + var(--top-gap) + var(--logo-s)); /* foto + logo = largura do texto */
+}
+/* Linha de cima: foto à esquerda, logo à direita; as bordas de fora alinham com o texto de baixo */
+.hero-top {
+  grid-column: 1; grid-row: 1; align-self: start; z-index: 1;
+  display: flex; align-items: center; gap: var(--top-gap); width: var(--top-w); max-width: 100%;
+}
+.hero-title {
+  flex: none; margin: 0;
+  font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(2.5rem, min(9.5vw, 17vh), 9.5rem); line-height: 0.88; letter-spacing: -0.01em;
+}
+/* Logo no lugar do título. Ela tem perspectiva para baixo (o "túnel"), então nasce do ponto de fuga
+   embaixo, no centro (transform-origin 50% 100%): sobe, desdobra e se revela de baixo para cima.
+   Em seguida, três ecos da face das letras saem de trás dela, como ondas subindo pelo túnel. */
+.hero-logo {
+  position: relative; display: block; line-height: 0;
+  width: var(--logo-s);
+  margin: 1.5rem 0 0;
+}
+.hero-logo img { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
+.hero-logo__full { position: relative; z-index: 2; opacity: 0; }
+.hero-logo__echo { position: absolute; inset: 0; z-index: 1; opacity: 0; pointer-events: none; }
+.is-loaded .hero-logo__full { animation: logo-rise 1.5s var(--ease-expo) both; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo { animation: logo-echo 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) both; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(2) { animation-delay: 0.7s; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(3) { animation-delay: 0.9s; }
+.is-loaded .hero-logo.is-echo .hero-logo__echo:nth-child(4) { animation-delay: 1.1s; }
+.hero-logo:not(.is-echo) .hero-logo__echo { animation: none; }
+@keyframes logo-rise {
+  0% { opacity: 0; clip-path: inset(100% 0 0 0); transform: perspective(900px) translate3d(0, 18%, 0) rotateX(60deg) scale(0.5); }
+  35% { opacity: 1; }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); transform: none; }
+}
+@keyframes logo-echo {
+  0% { opacity: 0; transform: translate3d(0, 6%, 0) scale(0.9); }
+  25% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(0, -7%, 0) scale(1.1); }
+}
+
+/* bio sobe 250px girando 45° (+500ms); imagens idem (+700ms, em cascata); 1ª faixa entra da direita (+500ms) */
+.hero-meta, .hero-enter, .hero + .ornament-band {
+  transition: transform 1.2s var(--ease-expo) var(--d, 0.5s), opacity 1.2s var(--ease-expo) var(--d, 0.5s);
+}
+.hero-meta, .hero-enter { transform: perspective(1500px) translate3d(0, 250px, 0) rotateY(45deg); opacity: 0; }
+.hero-enter { --d: 0.7s; }
+.hero-layer--b .hero-enter { --d: 0.85s; }
+.hero-layer--c .hero-enter { --d: 1s; }
+.hero + .ornament-band { transform: translate3d(30%, 0, 0); opacity: 0; }
+.is-loaded .hero-meta, .is-loaded .hero-enter, .is-loaded .hero + .ornament-band { transform: none; opacity: 1; }
+
+/* Três imagens sobrepostas; cada camada anda numa profundidade diferente (JS: data-depth) */
+.hero-image-holder {
+  grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; width: 100%;
+  max-width: calc(66.6vh - 70px); /* em telas baixas as imagens diminuem para não cortar */
+  margin: 8% 6vw 9% 0; /* reserva o espaço das imagens que saem para cima e para baixo; à direita, 6vw além da margem */
+  z-index: 2; position: relative; will-change: transform; }
+.hero-layer { will-change: transform; }
+.hero-layer--main { position: relative; z-index: 1; }
+.hero-layer--b { position: absolute; z-index: 2; width: 58%; left: -42%; bottom: -8%; }
+.hero-layer--c { position: absolute; z-index: 3; width: 40%; right: -6vw; top: -6%; } /* na frente; fica na margem do título, as outras vão 6vw para a esquerda */
+.hero-layer--d { position: relative; z-index: 2; flex: none; width: var(--ill-w); margin-top: 1.5rem; } /* à esquerda da logo */
+.hero-layer--d .hero-enter { --d: 0.92s; }
+.hero-layer--d .hero-float { animation-duration: 9s; animation-delay: -1.5s; }
+.hero-layer--b .ph, .hero-layer--c .ph, .hero-layer--d .ph { aspect-ratio: 4 / 5; min-height: 0; }
+.hero-layer--c .ph { background-color: var(--bg-cream); }
+.hero-layer:hover { z-index: 4; }
+.hero-float { animation: float 8s ease-in-out infinite; }
+.hero-layer--b .hero-float { animation-duration: 10s; animation-delay: -3s; }
+.hero-layer--c .hero-float { animation-duration: 12s; animation-delay: -6s; }
+/* as fotos das seções usam a mesma flutuação das 3 fotos da primeira página (duração e atraso vêm do JS) */
+.floaty { animation: float 8s ease-in-out infinite; }
+.drift { will-change: transform; }
+
+.product-media[data-view] { cursor: pointer; }
+.product-media[data-view]:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 4px; }
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  33% { transform: translate3d(0, -6px, 0) rotate(-0.6deg); }   /* metade do deslocamento de antes, mesma velocidade */
+  66% { transform: translate3d(0, 4px, 0) rotate(0.4deg); }
+}
+/* Bloco da bio: mesma largura da linha foto + logo e vai até embaixo, com os botões um pouco acima da base. */
+.hero-meta {
+  grid-column: 1; grid-row: 2; align-self: stretch; display: flex; gap: 1.5rem; align-items: stretch;
+  width: max(20rem, var(--top-w)); max-width: 100%;
+}
+.block-line { display: none; }
+.block-line__fill { display: block; width: 1.5px; height: 0%; }
+.block-line__fill::before { top: 0; left: -2.25px; }
+.block-line__fill::after { bottom: 0; left: -2.25px; }
+.hero-bio { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.hero-intro { font-size: clamp(1rem, min(1.2vw, 2.1vh), 1.35rem); line-height: 1.5; margin: 0 0 1em; }
+.hero-more p { font-size: clamp(0.88rem, min(0.95vw, 1.65vh), 1.1rem); line-height: 1.6; margin: 0 0 0.85em; opacity: 0.85; }
+.hero-more p:last-child { margin-bottom: 0; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 1.5rem; margin-bottom: clamp(1.5rem, 5vh, 3.5rem); } /* um pouco acima do fim */
+/* celular: texto da apresentação um pouco menor (15px e 13.5px) */
+@media (max-width: 640px) {
+  .hero-intro { font-size: 0.94rem; line-height: 1.45; }
+  .hero-more p { font-size: 0.84rem; line-height: 1.55; }
+}
+/* telas baixas (notebook): letras um pouco menores e só o primeiro parágrafo extra, para a bio caber até embaixo */
+@media (max-height: 820px) and (min-width: 641px) {
+  .hero-intro { font-size: 0.94rem; line-height: 1.42; }
+  .hero-more p { font-size: 0.84rem; line-height: 1.48; }
+  .hero-more p:nth-child(n+2) { display: none; }
+  .hero-ctas { padding-top: 1rem; margin-bottom: 1.25rem; }
+}
+
+/* Cantos levemente arredondados em botões, filtros e setas */
+:root { --radius-btn: 6px; }
+.btn, .filter, .shop-arrow, .nav-btn { border-radius: var(--radius-btn); }
+
+/* ---------- Faixas ornamentais (flor, S em espiral, fogo do Marco e pedra) ----------
+   Cada faixa repete um SVG de assets/img/ na horizontal.
+   --ratio = largura / altura do viewBox do SVG (precisa bater para a emenda ficar invisível).
+   Arquivos gerados por tools/gerar-ornamentos.js; podem ser trocados por desenho próprio. */
+.ornament-band {
+  --h: clamp(64px, 9vw, 112px);
+  --ratio: calc(1250 / 120);
+  --ornament: url("../img/ornamento-espiral.svg");
+  overflow: hidden; padding: 0.5rem 0; background: var(--bg-cotton);
+}
+.ornament-track {
+  height: var(--h); width: calc(100% + var(--h) * var(--ratio));
+  background: var(--ornament) repeat-x left center / auto 100%;
+  animation: ornament 36s linear infinite; /* ladrilho de 1250: 36s mantém a mesma velocidade de antes */ will-change: transform;
+}
+.ornament-band--reverse .ornament-track { animation-direction: reverse; }
+.ornament-band--terung { --ratio: calc(1250 / 120); --ornament: url("../img/ornamento-terung.svg"); }
+.ornament-band--terung .ornament-track { animation-duration: 30s; }
+.ornament-band--forest { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
+.ornament-band--dark { --ornament: url("../img/ornamento-espiral-claro.svg"); background: var(--bg-forest); border-bottom: none; }
+/* faixas que andam para a direita: versão com o fogo virado para esse lado */
+.ornament-band--terung.ornament-band--reverse { --ornament: url("../img/ornamento-terung-rev.svg"); }
+.ornament-band--forest.ornament-band--reverse,
+.ornament-band--dark.ornament-band--reverse { --ornament: url("../img/ornamento-espiral-claro-rev.svg"); }
+@keyframes ornament {
+  to { transform: translate3d(calc(-1 * var(--h) * var(--ratio)), 0, 0); }
+}
+/* A faixa já separa as seções: o espaço entre a faixa e o conteúdo é o mesmo em cima e embaixo */
+.ornament-band + section { padding-top: 0.75rem; }
+section:has(+ .ornament-band) { padding-bottom: 0.75rem; }
+
+/* Faixa de texto em movimento: usada só no "VER FICHA TÉCNICA" dos cards */
+.marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+.marquee-group { display: flex; white-space: nowrap; }
+@keyframes marquee {
+  0% { transform: translate3d(0%, 0, 0); }
+  100% { transform: translate3d(-33.333%, 0, 0); }
+}
+
+/* ---------- Cabeçalho de seção: título, texto curto e "ver todos" ---------- */
+/* Cabeçalho de seção: título à esquerda e ferramentas (filtros) à direita, na mesma linha.
+   As duas colunas se alinham pela base: a linha de baixo dos botões fica na linha de base do título.
+   Se o título for longo, ele quebra em duas linhas em vez de empurrar os filtros para baixo. */
+.section-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 1rem 2.5rem; margin-bottom: 2.5rem; }
+.section-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 0.5rem; margin: 0 0 0.35em; max-width: 46rem; }
+.section-tools .filters { justify-content: flex-end; margin: 0; }
+.section-intro .section-title { margin: 0; }
+/* Título com o texto logo abaixo (ex.: explicação do Flash Book) */
+.section-intro--stack { grid-template-columns: 1fr; gap: 0.75rem; }
+.section-lead { font-family: var(--font-editorial); font-style: italic; font-weight: 600; font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.3; margin: 0; max-width: 42ch; }
+.section-more { display: flex; justify-content: center; margin-top: 3rem; }
+.empty-note { font-family: var(--font-editorial); font-style: italic; font-size: 1.25rem; margin: 2rem 0 0; }
+
+/* ---------- [05] Portfólio ---------- */
+/* Loja e Trabalhos usam a mesma medida: conteúdo com no máximo --grid-max de largura, centrado,
+   então sobra margem dos dois lados em telas grandes. Imagens das duas grades no mesmo formato (--grid-ratio). */
+:root { --grid-max: 1320px; --grid-ratio: 1 / 1; --grid-pad: max(var(--pad), calc((100% - var(--grid-max)) / 2)); }
+.portfolio { padding: 6rem var(--grid-pad); }
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-left: auto; }
+.filter { background: none; border: var(--border); padding: 0.45rem 0.9rem; font-size: 0.72rem; font-weight: 700; transition: background 0.25s, color 0.25s; }
+.filter:hover { background: var(--bg-cream); }
+.filter.is-active { background: var(--ink-sumi); color: var(--bg-cotton); }
+
+.portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+/* Card = "project-link" do Alien: perspectiva de 1500px; o .card-item dentro dele gira até ±15°
+   seguindo o mouse e sobe 10px no hover (JS, com suavização 0.07 como o "smoothing 93" do Webflow). */
+.card { position: relative; perspective: 1500px; }
+.card:hover { z-index: 2; }
+.card[hidden] { display: none; }
+.card-item { transform-style: preserve-3d; will-change: transform; }
+.card-media { position: relative; aspect-ratio: var(--grid-ratio); overflow: hidden; }
+.card-media .ph, .card-media img { border: 0; position: absolute; inset: 0; }
+
+/* No hover os cards usam o mesmo brilho de vidro das outras imagens (.glass), sem a cortina branca */
+
+.view-project {
+  position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 2;
+  background: var(--accent-ochre); border-top: var(--border); padding: 0.4rem 0;
+  opacity: 0; transition: opacity 0.6s var(--ease-expo);
+}
+.view-project .marquee-track { animation-duration: 10s; }
+.view-project span { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; white-space: nowrap; padding-right: 1rem; }
+.card:hover .view-project, .card:focus-within .view-project,
+.product:hover .view-project, .product:focus-within .view-project { opacity: 1; transition: opacity 1.4s var(--ease-expo); }
+
+/* Título que "rola": uma cópia (text-shadow) espera logo abaixo e sobe no lugar do original */
+.card-info { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 0.9rem; }
+.card-title-wrap { overflow: hidden; height: 1.3em; font-size: 1.2rem; min-width: 0; }
+.card-title {
+  font-family: var(--font-display-alt); font-weight: 800; text-transform: uppercase; font-size: 1em; line-height: 1.3; margin: 0;
+  white-space: nowrap; text-shadow: 0 1.3em 0 var(--accent-vermilion);
+  transition: transform 0.6s var(--ease-expo);
+}
+.card:hover .card-title, .card:focus-within .card-title { transform: translateY(-100%); transition: transform 1.4s var(--ease-expo); }
+.card-meta { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
+.card-open { position: absolute; inset: 0; z-index: 3; background: none; border: 0; }
+
+/* ---------- [07] Loja ---------- */
+.shop { background: var(--bg-forest); padding: 6rem var(--grid-pad); }
+/* Textos da seção ficam claros sobre o verde; os cartões continuam em papel claro com tinta escura */
+.shop > .section-head, .shop > .section-intro, .shop > .section-more, .shop > .shop-grid, .shop > .empty-note {
+  --ink-sumi: #ECE8D4; --bg-cotton: #162A24; --shadow-ink: rgba(226, 160, 37, 0.9); --border: 1.5px solid #ECE8D4;
+  color: var(--ink-sumi);
+}
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+.product[hidden], .filters[hidden] { display: none; }
+.shop .filter { color: var(--ink-sumi); }
+.shop .filter:hover { background: rgba(236, 232, 212, 0.12); }
+.shop .filter.is-active { background: var(--ink-sumi); color: #162A24; }
+.shop-nav { display: flex; gap: 0.5rem; margin-left: 0.75rem; }
+.shop-nav[hidden] { display: none; }
+/* As fontes do Marco não têm setas; as setas usam a fonte do sistema */
+.shop-arrow { font-family: system-ui, sans-serif; width: 2.75rem; height: 2.75rem; border: var(--border); background: none; color: var(--ink-sumi); font-size: 1.2rem; line-height: 1; transition: background 0.25s, color 0.25s, opacity 0.25s; }
+.shop-arrow { display: inline-flex; align-items: center; justify-content: center; }
+.shop-arrow .arw { width: 1.15rem; height: auto; display: block; }
+.shop-arrow:hover:not(:disabled) { background: var(--ink-sumi); color: #162A24; }
+.shop-arrow:disabled { opacity: 0.3; cursor: default; }
+/* Vitrine: 3 colunas × 2 linhas = 6 produtos por vez. Com mais de 6, as colunas seguintes ficam
+   à direita e a grade desliza para o lado (setas, arrastar com o mouse, ou rolar no celular). */
+.vitrine {
+  --cols: 3;
+  grid-template-columns: none; grid-auto-flow: column; grid-template-rows: auto auto;
+  grid-auto-columns: calc((100% - (var(--cols) - 1) * 1.5rem) / var(--cols));
+  overflow-x: auto; overscroll-behavior-x: contain; padding-block: 0.75rem; margin-block: -0.75rem; /* folga para o card subir no hover sem ser cortado */ scroll-snap-type: x mandatory; scrollbar-width: none;
+}
+.vitrine::-webkit-scrollbar { display: none; }
+.vitrine .product { scroll-snap-align: start; }
+.vitrine.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+.product { position: relative; color: var(--ink-sumi); padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.product-media { margin-bottom: 0.5rem; overflow: hidden; }
+.product-avail { margin: 0; }
+.product-avail.is-disponivel { color: var(--accent-jade); opacity: 1 !important; }
+.product-avail.is-esgotado { color: var(--accent-vermilion); opacity: 1 !important; }
+/* Produtos direto sobre o verde da loja, sem cartão claro atrás */
+.shop > .shop-grid { --shadow-ink: rgba(0, 0, 0, 0.45); }
+.shop .ph { color: #121110; }
+/* faixa da loja com as mesmas cores da dos Trabalhos (tinta escura sobre ocre), apesar do texto claro da seção */
+.shop .view-project { color: #121110; border-top: 1.5px solid #121110; text-transform: uppercase; }
+.shop .product-avail.is-disponivel { color: #6CC4A1; }
+.product-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+.product-media { aspect-ratio: var(--grid-ratio); position: relative; }
+.product-media .ph, .product-media img { position: absolute; inset: 0; }
+.hanko {
+  position: absolute; top: -10px; right: -10px; z-index: 2; transform: rotate(6deg);
+  background: var(--accent-vermilion); color: var(--bg-cotton);
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; padding: 0.35rem 0.55rem;
+}
+.product h3 { font-family: var(--font-display-alt); font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin: 0; }
+.product .mono-small { opacity: 0.75; }
+.product-foot { margin-top: auto; padding-top: 0.15rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+/* Selo de dado de demonstração */
+.demo-tag {
+  position: absolute; top: 1.6rem; left: 1.6rem; z-index: 6;
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.16em;
+  padding: 0.2rem 0.45rem; background: #121110; color: #ECE8D4;
+}
+.price { font-family: var(--font-mono); font-weight: 700; }
+
+/* ---------- Botões ---------- */
+.btn { border: var(--border); padding: 0.75rem 1.2rem; font-family: var(--font-mono); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; background: var(--bg-cotton); transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+.btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink-sumi); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn--primary { background: var(--accent-vermilion); color: var(--bg-cotton); }
+.btn--small { padding: 0.5rem 0.8rem; font-size: 0.7rem; background: var(--accent-ochre); color: #121110; }
+a.btn { display: inline-block; text-decoration: none; }
+.btn--line { background: transparent; color: inherit; }
+.btn--ghost { background: transparent; color: inherit; }
+.btn.is-soon, .btn.is-off { cursor: default; opacity: 0.6; }
+.btn.is-soon:hover, .btn.is-off:hover { transform: none; box-shadow: none; }
+.btn.is-soon em { font-style: normal; font-weight: 400; margin-left: 0.6em; font-size: 0.85em; opacity: 0.8; }
+
+/* ---------- [04] Flash Book (fundo escuro) ---------- */
+.flashbook { --pw: min(46vw, 564px, calc((100vh - 9rem) * 0.75)); padding: 6rem var(--pad); } /* também cabe na altura da tela */ /* --pw: largura de uma página do livro; o texto de cima usa a mesma medida */
+.flash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.5rem; }
+.flash { position: relative; display: flex; flex-direction: column; gap: 0.5rem; }
+.flash-media { aspect-ratio: 3 / 4; position: relative; margin-bottom: 0.5rem; }
+.flash-media .ph, .flash-media img { position: absolute; inset: 0; }
+.flash h3 { font-family: var(--font-display-alt); font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin: 0; }
+.flash .mono-small { margin: 0; opacity: 0.8; }
+.flash-foot { margin-top: auto; padding-top: 0.5rem; }
+.flash-state {
+  position: absolute; top: -10px; left: -10px; z-index: 6; transform: rotate(-5deg);
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.3rem 0.55rem; background: var(--accent-jade); color: #ECE8D4;
+}
+.flash.is-reservado .flash-state { background: var(--accent-ochre); color: #121110; }
+.flash.is-tatuado .flash-state { background: #ECE8D4; color: #121110; }
+.flash.is-tatuado .flash-media { filter: grayscale(1); opacity: 0.55; }
+
+/* ---------- Flash book em formato de livro (protótipo) ----------
+   O livro tem duas metades; cada folha (.fb-leaf) fica na metade direita e gira -180° pela lombada.
+   Fechado, o livro anda 25% para a esquerda para a capa ficar no centro; no fim, 25% para a direita. */
+.fbook { --ph: calc(var(--pw) * 4 / 3); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; margin-top: 1rem; }
+.fb-stage { width: calc(var(--pw) * 2); height: var(--ph); perspective: 4200px; outline: none; touch-action: pan-y; user-select: none; }
+.fb-stage:focus-visible { outline: 2px solid var(--accent-ochre); outline-offset: 10px; }
+.fb-book { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.9s var(--ease-expo); }
+.fb-book.is-closed { transform: translateX(-25%); }
+.fb-book.is-end { transform: translateX(25%); }
+.fb-leaf { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1); }
+.fb-leaf.is-flipped { transform: rotateY(-180deg); }
+.fb-page { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; cursor: pointer;
+  --ink-sumi: #121110; --border: 1.5px solid #121110; --bg-cotton: #ECE8D4; color: #121110;
+  background: #ECE8D4; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
+.fb-page--back { transform: rotateY(180deg); }
+/* sombra da lombada: na página da direita fica à esquerda, na da esquerda fica à direita */
+.fb-page--front { border-radius: 0 6px 6px 0; background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 9%); }
+.fb-page--back { border-radius: 6px 0 0 6px; background-image: linear-gradient(270deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 9%); }
+/* a face que está virada para trás não recebe clique */
+.fb-leaf.is-flipped .fb-page--front, .fb-leaf:not(.is-flipped) .fb-page--back { pointer-events: none; }
+/* capa e contracapa */
+.fb-cover { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center;
+  background: radial-gradient(120% 90% at 50% 30%, #c4553b, #8f3523); color: #ECE8D4; }
+.fb-cover__frame { position: absolute; inset: 1.1rem; border: 2px solid var(--accent-ochre); border-radius: 4px; pointer-events: none; }
+.fb-cover__frame::after { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(226, 160, 37, 0.55); border-radius: 2px; }
+.fb-cover__name { margin: 0; font-family: var(--f-ui), var(--font-mono); font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-ochre); }
+.fb-cover__title { margin: 0; font-family: var(--f-titulo), var(--font-display-alt); text-transform: uppercase; font-size: calc(var(--pw) * 0.24); line-height: 0.9; letter-spacing: -0.02em; }
+.fb-cover__hint { font-family: var(--f-ui), var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.8; animation: fb-hint 2.4s ease-in-out infinite; }
+@keyframes fb-hint { 50% { opacity: 0.35; } }
+.fb-cover--back { background: radial-gradient(120% 90% at 50% 70%, #c4553b, #8f3523); }
+.fb-page--front:has(.fb-cover) { background: none; }
+/* verso da capa */
+/* página com um flash: a arte inteira (sem cortar) e o nome embaixo */
+.fb-art { position: absolute; inset: 0; margin: 0; padding: 9% 9% 7%; display: flex; flex-direction: column; gap: 0.9rem; }
+.fb-art__img { position: relative; flex: 1; min-height: 0; }
+.fb-art__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.fb-art__img .ph { position: absolute; inset: 0; }
+.fb-art__name { margin: 0; text-align: center; font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none; text-transform: uppercase; letter-spacing: -0.01em; font-size: clamp(1rem, calc(var(--pw) * 0.04), 1.35rem); line-height: 1.2; }
+.fb-blank { position: absolute; inset: 0; }
+/* Seção do flash book: tudo no eixo central do livro, sobre a mesma textura de escamas do site */
+.flashbook { text-align: center; }
+.fb-intro { display: flex; flex-direction: column; align-items: center; padding-top: 1rem; } /* texto mais perto da faixa de cima */
+.fb-intro .section-lead { width: min(100%, calc(var(--pw) * 2)); max-width: none; margin: 0 auto; text-align: center; text-wrap: balance; } /* mesma largura do livro aberto: 2 linhas */
+.flashbook .fbook { margin-top: 2rem; padding-bottom: 2.5rem; }
+.fb-nav { display: flex; align-items: center; gap: 1.25rem; }
+.fb-nav .mono-small { min-width: 9rem; text-align: center; margin: 0; }
+@media (max-width: 700px) {
+  /* celular: uma página por vez, bem maior; a folha que vira sai pela esquerda */
+  .fbook { --pw: min(84vw, 420px); }
+  .fb-stage.is-single { width: var(--pw); overflow: hidden; border-radius: 0 6px 6px 0; }
+  .fb-stage.is-single .fb-book, .fb-stage.is-single .fb-book.is-closed { width: calc(var(--pw) * 2); transform: translateX(-50%); }
+  .fb-cover__frame { inset: 0.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { .fb-book, .fb-leaf { transition: none; } .fb-cover__hint { animation: none; } }
+
+/* ---------- [05] Contato (compacto) ---------- */
+.contact { padding: 6rem var(--pad); }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+.contact-grid .section-lead { margin-top: 0.5rem; }
+.contact-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem 1.25rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; border: 0; padding: 0; margin: 0; min-width: 0; }
+.field--full { grid-column: 1 / -1; }
+label { font-size: 0.72rem; font-weight: 700; padding: 0; }
+input, select, textarea {
+  font: inherit; color: inherit; background: var(--bg-cotton); border: var(--border); border-radius: 0; padding: 0.7rem 0.9rem; width: 100%;
+}
+textarea { resize: vertical; min-height: 6.5rem; }
+input:focus, select:focus, textarea:focus { outline: none; box-shadow: 4px 4px 0 var(--accent-ochre); }
+.field.has-error input, .field.has-error select, .field.has-error textarea { box-shadow: 4px 4px 0 var(--accent-vermilion); }
+.field-error { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-vermilion); min-height: 0; }
+.field-error:empty { display: none; }
+.form-actions { flex-direction: row; align-items: center; gap: 0.5rem 1.25rem; flex-wrap: wrap; }
+.form-hint { font-size: 0.82rem; margin: 0; opacity: 0.75; }
+.form-status { font-family: var(--font-mono); font-size: 0.78rem; margin: 0; }
+.form-status:empty { display: none; }
+.form-status.ok { color: var(--accent-jade); }
+.form-status.err { color: var(--accent-vermilion); }
+
+/* ---------- [10] Footer ---------- */
+.footer { background: var(--bg-forest); color: var(--bg-cotton); padding: 0.75rem var(--pad) 2rem; } /* em cima: mesmo espaço das outras faixas */
+/* nome à esquerda; Redes e Contato logo ao lado, lado a lado; o espaço que sobra fica à direita */
+.footer-grid { display: grid; grid-template-columns: max-content max-content max-content 1fr; column-gap: clamp(2.5rem, 6vw, 6rem); row-gap: 2rem; padding-bottom: 3rem; align-items: start; }
+.footer-roles { margin-top: 1rem; opacity: 0.7; }
+.footer-big { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 5vw, 4rem); margin: 0.5rem 0 0; line-height: 1; }
+/* Redes e Contato: mesmo estilo (mono, maiúsculas). Contato encosta na margem direita. */
+.footer-col { display: flex; flex-direction: column; gap: 0.9rem; padding-top: 0.6rem; }
+.footer-col--end { align-items: flex-start; text-align: left; }
+.footer-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.55; margin: 0; }
+.footer-links { display: flex; flex-direction: column; gap: 0.5rem; align-items: inherit; }
+.footer-col a { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; }
+.footer-col a:hover { color: var(--accent-ochre); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+.back-to-top { display: inline-flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; }
+/* Alien "Up Button": a linha cresce de 60 para 80px em 1500ms */
+.back-line { display: none; height: 1.5px; width: 60px; background: currentColor; transition: width 1.5s var(--ease-expo); }
+.back-to-top:hover .back-line { width: 80px; }
+.back-to-top:hover { color: var(--accent-ochre); }
+
+/* ---------- Modal ---------- */
+.modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: var(--pad); }
+.modal[hidden] { display: none; }
+.modal-backdrop, .drawer-backdrop { position: absolute; inset: 0; background: rgba(18, 17, 16, 0.6); }
+.drawer-backdrop { position: fixed; z-index: 150; }
+.drawer-backdrop[hidden] { display: none; }
+.modal-panel {
+  position: relative; background: var(--bg-cotton); border: var(--border); box-shadow: 8px 8px 0 var(--ink-sumi);
+  width: min(960px, 100%); max-height: 90vh; overflow: auto;
+  display: grid; grid-template-columns: 1fr 1fr; animation: modalIn 0.45s var(--ease-out);
+}
+@keyframes modalIn { from { opacity: 0; transform: translateY(30px); } }
+.modal-media { position: relative; min-height: 360px; border-right: var(--border); }
+.modal-media .ph, .modal-media img { position: absolute; inset: 0; border: 0; }
+.modal-body { padding: 2rem; }
+.modal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin-top: 1.5rem; }
+.modal-actions:empty { display: none; }
+.modal-actions .mono-small { flex-basis: 100%; margin: 0; }
+.modal-body h3 { font-family: var(--font-display-alt); font-weight: 800; text-transform: uppercase; font-size: 1.8rem; line-height: 1.05; margin: 0.5rem 0 1rem; }
+.modal-close { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 2; width: 36px; height: 36px; border: var(--border); background: var(--bg-cotton); }
+.modal-close:hover { background: var(--ink-sumi); color: var(--bg-cotton); }
+.spec { display: grid; grid-template-columns: auto 1fr; margin: 1.5rem 0 0; border-top: var(--border); }
+.spec dt, .spec dd { margin: 0; padding: 0.6rem 0; border-bottom: var(--border); font-size: 0.9rem; }
+.spec dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; padding-right: 1.5rem; align-self: center; }
+
+/* ---------- Drawer Sacola ---------- */
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 160; width: min(420px, 100%);
+  background: var(--bg-cotton); border-left: var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(100%); visibility: hidden;
+  transition: transform 0.55s var(--ease-curtain), visibility 0s linear 0.55s;
+}
+.drawer.is-open { transform: none; visibility: visible; transition: transform 0.55s var(--ease-curtain), visibility 0s; }
+.drawer-head { position: relative; padding: 1.25rem 1.5rem; border-bottom: var(--border); }
+.drawer-head .modal-close { top: 50%; transform: translateY(-50%); }
+.drawer-note { margin: 0; padding: 0.75rem 1.5rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; background: var(--accent-ochre); border-bottom: var(--border); }
+.cart-list { list-style: none; margin: 0; padding: 0 1.5rem; overflow-y: auto; flex: 1; }
+.cart-empty { padding: 2rem 0; font-family: var(--font-editorial); font-style: italic; font-size: 1.25rem; }
+.cart-item { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; padding: 1rem 0; border-bottom: var(--border); }
+.cart-item h4 { margin: 0; font-size: 0.92rem; line-height: 1.3; }
+.qty { display: flex; align-items: center; border: var(--border); }
+.qty button { width: 30px; height: 30px; border: 0; background: none; }
+.qty button:hover:not(:disabled) { background: var(--bg-cream); }
+.qty button:disabled { opacity: 0.3; cursor: not-allowed; }
+.qty span { min-width: 28px; text-align: center; font-family: var(--font-mono); }
+.drawer-foot { padding: 1.25rem 1.5rem; border-top: var(--border); display: flex; flex-direction: column; gap: 0.6rem; }
+.cart-total { display: flex; justify-content: space-between; font-family: var(--font-mono); padding: 0.5rem 0; }
+
+/* ---------- Imagens: inclinação 3D + brilho de vidro no hover ----------
+   JS atualiza --rx/--ry (inclinação), --mx/--my (posição do brilho) e a classe .is-hover. */
+.tilt {
+  --rx: 0deg; --ry: 0deg; --s: 1; --mx: 50%; --my: 50%;
+  position: relative; overflow: hidden; isolation: isolate;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
+  transition: transform 0.7s var(--ease-out), box-shadow 0.7s var(--ease-out);
+}
+.tilt.is-hover { transition: transform 0.15s linear, box-shadow 0.4s var(--ease-out); box-shadow: 10px 14px 0 var(--shadow-ink); }
+.tilt > .ph, .tilt > img { height: 100%; }
+/* .glass = só o brilho, sem inclinar (usado nos cards, que já giram inteiros) */
+.glass { --mx: 50%; --my: 50%; isolation: isolate; }
+/* reflexo que segue o mouse */
+.tilt::after, .glass::after {
+  content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0;
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.12) 28%, transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 40%);
+  mix-blend-mode: soft-light; transition: opacity 0.5s;
+}
+/* faixa de luz que atravessa a imagem na entrada do mouse, como reflexo em vidro */
+.tilt::before, .glass::before {
+  content: ""; position: absolute; inset: -10%; z-index: 5; pointer-events: none;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0.15) 52%, transparent 60%);
+  transform: translateX(-120%); transition: transform 0s;
+}
+.tilt.is-hover::after, .glass.is-hover::after { opacity: 1; }
+.tilt.is-hover::before, .glass.is-hover::before { transform: translateX(120%); transition: transform 1.1s var(--ease-out); }
+
+/* ---------- Reveal genérico ---------- */
+/* Alien "Fade In On Scroll": sobe 20px e aparece em 1200ms, depois de 300ms */
+[data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s; }
+[data-reveal].is-visible { opacity: 1; transform: none; }
+
+/* ==========================================================================
+   FONTES DO MARCO (assets/fonts)
+   SURREALES: títulos e subtítulos. PRINTED BOY SURREAL: menus, filtros e botões.
+   O texto corrido continua na fonte padrão (--font-body) e as etiquetas pequenas em --font-mono.
+   ========================================================================== */
+@font-face { font-family: 'SURREALES'; src: url('../fonts/SURREALES.woff') format('woff'), url('../fonts/SURREALES.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'PRINTED BOY SURREAL'; src: url('../fonts/printed-boy-surreal.woff') format('woff'), url('../fonts/PRINTED%20BOY%20SURREAL.ttf') format('truetype'); font-display: swap; }
+
+:root { --f-titulo: 'SURREALES'; --f-ui: 'PRINTED BOY SURREAL'; }
+/* etiquetas pequenas (categorias, status, preços, legendas) também na PRINTED BOY SURREAL; o que faltar na fonte cai na Space Mono */
+:root { --font-mono: 'PRINTED BOY SURREAL', 'Space Mono', monospace; }
+
+/* títulos e subtítulos */
+.section-title, .card-title, .product h3, .flash h3, .modal-body h3, .footer-big {
+  font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-synthesis: none;
+  text-transform: uppercase; /* a SURREALES aparece sempre em maiúsculas no site, para ficar legível em qualquer tela */
+}
+/* letras dos títulos bem juntas: as espirais e pontas de algumas letras chegam a encostar na vizinha */
+.section-title, .footer-big, .modal-body h3 { letter-spacing: -0.035em; }
+#contato-title { letter-spacing: -0.07em; }   /* CONTATO com as letras mais juntas */
+#trabalhos-title .kern-d { margin-right: 0.06em; } /* o D se afasta um pouco do O, que encostava */
+#contato-title .kern-c { margin-right: 0.06em; } /* só o C se afasta um pouco do O, que encostava */
+.footer-big { letter-spacing: 0.03em; }       /* MARCO SURREAL do rodapé um pouco mais aberto */
+/* nos títulos pequenos (cards), só um pouco mais juntas, para continuar legível */
+.card-title, .product h3, .flash h3 { letter-spacing: -0.01em; }
+.section-title { line-height: 1; }
+.portfolio .section-title, .shop .section-title { font-size: clamp(1.9rem, 3.4vw, 2.75rem); } /* Loja e Trabalhos com o mesmo tamanho; cabe numa linha ao lado dos filtros */
+/* menus, filtros e botões */
+.nav-logo, .nav-links a, .nav-btn, .filter, .btn, .back-to-top, .footer-col a, .view-project span {
+  font-family: var(--f-ui), var(--font-mono); font-synthesis: none;
+}
+.nav-logo, .nav-links a, .nav-btn, .hero .btn { font-weight: 700; }
+/* MARCO SURREAL da barra na SURREALES (as outras palavras da barra seguem na PRINTED) */
+.nav-logo { font-family: var(--f-titulo), var(--font-display-alt); font-weight: 400; font-size: 1.45rem; letter-spacing: 0.01em; text-transform: uppercase; line-height: 1; }
+.nav-links a, .nav-btn, .filter, .btn { letter-spacing: 0.1em; }
+.nav-links a { font-size: 0.8rem; }
+.btn { font-size: 0.85rem; }
+.filter { font-size: 0.8rem; }
+.portfolio .filter, .portfolio .btn, .contact .btn { font-weight: 400; font-size: 0.9rem; letter-spacing: 0.06em; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 960px) {
+  .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .section-intro { grid-template-columns: 1fr; }
+  .section-tools { justify-content: flex-start; margin: 0; }
+  .section-tools .filters { justify-content: flex-start; }
+  .footer-grid > :first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  /* No celular, texto e botões vêm logo depois do título; as imagens descem */
+  .hero { grid-template-columns: 1fr; grid-template-rows: auto auto auto; min-height: 0; padding-bottom: 4rem; }
+  .hero-top { display: block; width: auto; }
+  .hero-meta { grid-row: 2; }
+  .hero-image-holder { grid-column: 1; grid-row: 3; width: 62%; justify-self: center; margin: 2rem 0 4rem; } /* espaço para a imagem de baixo não ser cortada */
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-logo { width: 64%; margin-top: 0.5rem; }
+  .hero-layer--d { display: none; } /* no celular só a logo fica em cima */
+  .footer-col--end { align-items: flex-start; text-align: left; } /* no celular, tudo na mesma margem esquerda */
+  .footer-col a { overflow-wrap: anywhere; }
+  .vitrine { --cols: 2; gap: 1rem; grid-auto-columns: calc((100% - 1rem) / 2); }
+  .contact-form { grid-template-columns: 1fr; }
+  .modal-panel { grid-template-columns: 1fr; }
+  .modal-media { min-height: 260px; border-right: 0; border-bottom: var(--border); }
+  .filters { margin-left: 0; }
+  .nav-logo { font-size: 1.1rem; }
+}
+
+/* ---------- Movimento reduzido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0s !important; }
+  .marquee-track, .ornament-track, .hero-float, .floaty { animation: none !important; }
+  .tilt::before, .glass::before { display: none; }
+  .hero-meta, .hero-enter, .hero + .ornament-band { transform: none !important; opacity: 1 !important; }
+  [data-reveal] { opacity: 1; transform: none; }
+  .lines { width: 100%; }
+}
